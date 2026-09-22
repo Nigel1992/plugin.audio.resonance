@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings version="1">
+  <section id="plugin.audio.resonance">
+    <category id="account" label="11109">
+      <group id="1">
+        <setting id="setup_spotify" type="action" label="11118">
+          <level>0</level>
+          <help>11387</help>
+          <data>RunPlugin(plugin://plugin.audio.resonance/?action=setup)</data>
+          <control type="button" format="action"><close>false</close></control>
+        </setting>
+      </group>
+    </category>
+    <category id="playback" label="11110">
+      <group id="1">
+        <setting id="audio_quality" type="string" label="11340">
+          <level>0</level><default>320</default>
+          <constraints>
+            <options>
+              <option label="11349">96</option>
+              <option label="11350">160</option>
+              <option label="11351">320</option>
+            </options>
+          </constraints>
+          <control type="list" format="string" />
+        </setting>
+        <setting id="normalization_type" type="string" label="11342">
+          <level>0</level><default>track</default>
+          <constraints>
+            <options>
+              <option label="11343">track</option>
+              <option label="11344">album</option>
+              <option label="11345">auto</option>
+            </options>
+          </constraints>
+          <control type="list" format="string" />
+        </setting>
+      </group>
+    </category>
+    <category id="maintenance" label="11346">
+      <group id="1">
+        <setting id="clear_resonance_cache" type="action" label="11348">
+          <level>0</level><data>RunPlugin(plugin://plugin.audio.resonance/?action=clear_cache)</data>
+          <control type="button" format="action"><close>true</close></control>
+        </setting>
+        <setting id="sign_out_spotify" type="action" label="11347">
+          <level>0</level><data>RunPlugin(plugin://plugin.audio.resonance/?action=sign_out)</data>
+          <control type="button" format="action"><close>true</close></control>
+        </setting>
+      </group>
+    </category>
+    <category id="advanced" label="11395">
+      <group id="1">
+        <setting id="spotify_webapi_client_id" type="string" label="11096">
+          <level>0</level><default></default>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string" />
+        </setting>
+        <setting id="web_auth_redirect_uri" type="string" label="11386">
+          <level>0</level><default>https://resonance-spotify-callback.vercel.app/api/callback</default>
+          <constraints><allowempty>false</allowempty></constraints>
+          <control type="edit" format="string" />
+        </setting>
+      </group>
+      <group id="2">
+        <setting id="dev_bypass_response_cache" type="boolean" label="11384">
+          <level>0</level><default>false</default><control type="toggle" />
+        </setting>
+        <setting id="verbose_debug_logging" type="boolean" label="11104">
+          <level>0</level><default>false</default><control type="toggle" />
+        </setting>
+      </group>
+    </category>
+  </section>
+</settings>

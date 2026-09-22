@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+.DS_Store
+Thumbs.db
+
+*.log
+*.tmp
+*.bak
+*.zip
+
+# Local Kodi/add-on runtime data and OAuth/debug caches should never be committed.
+userdata/
+addon_data/
+spotty-cache/
+credentials.json
+spotty-token*
+dashboard-oauth-cache.json
+spotify-api-gate.json
+spotify-api-gate.lock
+
+# Local editor/project files.
+.idea/
+.vscode/

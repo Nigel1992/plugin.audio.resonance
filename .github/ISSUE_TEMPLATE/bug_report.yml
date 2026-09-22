@@ -1,0 +1,84 @@
+name: Bug report
+description: Report something that is broken in Resonance.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please include enough detail to reproduce it.
+        Resonance 1.0.0 is supported on LibreELEC/Raspberry Pi ARM/AArch64; Android ARM is experimental.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the broken behavior and what you expected instead.
+      placeholder: Search opens, but selecting a track shows...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Resonance
+        2. Go to ...
+        3. Select ...
+        4. See ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Playback / Device Connect
+        - Browser sign-in / catalogue token
+        - Search
+        - Playlists
+        - Albums / artists
+        - Spotify link handling
+        - Settings
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: addon-version
+    attributes:
+      label: Resonance version
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: kodi-version
+    attributes:
+      label: Kodi version
+      placeholder: "Kodi 21.3"
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: "LibreELEC 12.2.1 on Raspberry Pi 5 AArch64"
+    validations:
+      required: true
+  - type: checkboxes
+    id: signins
+    attributes:
+      label: Spotify sign-in state
+      options:
+        - label: Device Connect playback pairing is complete.
+        - label: Browser sign-in for the catalogue is complete.
+        - label: Spotify Premium is active on this account.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Paste relevant lines from `/storage/.kodi/temp/kodi.log`. Please remove tokens or private data.
+      render: text
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Screenshots, network notes, playlist/link examples, or details that may help.

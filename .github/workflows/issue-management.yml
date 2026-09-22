@@ -1,0 +1,47 @@
+name: Issue Management
+
+on:
+  issues:
+    types: [opened]
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  welcome:
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: |
+            👋 **Welcome and thanks for opening your first issue!**
+
+            We appreciate you taking the time to contribute or report a problem. Please make sure your issue includes the relevant Kodi version, platform, reproduction steps and log output where useful.
+
+  stale:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          days-before-stale: ${{ vars.STALE_DAYS || 30 }}
+          days-before-close: ${{ vars.STALE_CLOSE_DAYS || 7 }}
+          stale-issue-label: 'stale'
+          exempt-issue-labels: ${{ vars.STALE_EXEMPT_LABELS || 'pinned,security,platform,help wanted' }}
+          stale-issue-message: |
+            ⏳ **This issue has been marked as stale** because it has been inactive for a while.
+
+            It will automatically close if no further activity occurs. If this is still relevant, please leave a comment or update it with current details.
+          close-issue-message: |
+            🔒 **Closed due to inactivity.**
+
+            This issue was automatically closed because it remained inactive. Feel free to open a new issue if you need further assistance.
+          days-before-pr-stale: -1
+          days-before-pr-close: -1

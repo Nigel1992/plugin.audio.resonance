@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Resonance releases
+    url: https://github.com/Nigel1992/plugin.audio.resonance/releases
+    about: Download the latest release ZIP.
+  - name: Spotify Developer Dashboard
+    url: https://developer.spotify.com/dashboard
+    about: Create the Spotify app and Client ID required for browser sign-in.
