@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window type="dialog">
+  <defaultcontrol always="true">400</defaultcontrol>
+  <coordinates>
+    <system>1</system>
+    <left>0</left>
+    <top>0</top>
+  </coordinates>
+  <controls>
+    <control type="group">
+      <left>300</left>
+      <top>86</top>
+      <width>680</width>
+      <height>548</height>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>680</width>
+        <height>548</height>
+        <texture border="24">dialogs/dialog-bg.png</texture>
+        <colordiffuse>F214171C</colordiffuse>
+      </control>
+      <control type="image">
+        <left>20</left>
+        <top>20</top>
+        <width>640</width>
+        <height>508</height>
+        <texture border="16">buttons/dialogbutton-nofo.png</texture>
+        <colordiffuse>CC1F2933</colordiffuse>
+      </control>
+      <control type="label" id="100">
+        <left>40</left>
+        <top>30</top>
+        <width>600</width>
+        <height>38</height>
+        <align>center</align>
+        <font>font16</font>
+        <textcolor>FFFFFFFF</textcolor>
+        <label></label>
+      </control>
+      <control type="image" id="200">
+        <left>215</left>
+        <top>84</top>
+        <width>250</width>
+        <height>250</height>
+        <aspectratio align="center" aligny="center">keep</aspectratio>
+        <texture background="false"></texture>
+      </control>
+      <control type="textbox" id="300">
+        <left>48</left>
+        <top>350</top>
+        <width>584</width>
+        <height>52</height>
+        <align>center</align>
+        <font>font13</font>
+        <textcolor>FFFFFFFF</textcolor>
+        <label></label>
+      </control>
+      <control type="textbox" id="301">
+        <left>52</left>
+        <top>410</top>
+        <width>576</width>
+        <height>58</height>
+        <align>center</align>
+        <font>font12</font>
+        <textcolor>FF8FD3FF</textcolor>
+        <label></label>
+      </control>
+      <control type="button" id="400">
+        <left>240</left>
+        <top>480</top>
+        <width>200</width>
+        <height>44</height>
+        <label>Close</label>
+        <align>center</align>
+      </control>
+    </control>
+  </controls>
+</window>

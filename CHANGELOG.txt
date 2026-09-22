@@ -1,0 +1,15 @@
+Resonance Version 1
+
+v1.0.0 - 2026-09-22
+
+- Initial Version 1 release of Resonance for Kodi.
+- Search, playlists, albums, artists, links and track metadata use the browser PKCE token.
+- Playback remains handled by Device Connect and the bundled Spotty/librespot helpers.
+- Added browser PKCE sign-in through the hosted Resonance callback relay.
+- Added Device Connect pairing for playback.
+- Added persistent catalogue caching and shared Spotify API cooldown handling.
+- Added loopback audio streaming into Kodi.
+- Uses the regular Spotify Web API catalogue only.
+- Supported target is LibreELEC on Raspberry Pi ARM/AArch64; Android ARM is experimental.
+- Windows, macOS and Linux x86/x64 are not supported by this release.
+- Verified with the full unit test suite.

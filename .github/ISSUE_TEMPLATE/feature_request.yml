@@ -1,0 +1,56 @@
+name: Feature request
+description: Suggest a new Resonance feature or improvement.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please keep requests focused on Resonance 1.x: Spotify Web API catalogue browsing and Kodi playback.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What would you like Resonance to do?
+      placeholder: Add a context menu item that...
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Why is this useful?
+      description: Describe the listening or browsing workflow this would improve.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Feature area
+      options:
+        - Catalogue browsing
+        - Playback
+        - Playlists
+        - Search
+        - Settings
+        - Platform support
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: api
+    attributes:
+      label: Spotify API considerations
+      options:
+        - label: This likely needs extra Spotify OAuth scopes.
+        - label: This likely needs write access to a Spotify account.
+        - label: This can probably use existing read-only catalogue access.
+        - label: I am not sure.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any workaround or simpler version that would still help?
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context

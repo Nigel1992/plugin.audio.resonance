@@ -1,0 +1,62 @@
+name: Install or sign-in help
+description: Get help with installation, Device Connect, or browser sign-in.
+title: "[Help]: "
+labels: ["support"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for setup issues: ZIP install, Device Connect pairing, browser sign-in, or missing playlists after sign-in.
+  - type: dropdown
+    id: issue-kind
+    attributes:
+      label: What are you stuck on?
+      options:
+        - Installing the ZIP
+        - Kodi service does not start
+        - Device Connect pairing
+        - Browser sign-in / callback
+        - Spotify Client ID / Redirect URI
+        - Playlists not showing
+        - Playback not starting
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happens?
+      placeholder: I get to the browser approval page, then...
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: "LibreELEC 12.2.1 on Raspberry Pi 5 AArch64"
+    validations:
+      required: true
+  - type: input
+    id: kodi-version
+    attributes:
+      label: Kodi version
+      placeholder: "Kodi 21.3"
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Setup checklist
+      options:
+        - label: I restarted Kodi after installing the add-on.
+        - label: I use a Spotify Premium account.
+        - label: Device Connect pairing completed.
+        - label: I created my own Spotify Developer app.
+        - label: I added `https://resonance-spotify-callback.vercel.app/api/callback` as a Redirect URI.
+        - label: I pasted the 32-character Client ID into Resonance settings.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Paste relevant lines from `/storage/.kodi/temp/kodi.log`. Please remove tokens or private data.
+      render: text

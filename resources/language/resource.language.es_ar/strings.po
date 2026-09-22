@@ -1,0 +1,1415 @@
+# Kodi Media Center language file
+# Addon Name: Resonance
+# Addon id: plugin.audio.resonance
+# Addon Provider: Nigel1992
+# Resonance release: 1.0.0
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi-Addons\n"
+"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
+"POT-Creation-Date: 2015-11-04 18:30+0100\n"
+"PO-Revision-Date: 2015-11-04 18:30+0100\n"
+"Last-Translator: trihy\n"
+"Language-Team: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: es_AR\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgctxt "#11007"
+msgid "Save to My Music"
+msgstr "Guardar en Mi Música"
+
+msgctxt "#11008"
+msgid "Remove from My Music"
+msgstr "Remover de Mi Música"
+
+msgctxt "#11009"
+msgid "Follow"
+msgstr "Seguir"
+
+msgctxt "#11010"
+msgid "Unfollow"
+msgstr "Dejar de Seguir"
+
+msgctxt "#11011"
+msgid "Artist top tracks"
+msgstr "Canciones Top del Artista"
+
+msgctxt "#11012"
+msgid "Related artists"
+msgstr "Artistas Relacionados"
+
+msgctxt "#11013"
+msgid "My Music"
+msgstr "Mi Música"
+
+msgctxt "#11014"
+msgid "Explore"
+msgstr "Explorar"
+
+msgctxt "#11015"
+msgid "Featured playlists"
+msgstr "Playlists Destacadas"
+
+msgctxt "#11016"
+msgid "All new releases"
+msgstr "Nuevos Lanzamientos"
+
+msgctxt "#11017"
+msgid "Remove from playlist"
+msgstr "Remover del Playlist"
+
+msgctxt "#11018"
+msgid "All albums for artist"
+msgstr "Todos los Albumes del Artista"
+
+msgctxt "#11019"
+msgid "All singles for artist"
+msgstr "All singles for artist"
+
+msgctxt "#11020"
+msgid "Default view for categories"
+msgstr "Vista por Defecto para Categorías"
+
+msgctxt "#11023"
+msgid "Most played artists"
+msgstr "Artistas más Reproducidos "
+
+msgctxt "#11024"
+msgid "Most played tracks"
+msgstr "Canciones más Reproducidas"
+
+msgctxt "#11025"
+msgid "Follow artist"
+msgstr "Seguir Artista"
+
+msgctxt "#11026"
+msgid "Unfollow artist"
+msgstr "Dejar de Seguir Artista"
+
+msgctxt "#11027"
+msgid "Refresh listing"
+msgstr "Refrescar Listado"
+
+msgctxt "#11030"
+msgid "Append artist name to song title"
+msgstr "Adjuntar Nombre del Artista a Título de Canción"
+
+msgctxt "#11031"
+msgid "Default view for playlists"
+msgstr "Vista por Defecto para Playlists"
+
+msgctxt "#11032"
+msgid "Default view for artist list"
+msgstr "Vista por Defecto para Lista de Artista"
+
+msgctxt "#11033"
+msgid "Default view for album list"
+msgstr "Vista por Defecto para Lista de Album"
+
+msgctxt "#11034"
+msgid "Default view for song list"
+msgstr "Vista por Defecto para Lista de Canción"
+
+msgctxt "#11047"
+msgid "Current user"
+msgstr "Usuario Actual"
+
+msgctxt "#11054"
+msgid "Audio"
+msgstr "Audio"
+
+msgctxt "#11055"
+msgid "Views"
+msgstr "Vistas"
+
+msgctxt "#11069"
+msgid "My recently played playlist"
+msgstr "Mi Playlist reproducida Recientemente"
+
+msgctxt "#11070"
+msgid "Gap between tracks when playing a playlist (secs)"
+msgstr "Espacio entre canciones cuando se reproduce una playlist (Segundos)"
+
+msgctxt "#11071"
+msgid ""
+"To give better audio streaming from Spotify, a video http rule was just added to 'userdata/playercorefactory.xml'.\n"
+"Please restart Kodi for this to take affect."
+msgstr ""
+"To give better audio streaming from Spotify, a video http rule was just added to 'userdata/playercorefactory.xml'.\n"
+"Please restart Kodi for this to take affect."
+
+msgctxt "#11072"
+msgid "Clear the plugin cache"
+msgstr "Limpiar cache del plugin"
+
+msgctxt "#11073"
+msgid "Followed artists"
+msgstr "Artistas Seguidos"
+
+msgctxt "#11074"
+msgid ""
+"Successfully cleared the plugin cache database.\n"
+"Please restart Kodi for this to take affect."
+msgstr "Cache de base de datos del plugin exitosamente limpiada"
+
+msgctxt "#11075"
+msgid "Use Spotify normalization when playing tracks"
+msgstr "Usar Normalizacion de Spotify cuando reproduzca canciones"
+
+msgctxt "#11076"
+msgid "Authenticate the plugin"
+msgstr "Authenticate the plugin"
+
+msgctxt "#11077"
+msgid ""
+"The Spotify login failed. Use another Spotify app on your\n"
+"LAN to authenticate this plugin. In the other app, goto\n"
+"\"Connect to a device\" and select the device \"Kodi-Resonance\".\n"
+"PRESS \"OK\" here when you've done that."
+msgstr ""
+"The Spotify login failed. Use another Spotify app on your\n"
+"LAN to authenticate this plugin. In the other app, goto\n"
+"\"Connect to a device\" and select the device \"Kodi-Resonance\".\n"
+"PRESS \"OK\" here when you've done that."
+
+msgctxt "#11078"
+msgid ""
+"Use another Spotify app on your LAN to authenticate this\n"
+"plugin. In the other app, goto \"Connect to a device\"\n"
+"and select the device \"Kodi-Resonance\".\n"
+"PRESS \"OK\" here when you've done that."
+msgstr ""
+"Use another Spotify app on your LAN to authenticate this\n"
+"plugin. In the other app, goto \"Connect to a device\"\n"
+"and select the device \"Kodi-Resonance\".\n"
+"PRESS \"OK\" here when you've done that."
+
+msgctxt "#11079"
+msgid ""
+"Successfully authenticated the Kodi Resonance plugin.\n"
+"Your Spotify username for the plugin is "
+msgstr ""
+"Successfully authenticated the Kodi Resonance plugin.\n"
+"Your Spotify username for the plugin is "
+
+msgctxt "#11080"
+msgid ""
+"Failed to authenticate. Could not find the credentials file:"
+msgstr ""
+"Failed to authenticate. Could not find the credentials file:"
+
+msgctxt "#11081"
+msgid ""
+"Authentication program failed to run."
+msgstr ""
+"Authentication program failed to run."
+
+msgctxt "#11082"
+msgid ""
+"Terminating the Resonance plugin."
+msgstr ""
+"Terminating the Resonance plugin."
+
+msgctxt "#11083"
+msgid "All tracks for artist"
+msgstr "All tracks for artist"
+
+msgctxt "#11084"
+msgid "All albums and singles for artist"
+msgstr "All albums and singles for artist"
+
+msgctxt "#11085"
+msgid "All 'appears on' albums for artist"
+msgstr "All 'appears on' albums for artist"
+
+msgctxt "#11086"
+msgid "Set to 'True', if there is a problem with early stream termination"
+msgstr "Set to 'True', if there is a problem with early stream termination"
+
+msgctxt "#11095"
+msgid "Spotify Web API"
+msgstr "Spotify Web API"
+
+msgctxt "#11096"
+msgid "Spotify Web API client ID"
+msgstr "Spotify Web API client ID"
+
+msgctxt "#11097"
+msgid "Use your own Spotify Developer client ID to avoid the shared legacy API quota."
+msgstr "Your own client ID from the Spotify Developer Dashboard. Avoids the shared API quota of the legacy default ID."
+
+msgctxt "#11094"
+msgid "Spotify connected"
+msgstr "Spotify conectado"
+
+msgctxt "#11060"
+msgid "Pause between tracks"
+msgstr "Pausa entre pistas"
+
+msgctxt "#11061"
+msgid "Spotify volume normalization"
+msgstr "Normalización de volumen de Spotify"
+
+msgctxt "#11062"
+msgid "Workaround for early stream termination"
+msgstr ""
+
+msgctxt "#11087"
+msgid "Not authenticated"
+msgstr ""
+
+msgctxt "#11088"
+msgid "Spotify account email"
+msgstr ""
+
+msgctxt "#11089"
+msgid "Spotify account"
+msgstr ""
+
+msgctxt "#11091"
+msgid "General"
+msgstr ""
+
+msgctxt "#11092"
+msgid "Cache checksum (internal)"
+msgstr ""
+
+msgctxt "#11093"
+msgid "Device Connect succeeded, but the Spotify account could not be loaded."
+msgstr ""
+
+msgctxt "#11098"
+msgid "Spotify API temporarily limited"
+msgstr "Spotify API temporarily limited"
+
+msgctxt "#11099"
+msgid "Try again later or configure your own Web API Client ID."
+msgstr "Try again later or configure your own Web API Client ID."
+
+msgctxt "#11100"
+msgid "Spotify account e-mail"
+msgstr "Spotify account e-mail"
+
+msgctxt "#11101"
+msgid "Optional Spotify account e-mail for persistent account display"
+msgstr "Optional. Stored only in Resonance userdata and used for the account display because Spotify Development Mode may omit e-mail from /me."
+
+msgctxt "#11102"
+msgid "Made for you"
+msgstr "Made for you"
+
+
+msgctxt "#11103"
+msgid "Logging"
+msgstr "Registro"
+
+msgctxt "#11104"
+msgid "Verbose debug logging"
+msgstr "Registro de depuración detallado"
+
+msgctxt "#11105"
+msgid "Write detailed Resonance diagnostics to the Kodi log. Enable only for troubleshooting."
+msgstr "Escribe diagnósticos detallados de Resonance en el registro de Kodi. Activarlo solo para solucionar problemas."
+
+msgctxt "#11106"
+msgid "Entries per page"
+msgstr "Elementos por página"
+
+msgctxt "#11107"
+msgid "Number of entries shown per page. Resonance loads additional API pages internally as needed."
+msgstr "Número de elementos mostrados por página. Resonance carga internamente páginas adicionales de la API cuando es necesario."
+
+msgctxt "#11108"
+msgid "More ..."
+msgstr "More ..."
+
+msgctxt "#11109"
+msgid "Account & Connection"
+msgstr "Cuenta y conexión"
+
+msgctxt "#11110"
+msgid "Playback"
+msgstr "Reproducción"
+
+msgctxt "#11111"
+msgid "Library & Display"
+msgstr "Biblioteca y visualización"
+
+msgctxt "#11112"
+msgid "Cache & Storage"
+msgstr "Caché y almacenamiento"
+
+msgctxt "#11113"
+msgid "Developer"
+msgstr "Desarrollador"
+
+msgctxt "#11114"
+msgid "About"
+msgstr "Acerca de"
+
+msgctxt "#11115"
+msgid "Account information"
+msgstr "Información de la cuenta"
+
+msgctxt "#11116"
+msgid "Actions"
+msgstr "Acciones"
+
+msgctxt "#11117"
+msgid "Connection status"
+msgstr "Estado de conexión"
+
+msgctxt "#11118"
+msgid "Connect with Spotify"
+msgstr "Conectar con Spotify"
+
+msgctxt "#11119"
+msgid "Re-authenticate"
+msgstr "Volver a autenticar"
+
+msgctxt "#11120"
+msgid "Delete credentials"
+msgstr "Eliminar credenciales"
+
+msgctxt "#11121"
+msgid "Delete all Resonance credentials and sign out?"
+msgstr "¿Eliminar todas las credenciales de Resonance y cerrar sesión?"
+
+msgctxt "#11122"
+msgid "Resonance credentials were deleted."
+msgstr "Se eliminaron las credenciales de Resonance."
+
+msgctxt "#11123"
+msgid "Cache"
+msgstr "Caché"
+
+msgctxt "#11124"
+msgid "About Resonance"
+msgstr "Acerca de Resonance"
+
+msgctxt "#11125"
+msgid "Add-on version"
+msgstr "Versión del complemento"
+
+msgctxt "#11126"
+msgid "Add-on ID"
+msgstr "ID del complemento"
+
+msgctxt "#11127"
+msgid "Playback engine"
+msgstr "Motor de reproducción"
+
+msgctxt "#11130"
+msgid "Audio quality"
+msgstr "Calidad de audio"
+
+msgctxt "#11131"
+msgid "Start volume (%)"
+msgstr "Volumen inicial (%)"
+
+msgctxt "#11132"
+msgid "Normalization mode"
+msgstr "Modo de normalización"
+
+msgctxt "#11133"
+msgid "Track"
+msgstr "Pista"
+
+msgctxt "#11134"
+msgid "Album"
+msgstr "Álbum"
+
+msgctxt "#11135"
+msgid "Automatic"
+msgstr "Automático"
+
+msgctxt "#11137"
+msgid "20"
+msgstr "20"
+
+msgctxt "#11138"
+msgid "40"
+msgstr "40"
+
+msgctxt "#11139"
+msgid "60"
+msgstr "60"
+
+msgctxt "#11140"
+msgid "80"
+msgstr "80"
+
+msgctxt "#11141"
+msgid "100"
+msgstr "100"
+
+msgctxt "#11142"
+msgid "96 kbps"
+msgstr "96 kbps"
+
+msgctxt "#11143"
+msgid "160 kbps"
+msgstr "160 kbps"
+
+msgctxt "#11144"
+msgid "320 kbps"
+msgstr "320 kbps"
+
+msgctxt "#11145"
+msgid "0 seconds"
+msgstr "0 segundos"
+
+msgctxt "#11146"
+msgid "1 second"
+msgstr "1 segundo"
+
+msgctxt "#11147"
+msgid "2 seconds"
+msgstr "2 segundos"
+
+msgctxt "#11148"
+msgid "3 seconds"
+msgstr "3 segundos"
+
+msgctxt "#11149"
+msgid "5 seconds"
+msgstr "5 segundos"
+
+msgctxt "#11150"
+msgid "10 seconds"
+msgstr "10 segundos"
+
+msgctxt "#11129"
+msgid "The client ID used by Resonance authentication. This value is managed by the add-on."
+msgstr "El ID de cliente utilizado por Resonance para la autenticación. Este valor lo administra el complemento."
+
+msgctxt "#11151"
+msgid "Audio preloading"
+msgstr "Precarga de audio"
+
+msgctxt "#11152"
+msgid "Preload time"
+msgstr "Tiempo de precarga"
+
+msgctxt "#11153"
+msgid "15 seconds"
+msgstr "15 segundos"
+msgctxt "#11154"
+msgid "Preload mode"
+msgstr "Modo de precarga"
+
+msgctxt "#11155"
+msgid "Automatic"
+msgstr "Automático"
+
+msgctxt "#11156"
+msgid "Manual"
+msgstr "Manual"
+msgctxt "#11157"
+msgid "Prefetch diagnostics"
+msgstr "Diagnóstico de precarga"
+
+msgctxt "#11158"
+msgid "Current automatic preload"
+msgstr "Precarga automática actual"
+
+msgctxt "#11159"
+msgid "Smoothed Spotty latency"
+msgstr "Latencia Spotty suavizada"
+
+msgctxt "#11160"
+msgid "Prefetch hits"
+msgstr "Aciertos de precarga"
+
+msgctxt "#11161"
+msgid "Normal fallbacks"
+msgstr "Inicios normales"
+
+msgctxt "#11162"
+msgid "Prefetch cancellations"
+msgstr "Cancelaciones de precarga"
+
+msgctxt "#11163"
+msgid "Hit rate"
+msgstr "Tasa de aciertos"
+
+msgctxt "#11164"
+msgid "Settings"
+msgstr "Configuración"
+
+msgctxt "#11165"
+msgid "System and playback"
+msgstr "Sistema y reproducción"
+
+msgctxt "#11166"
+msgid "Operating system"
+msgstr "Sistema operativo"
+
+msgctxt "#11167"
+msgid "Architecture"
+msgstr "Arquitectura"
+
+msgctxt "#11168"
+msgid "Playback binary"
+msgstr "Binario de reproducción"
+
+msgctxt "#11169"
+msgid "Authentication"
+msgstr "Autenticación"
+
+msgctxt "#11170"
+msgid "Authentication method"
+msgstr "Método de autenticación"
+
+msgctxt "#11171"
+msgid "Token binary"
+msgstr "Binario de token"
+
+msgctxt "#11172"
+msgid "Device name"
+msgstr "Nombre del dispositivo"
+
+msgctxt "#11173"
+msgid "Device Connect port"
+msgstr "Puerto de Device Connect"
+
+msgctxt "#11174"
+msgid "Token method"
+msgstr "Método de token"
+
+msgctxt "#11175"
+msgid "Active Client ID"
+msgstr "ID de cliente activo"
+
+msgctxt "#11176"
+msgid "Credentials status"
+msgstr "Estado de credenciales"
+
+msgctxt "#11177"
+msgid "Token status"
+msgstr "Estado del token"
+
+msgctxt "#11178"
+msgid "Preload mode"
+msgstr "Modo de precarga"
+
+msgctxt "#11179"
+msgid "Present"
+msgstr "Presente"
+
+msgctxt "#11180"
+msgid "Missing"
+msgstr "Falta"
+
+msgctxt "#11181"
+msgid "Valid"
+msgstr "Válido"
+
+msgctxt "#11182"
+msgid "Expired"
+msgstr "Caducado"
+
+msgctxt "#11183"
+msgid "Native Device Connect + legacy token split"
+msgstr "Device Connect nativo + división de token heredada"
+
+msgctxt "#11184"
+msgid "Spotty --save-token"
+msgstr "Spotty --save-token"
+
+msgctxt "#11185"
+msgid "Disabled"
+msgstr "Desactivado"
+
+msgctxt "#11186"
+msgid "Automatic"
+msgstr "Automático"
+
+msgctxt "#11187"
+msgid "Manual"
+msgstr "Manual"
+
+msgctxt "#11188"
+msgid "Device Connect binary"
+msgstr "Binario de Device Connect"
+
+msgctxt "#11189"
+msgid "Device Connect"
+msgstr "Device Connect"
+
+msgctxt "#11190"
+msgid "Current Device Connect name"
+msgstr "Current Device Connect name"
+
+msgctxt "#11191"
+msgid "Name advertised in the Spotify device selection."
+msgstr "Name advertised in the Spotify device selection."
+
+msgctxt "#11192"
+msgid "Device name mode"
+msgstr "Device name mode"
+
+msgctxt "#11193"
+msgid "Automatically identifies this Kodi installation or uses a custom name."
+msgstr "Automatically identifies this Kodi installation or uses a custom name."
+
+msgctxt "#11194"
+msgid "Automatic"
+msgstr "Automatic"
+
+msgctxt "#11195"
+msgid "Custom"
+msgstr "Custom"
+
+msgctxt "#11196"
+msgid "Custom device name"
+msgstr "Custom device name"
+
+msgctxt "#11197"
+msgid "Custom name shown in Spotify. Control characters are removed and the length is limited."
+msgstr "Custom name shown in Spotify. Control characters are removed and the length is limited."
+
+msgctxt "#11198"
+msgid "Generate new automatic device name"
+msgstr "Generate new automatic device name"
+
+msgctxt "#11199"
+msgid "Creates a new stable suffix. Existing credentials and tokens are preserved."
+msgstr "Creates a new stable suffix. Existing credentials and tokens are preserved."
+
+msgctxt "#11200"
+msgid "A new Device Connect name was generated."
+msgstr "A new Device Connect name was generated."
+
+msgctxt "#11201"
+msgid "Select this device in Spotify"
+msgstr "Select this device in Spotify"
+
+msgctxt "#11202"
+msgid "Kodi version"
+msgstr "Kodi version"
+
+msgctxt "#11203"
+msgid "Python version"
+msgstr "Python version"
+
+msgctxt "#11204"
+msgid "Local audio proxy port"
+msgstr "Local audio proxy port"
+msgctxt "#11205"
+msgid "Kodi music system"
+msgstr "Sistema de música de Kodi"
+
+msgctxt "#11206"
+msgid "Automatically play next track"
+msgstr "Reproducir automáticamente la siguiente pista"
+
+msgctxt "#11207"
+msgid "Switch to visualisation on playback"
+msgstr "Cambiar a visualización al iniciar la reproducción"
+
+msgctxt "#11208"
+msgid "Changes Kodi's system-wide Player > Music setting. Resonance reads the current Kodi value whenever its settings are opened."
+msgstr "Cambia el ajuste global de Kodi Reproductor > Música. Resonance lee el valor actual de Kodi al abrir sus ajustes."
+
+msgctxt "#11209"
+msgid "Changes Kodi's system-wide Media > Music setting. Resonance reads the current Kodi value whenever its settings are opened."
+msgstr "Cambia el ajuste global de Kodi Medios > Música. Resonance lee el valor actual de Kodi al abrir sus ajustes."
+
+msgctxt "#11210"
+msgid "View management"
+msgstr "View management"
+
+msgctxt "#11211"
+msgid "Kodi and the active skin remember the selected view. Legacy numeric view IDs remain internal."
+msgstr "Kodi and the active skin remember the selected view. Legacy numeric view IDs remain internal."
+
+msgctxt "#11212"
+msgid "Reset saved Resonance views"
+msgstr "Reset saved Resonance views"
+
+msgctxt "#11213"
+msgid "Removes legacy forced view IDs. Kodi and the active skin will select and remember views."
+msgstr "Removes legacy forced view IDs. Kodi and the active skin will select and remember views."
+
+msgctxt "#11214"
+msgid "Resonance view settings were reset."
+msgstr "Resonance view settings were reset."
+
+msgctxt "#11215"
+msgid "Tracks per playlist page"
+msgstr "Tracks per playlist page"
+
+msgctxt "#11216"
+msgid "Limits only the visible playlist page. Playing a playlist still queues every track."
+msgstr "Limits only the visible playlist page. Playing a playlist still queues every track."
+
+msgctxt "#11217"
+msgid "10 entries"
+msgstr "10 entries"
+
+msgctxt "#11218"
+msgid "Spotty audio-file cache size"
+msgstr "Spotty audio-file cache size"
+
+msgctxt "#11219"
+msgid "Clear Spotty audio-file cache"
+msgstr "Clear Spotty audio-file cache"
+
+msgctxt "#11220"
+msgid "Stop audio playback before clearing the Spotty file cache."
+msgstr "Stop audio playback before clearing the Spotty file cache."
+
+msgctxt "#11221"
+msgid "Refresh status displays"
+msgstr "Refresh status displays"
+
+msgctxt "#11222"
+msgid "Status displays were refreshed."
+msgstr "Status displays were refreshed."
+
+msgctxt "#11223"
+msgid "Liked songs"
+msgstr "Canciones que te gustan"
+
+msgctxt "#11224"
+msgid "Artists"
+msgstr "Artistas"
+
+msgctxt "#11225"
+msgid "Your taste"
+msgstr "Tus gustos"
+
+msgctxt "#11226"
+msgid "Top artists"
+msgstr "Artistas favoritos"
+
+msgctxt "#11227"
+msgid "Top tracks"
+msgstr "Canciones favoritas"
+
+msgctxt "#11228"
+msgid "Recently played tracks"
+msgstr "Escuchado recientemente"
+
+msgctxt "#11230"
+msgid "Podcast"
+msgstr "Podcast"
+
+msgctxt "#11231"
+msgid "Enable podcast resume"
+msgstr "Activar reanudación de podcasts"
+
+msgctxt "#11232"
+msgid "Save podcast positions and show resumable episodes under Continue listening."
+msgstr "Guarda las posiciones de podcasts y muestra episodios reanudables en Continuar escuchando."
+
+msgctxt "#11233"
+msgid "Resume rewind"
+msgstr "Retroceso al reanudar"
+
+msgctxt "#11234"
+msgid "Start this many seconds before the saved position. Default: 5 seconds."
+msgstr "Inicia esta cantidad de segundos antes de la posición guardada. Predeterminado: 5 segundos."
+
+msgctxt "#11235"
+msgid "Minimum played time"
+msgstr "Tiempo mínimo reproducido"
+
+msgctxt "#11236"
+msgid "Do not save a resume position until at least this many seconds have been played. Default: 10 seconds."
+msgstr "No guarda una posición hasta reproducir al menos esta cantidad de segundos. Predeterminado: 10 segundos."
+
+msgctxt "#11237"
+msgid "Completion threshold"
+msgstr "Umbral de finalización"
+
+msgctxt "#11238"
+msgid "Hide an episode from Continue listening when fewer than this many seconds remain. Default: 30 seconds."
+msgstr "Oculta un episodio de Continuar escuchando cuando quedan menos de estos segundos. Predeterminado: 30 segundos."
+
+msgctxt "#11239"
+msgid "Podcast resume"
+msgstr "Reanudación de podcast"
+
+msgctxt "#11240"
+msgid "Off"
+msgstr "Desactivado"
+
+msgctxt "#11241"
+msgid "3 seconds"
+msgstr "3 segundos"
+
+msgctxt "#11242"
+msgid "5 seconds"
+msgstr "5 segundos"
+
+msgctxt "#11243"
+msgid "10 seconds"
+msgstr "10 segundos"
+
+msgctxt "#11244"
+msgid "15 seconds"
+msgstr "15 segundos"
+
+msgctxt "#11245"
+msgid "30 seconds"
+msgstr "30 segundos"
+
+msgctxt "#11246"
+msgid "5 seconds"
+msgstr "5 segundos"
+
+msgctxt "#11247"
+msgid "20 seconds"
+msgstr "20 segundos"
+
+msgctxt "#11248"
+msgid "60 seconds"
+msgstr "60 segundos"
+
+msgctxt "#11249"
+msgid "120 seconds"
+msgstr "120 segundos"
+
+msgctxt "#11250"
+msgid "300 seconds"
+msgstr "300 segundos"
+
+msgctxt "#11229"
+msgid "Podcasts"
+msgstr "Podcasts"
+
+msgctxt "#11260"
+msgid "Audiobooks"
+msgstr "Audiolibros"
+
+msgctxt "#11261"
+msgid "Search audiobooks"
+msgstr "Buscar audiolibros"
+
+msgctxt "#11262"
+msgid "Saved audiobooks"
+msgstr "Audiolibros guardados"
+
+msgctxt "#11263"
+msgid "Display and lists"
+msgstr "Pantalla y listas"
+
+msgctxt "#11264"
+msgid "Show saved audiobooks"
+msgstr "Mostrar audiolibros guardados"
+
+msgctxt "#11265"
+msgid "Shows the saved audiobooks entry in the audiobook menu."
+msgstr "Muestra la entrada de audiolibros guardados en el menú de audiolibros."
+
+msgctxt "#11266"
+msgid "Search results per request"
+msgstr "Resultados de búsqueda por consulta"
+
+msgctxt "#11267"
+msgid "Limits the number of audiobook search results per request."
+msgstr "Limita la cantidad de resultados de audiolibros por consulta."
+
+msgctxt "#11272"
+msgid "Saved audiobooks per page"
+msgstr "Audiolibros guardados por página"
+
+msgctxt "#11273"
+msgid "Limits the number of saved audiobooks loaded at once."
+msgstr "Limita la cantidad de audiolibros guardados cargados a la vez."
+
+msgctxt "#11274"
+msgid "Chapters per page"
+msgstr "Capítulos por página"
+
+msgctxt "#11275"
+msgid "Limits the number of chapters loaded per audiobook."
+msgstr "Limita la cantidad de capítulos cargados por audiolibro."
+
+msgctxt "#11276"
+msgid "Audiobooks"
+msgstr "Audiolibros"
+
+msgctxt "#11268"
+msgid "10"
+msgstr "10"
+
+msgctxt "#11269"
+msgid "20"
+msgstr "20"
+
+msgctxt "#11270"
+msgid "30"
+msgstr "30"
+
+msgctxt "#11271"
+msgid "50"
+msgstr "50"
+
+msgctxt "#30080"
+msgid "Enable audiobook resume"
+msgstr "Enable audiobook resume"
+
+msgctxt "#30081"
+msgid "Save the position for Continue listening."
+msgstr "Save the position for Continue listening."
+
+msgctxt "#30082"
+msgid "Resume rewind"
+msgstr "Resume rewind"
+
+msgctxt "#30083"
+msgid "Start some seconds before the saved position."
+msgstr "Start some seconds before the saved position."
+
+msgctxt "#30084"
+msgid "Minimum listening time for resume"
+msgstr "Minimum listening time for resume"
+
+msgctxt "#30085"
+msgid "The position is only saved after this listening time."
+msgstr "The position is only saved after this listening time."
+
+msgctxt "#11286"
+msgid "History, search and maintenance"
+msgstr "Historial, búsqueda y mantenimiento"
+
+msgctxt "#11287"
+msgid "Enable automatic housekeeping"
+msgstr "Activar mantenimiento automático"
+
+msgctxt "#11293"
+msgid "Every 30 days"
+msgstr "Cada 30 días"
+
+msgctxt "#11301"
+msgid "Manual maintenance"
+msgstr "Mantenimiento manual"
+
+msgctxt "#11302"
+msgid "Run housekeeping now"
+msgstr "Ejecutar mantenimiento ahora"
+
+msgctxt "#11303"
+msgid "Clear recent searches"
+msgstr "Borrar búsquedas recientes"
+
+msgctxt "#11304"
+msgid "Remove completed entries"
+msgstr "Eliminar entradas completadas"
+
+msgctxt "#11305"
+msgid "Clear playback history"
+msgstr "Borrar historial de reproducción"
+
+msgctxt "#11306"
+msgid "Reset resume positions"
+msgstr "Restablecer posiciones de reanudación"
+
+msgctxt "#11307"
+msgid "Remove orphaned entries"
+msgstr "Eliminar entradas huérfanas"
+
+msgctxt "#11308"
+msgid "Refresh local metadata cache"
+msgstr "Actualizar caché de metadatos local"
+
+msgctxt "#11309"
+msgid "Reset all local branch data"
+msgstr "Restablecer todos los datos locales de la sección"
+
+msgctxt "#11310"
+msgid "Unlimited / never"
+msgstr "Sin límite / nunca"
+
+msgctxt "#11335"
+msgid "Continue at {time}"
+msgstr "Continuar desde {time}"
+
+msgctxt "#11336"
+msgid "Completed"
+msgstr "Completado"
+
+msgctxt "#11337"
+msgid "Settings & Account"
+msgstr "Configuración y cuenta"
+
+msgctxt "#30090"
+msgid "Continue playlists"
+msgstr "Continuar listas de reproducción"
+
+msgctxt "#30091"
+msgid "Continue at track {track}: {time}"
+msgstr "Continuar en pista {track}: {time}"
+
+msgctxt "#30092"
+msgid "Enable playlist continuation"
+msgstr "Activar continuación de listas"
+
+msgctxt "#30093"
+msgid "Saves the concrete playlist order, current track and playback position locally."
+msgstr "Guarda localmente el orden concreto, la pista actual y la posición."
+
+msgctxt "#30094"
+msgid "Rewind when continuing"
+msgstr "Retroceso al continuar"
+
+msgctxt "#30095"
+msgid "Starts a few seconds before the saved music position."
+msgstr "Inicia unos segundos antes de la posición guardada."
+
+msgctxt "#30096"
+msgid "Minimum playback time"
+msgstr "Tiempo mínimo de reproducción"
+
+msgctxt "#30097"
+msgid "Clear saved playlist sessions"
+msgstr "Borrar sesiones de listas guardadas"
+
+msgctxt "#30098"
+msgid "No playlist available to continue"
+msgstr "No hay listas para continuar"
+
+msgctxt "#30099"
+msgid "Really delete all saved playlist sessions?"
+msgstr "¿Borrar todas las sesiones guardadas?"
+
+msgctxt "#30100"
+msgid "Maximum saved sessions"
+msgstr "Máximo de sesiones guardadas"
+
+msgctxt "#30101"
+msgid "Retention period"
+msgstr "Período de conservación"
+
+msgctxt "#30102"
+msgid "A position is saved after this playback time; later tracks are saved immediately."
+msgstr "La posición se guarda tras este tiempo; las pistas posteriores se guardan inmediatamente."
+
+msgctxt "#30103"
+msgid "Limits the number of recent playlist sessions stored locally."
+msgstr "Limita las sesiones recientes guardadas localmente."
+
+msgctxt "#30104"
+msgid "Automatically hides playlist sessions older than this period."
+msgstr "Oculta automáticamente las sesiones más antiguas que este período."
+
+msgctxt "#30105"
+msgid "1 session"
+msgstr "1 sesión"
+
+msgctxt "#30106"
+msgid "3 sessions"
+msgstr "3 sesiones"
+
+msgctxt "#30107"
+msgid "5 sessions"
+msgstr "5 sesiones"
+
+msgctxt "#30108"
+msgid "10 sessions"
+msgstr "10 sesiones"
+
+msgctxt "#30109"
+msgid "Clean up expired sessions now"
+msgstr "Limpiar ahora las sesiones vencidas"
+
+msgctxt "#30110"
+msgid "Physically removes expired or invalid local playlist sessions according to the retention period."
+msgstr "Elimina físicamente las sesiones locales vencidas o inválidas según el período de conservación."
+
+msgctxt "#30111"
+msgid "Cleanup complete: {removed} expired or invalid sessions removed; {remaining} remain."
+msgstr "Limpieza terminada: {removed} sesiones vencidas o inválidas eliminadas; quedan {remaining}."
+
+msgctxt "#11288"
+msgid "Cleans local Resonance history and cache data only. Your Spotify library is never changed."
+msgstr "Limpia únicamente el historial y la caché locales de Resonance. Tu biblioteca de Spotify nunca se modifica."
+
+msgctxt "#11289"
+msgid "Housekeeping interval"
+msgstr "Intervalo de mantenimiento"
+
+msgctxt "#11291"
+msgid "Daily"
+msgstr "Diariamente"
+
+msgctxt "#11292"
+msgid "Weekly"
+msgstr "Semanalmente"
+
+msgctxt "#11294"
+msgid "Keep recent searches"
+msgstr "Conservar búsquedas recientes"
+
+msgctxt "#11295"
+msgid "Maximum search age"
+msgstr "Antigüedad máxima de búsquedas"
+
+msgctxt "#11296"
+msgid "Maximum history entries"
+msgstr "Máximo de entradas del historial"
+
+msgctxt "#11297"
+msgid "Maximum history age"
+msgstr "Antigüedad máxima del historial"
+
+msgctxt "#11298"
+msgid "Keep completed entries"
+msgstr "Conservar entradas completadas"
+
+msgctxt "#11299"
+msgid "Maximum Continue listening entries"
+msgstr "Máximo de elementos en Continuar escuchando"
+
+msgctxt "#11300"
+msgid "Remove inactive resume positions after"
+msgstr "Eliminar posiciones de reanudación inactivas después de"
+
+msgctxt "#11322"
+msgid "10 entries"
+msgstr "10 entradas"
+
+msgctxt "#11323"
+msgid "20 entries"
+msgstr "20 entradas"
+
+msgctxt "#11325"
+msgid "50 entries"
+msgstr "50 entradas"
+
+msgctxt "#11326"
+msgid "100 entries"
+msgstr "100 entradas"
+
+msgctxt "#11327"
+msgid "200 entries"
+msgstr "200 entradas"
+
+msgctxt "#11328"
+msgid "500 entries"
+msgstr "500 entradas"
+
+msgctxt "#11329"
+msgid "30 days"
+msgstr "30 días"
+
+msgctxt "#11330"
+msgid "90 days"
+msgstr "90 días"
+
+msgctxt "#11331"
+msgid "180 days"
+msgstr "180 días"
+
+msgctxt "#11332"
+msgid "365 days"
+msgstr "365 días"
+
+msgctxt "#11312"
+msgid "This deletes local Resonance data for the selected section. Your Spotify library and account are not changed. Continue?"
+msgstr "Esto elimina los datos locales de Resonance de la sección seleccionada. Tu biblioteca y cuenta de Spotify no se modifican. ¿Continuar?"
+
+msgctxt "#11313"
+msgid "Maintenance completed."
+msgstr "Mantenimiento completado."
+
+msgctxt "#11314"
+msgid "Maintenance could not be completed."
+msgstr "No se pudo completar el mantenimiento."
+
+msgctxt "#11315"
+msgid "Searches removed"
+msgstr "Búsquedas eliminadas"
+
+msgctxt "#11316"
+msgid "History entries removed"
+msgstr "Entradas del historial eliminadas"
+
+msgctxt "#11317"
+msgid "Completed entries removed"
+msgstr "Entradas completadas eliminadas"
+
+msgctxt "#11318"
+msgid "Resume positions removed"
+msgstr "Posiciones de reanudación eliminadas"
+
+msgctxt "#11319"
+msgid "Orphaned entries removed"
+msgstr "Entradas huérfanas eliminadas"
+
+msgctxt "#11320"
+msgid "Cache entries removed"
+msgstr "Entradas de caché eliminadas"
+
+msgctxt "#11321"
+msgid "Maintenance is already running. Please try again shortly."
+msgstr "El mantenimiento ya está en curso. Inténtalo de nuevo en breve."
+
+msgctxt "#11334"
+msgid "Stop audio playback before running local maintenance."
+msgstr "Detén la reproducción de audio antes de ejecutar el mantenimiento local."
+
+msgctxt "#30112"
+msgid "Spotify account"
+msgstr "Spotify account"
+
+msgctxt "#30113"
+msgid "Device Connect / Reconnect"
+msgstr "Device Connect / Reconnect"
+
+msgctxt "#30114"
+msgid "Diagnostics"
+msgstr "Diagnostics"
+
+msgctxt "#30115"
+msgid "Current Device Connect name"
+msgstr "Current Device Connect name"
+
+msgctxt "#30116"
+msgid "Reconnect"
+msgstr "Reconnect"
+
+msgctxt "#30117"
+msgid "Authentication"
+msgstr "Authentication"
+
+msgctxt "#30118"
+msgid "Device Connect"
+msgstr "Device Connect"
+
+msgctxt "#30119"
+msgid "Network"
+msgstr "Network"
+
+msgctxt "#30120"
+msgid "Spotty binaries"
+msgstr "Spotty binaries"
+
+msgctxt "#30121"
+msgid "Playback"
+msgstr "Playback"
+
+msgctxt "#30122"
+msgid "Write diagnostics to Kodi log"
+msgstr "Write diagnostics to Kodi log"
+
+msgctxt "#30123"
+msgid "Credentials present"
+msgstr "Credentials present"
+
+msgctxt "#30124"
+msgid "Credentials missing"
+msgstr "Credentials missing"
+
+msgctxt "#30125"
+msgid "Token valid"
+msgstr "Token valid"
+
+msgctxt "#30126"
+msgid "Token missing"
+msgstr "Token missing"
+
+msgctxt "#30127"
+msgid "Diagnostics were written to the Kodi log."
+msgstr "Diagnostics were written to the Kodi log."
+
+
+msgctxt "#30128"
+msgid "Resonance playback module missing"
+msgstr "Falta el módulo de reproducción de Resonance"
+
+msgctxt "#30129"
+msgid "The optional playback module for {platform} is missing ({binary}). Device Connect and token authentication remain available, but local Resonance playback is unavailable on this platform."
+msgstr "Falta el módulo de reproducción opcional para {platform} ({binary}). Device Connect y la autenticación por token siguen disponibles, pero la reproducción local de Resonance no está disponible en esta plataforma."
+
+msgctxt "#30137"
+msgid "The next playlist \"{name}\" cannot be read through the Spotify API. Playback has ended."
+msgstr "The next playlist \"{name}\" cannot be read through the Spotify API. Playback has ended."
+
+msgctxt "#30138"
+msgid "Spotify does not provide this playlist's contents to Development Mode apps. Without an existing Resonance cache, only playlists you own or collaborate on can be loaded."
+msgstr "Spotify does not provide this playlist's contents to Development Mode apps. Without an existing Resonance cache, only playlists you own or collaborate on can be loaded."
+
+msgctxt "#30139"
+msgid "The next playlist \"{name}\" could not start because Spotify temporarily limited the Web API. Playback has ended."
+msgstr "The next playlist \"{name}\" could not start because Spotify temporarily limited the Web API. Playback has ended."
+
+
+msgctxt "#11385"
+msgid "Sign in to Spotify with a browser"
+msgstr "Iniciar sesión en Spotify con un navegador"
+
+msgctxt "#11386"
+msgid "Web Auth redirect URI"
+msgstr "URI de redirección Web Auth"
+
+
+msgctxt "#11340"
+msgid "Playback quality"
+msgstr ""
+
+msgctxt "#11342"
+msgid "Volume normalization"
+msgstr ""
+
+msgctxt "#11343"
+msgid "Track"
+msgstr ""
+
+msgctxt "#11344"
+msgid "Album"
+msgstr ""
+
+msgctxt "#11345"
+msgid "Automatic"
+msgstr ""
+
+msgctxt "#11346"
+msgid "Maintenance"
+msgstr ""
+
+msgctxt "#11347"
+msgid "Sign out of Spotify"
+msgstr ""
+
+msgctxt "#11348"
+msgid "Clear cache"
+msgstr ""
+
+msgctxt "#11349"
+msgid "96 kbps"
+msgstr ""
+
+msgctxt "#11350"
+msgid "160 kbps"
+msgstr ""
+
+msgctxt "#11351"
+msgid "320 kbps"
+msgstr ""
+
+msgctxt "#11380"
+msgid "Advanced"
+msgstr ""
+
+msgctxt "#11384"
+msgid "Bypass cached API responses"
+msgstr ""
+
+msgctxt "#11387"
+msgid "Required once so that music can play. Start a song in the Spotify app, tap the speakers icon and select your Resonance device."
+msgstr ""
+
+msgctxt "#11388"
+msgid "Opens your web browser so you can sign in with Spotify here. Grants access to search, playlists and Spotify links without rate limits."
+msgstr ""
+
+msgctxt "#11395"
+msgid "Advanced"
+msgstr ""

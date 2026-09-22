@@ -1,0 +1,55 @@
+name: Platform validation
+description: Report results from a platform/device test.
+title: "[Platform]: "
+labels: ["platform"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Resonance 1.0.0 is supported on LibreELEC/Raspberry Pi ARM/AArch64.
+        Android ARM is experimental. Windows, macOS and Linux x86/x64 are not supported in this release.
+  - type: input
+    id: device
+    attributes:
+      label: Device and OS
+      placeholder: "Raspberry Pi 5, LibreELEC 12.2.1"
+    validations:
+      required: true
+  - type: input
+    id: arch
+    attributes:
+      label: CPU architecture
+      placeholder: "AArch64 / ARMv7 / x86_64"
+    validations:
+      required: true
+  - type: input
+    id: kodi
+    attributes:
+      label: Kodi version
+      placeholder: "Kodi 21.3"
+    validations:
+      required: true
+  - type: checkboxes
+    id: tested
+    attributes:
+      label: What did you test?
+      options:
+        - label: Add-on installs from ZIP.
+        - label: Device Connect pairing completes.
+        - label: Browser sign-in completes.
+        - label: Search works.
+        - label: Playlists load.
+        - label: Track playback works.
+        - label: Queue playback works.
+  - type: textarea
+    id: result
+    attributes:
+      label: Result
+      description: What worked, what failed, and any relevant details.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      render: text
