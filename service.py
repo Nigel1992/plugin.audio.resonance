@@ -5,6 +5,7 @@ import re
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import quote
 
 import xbmc
 import xbmcgui
@@ -62,6 +63,46 @@ def return_to_home() -> None:
         xbmc.log("Resonance sign-in: returned to main menu", xbmc.LOGINFO)
     except Exception as exc:
         xbmc.log("Resonance sign-in navigation failed: " + type(exc).__name__ + ": " + str(exc), xbmc.LOGWARNING)
+
+
+def refresh_current_resonance_menu() -> None:
+    """Reload the visible Resonance folder after settings change."""
+    try:
+        path = xbmc.getInfoLabel("Container.FolderPath") or ""
+        if "plugin://plugin.audio.resonance/" not in path:
+            return
+        xbmc.executebuiltin("Container.Update(" + quote(path, safe=":/?&=%") + ",replace)")
+        xbmc.log("Resonance settings changed: refreshed current menu", xbmc.LOGINFO)
+    except Exception as exc:
+        xbmc.log("Resonance settings refresh failed: " + type(exc).__name__ + ": " + str(exc), xbmc.LOGWARNING)
+
+
+class ResonanceMonitor(xbmc.Monitor):
+    def __init__(self):
+        super().__init__()
+        self.hide_unreadable_playlists = self._hide_unreadable_playlists()
+
+    @staticmethod
+    def _hide_unreadable_playlists() -> bool:
+        try:
+            return bool(utils.get_catalogue_settings().get("hide_unreadable_playlists"))
+        except Exception:
+            return False
+
+    def onSettingsChanged(self):
+        try:
+            utils.reload_verbose_debug_logging()
+        except Exception:
+            pass
+        hide_unreadable_playlists = self._hide_unreadable_playlists()
+        if hide_unreadable_playlists != self.hide_unreadable_playlists:
+            self.hide_unreadable_playlists = hide_unreadable_playlists
+            try:
+                utils.clear_resonance_cache()
+                xbmc.log("Resonance settings changed: cleared catalogue cache after playlist hide toggle", xbmc.LOGINFO)
+            except Exception as exc:
+                xbmc.log("Resonance settings cache clear failed: " + type(exc).__name__ + ": " + str(exc), xbmc.LOGWARNING)
+        refresh_current_resonance_menu()
 
 
 def refresh_playlists() -> None:
@@ -192,7 +233,7 @@ class Player(xbmc.Player):
 
 def run():
     utils.migrate_legacy_addon_data()
-    monitor = xbmc.Monitor()
+    monitor = ResonanceMonitor()
     window = xbmcgui.Window(10000)
     spotty = get_spotty(SpottyHelper(), cache_directory=utils.RUNTIME_PATH)
     auth = SpottyAuth(spotty)

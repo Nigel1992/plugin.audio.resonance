@@ -65,7 +65,7 @@ class MaintenanceTests(unittest.TestCase):
     def test_service_logout_clears_catalogue_cache_after_credentials(self):
         source = (ROOT / "service.py").read_text()
         credentials = source.index("utils.delete_resonance_credentials()")
-        cache = source.index("utils.clear_resonance_cache()")
+        cache = source.index("utils.clear_resonance_cache()", credentials)
         self.assertLess(credentials, cache)
 
     def test_permission_errors_are_reported(self):

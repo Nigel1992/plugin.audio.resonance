@@ -398,6 +398,8 @@ class WebAuth:
         if isinstance(refreshed, dict):
             merged = dict(stored)
             merged.update(_normalize(refreshed, self.client_id, now))
+            if not refreshed.get("refresh_token") and not refreshed.get("refreshToken"):
+                merged["refresh_token"] = refresh
             self.save(merged)
             return merged["access_token"]
         return ""

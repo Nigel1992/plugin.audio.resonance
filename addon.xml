@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addon id="plugin.audio.resonance" version="1.0.0" name="Resonance" provider-name="Nigel1992">
+<addon id="plugin.audio.resonance" version="1.0.1" name="Resonance" provider-name="Nigel1992">
     <requires>
         <import addon="xbmc.python" version="3.0.0" />
         <import addon="xbmc.addon" version="18.9.701" />
@@ -23,7 +23,10 @@
         <disclaimer lang="de_DE">Dieses Produkt verwendet die SPOTIFY WEB API, wird jedoch in keiner Weise von Spotify unterstützt, zertifiziert oder anderweitig genehmigt. Spotify ist eine eingetragene Marke von Spotify AB.</disclaimer>
         <source>https://github.com/Nigel1992/plugin.audio.resonance</source>
         <website>https://github.com/Nigel1992/plugin.audio.resonance</website>
-        <news>[B]1.0.0[/B]
+        <news>[B]1.0.1[/B]
+- Hotfix: preserve the Spotify browser-login refresh token when Spotify refresh responses omit a replacement token, so catalogue sign-in survives access-token expiry and addon restarts.
+
+[B]1.0.0[/B]
 - Version 1 release of Resonance for Kodi.
 - Spotify Web API-only catalogue: search, playlists, albums, artists, links and track metadata use the browser PKCE token.
 - Single setup flow: Spotify Connect pairing for playback first, then browser PKCE sign-in for the catalogue.

@@ -163,6 +163,16 @@ class TestWebAuthStore(unittest.TestCase):
         self.assertEqual(stored["access_token"], "new")
         self.assertGreater(stored["expires_at"], self.store.clock())
 
+    def test_access_token_refresh_preserves_existing_refresh_token(self):
+        self.store.save({"access_token": "old", "refresh_token": "ref", "expires_at": -1, "client_id": "c" * 32})
+        fetched = {"access_token": "new", "expires_in": 3600}
+
+        self.assertEqual(
+            self.store.access_token(refresh_fetcher=lambda client_id, refresh: fetched),
+            "new",
+        )
+        self.assertEqual(self.store.load()["refresh_token"], "ref")
+
     def test_access_token_no_refresh_returns_empty(self):
         self.store.save({"access_token": "old", "refresh_token": "", "expires_at": -1, "client_id": "c" * 32})
         with mock.patch.object(module, "refresh_access_token", side_effect=AssertionError("must not refresh")):

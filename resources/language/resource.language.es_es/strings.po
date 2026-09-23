@@ -2,7 +2,7 @@
 # Addon Name: Resonance
 # Addon id: plugin.audio.resonance
 # Addon Provider: Nigel1992
-# Resonance release: 1.0.0
+# Resonance release: 1.0.1
 msgid ""
 msgstr ""
 "Project-Id-Version: Kodi-Addons\n"
@@ -1413,3 +1413,15 @@ msgstr ""
 msgctxt "#11395"
 msgid "Advanced"
 msgstr ""
+
+msgctxt "#11396"
+msgid "Hide playlists Resonance cannot read"
+msgstr "Hide playlists Resonance cannot read"
+
+msgctxt "#11397"
+msgid "Hides followed playlists that Spotify will not let this app open because you do not own or collaborate on them."
+msgstr "Hides followed playlists that Spotify will not let this app open because you do not own or collaborate on them."
+
+msgctxt "#11398"
+msgid "Catalogue"
+msgstr "Catalogue"

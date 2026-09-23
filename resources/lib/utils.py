@@ -571,8 +571,14 @@ def get_playback_settings() -> "tuple[str, str, str]":
 
 def get_catalogue_settings() -> dict:
     addon = xbmcaddon.Addon(id=ADDON_ID)
+    profile = load_persistent_spotify_profile()
     return {
         "bypass_response_cache": addon.getSetting("dev_bypass_response_cache") == "true",
+        "hide_unreadable_playlists": addon.getSetting("hide_unreadable_playlists") == "true",
+        "spotify_user_id": (
+            get_cached_value_from_kodi(KODI_PROPERTY_SPOTIFY_ACCOUNT_ID)
+            or str(profile.get("id") or "")
+        ),
     }
 
 
