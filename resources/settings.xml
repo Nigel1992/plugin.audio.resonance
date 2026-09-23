@@ -37,6 +37,16 @@
         </setting>
       </group>
     </category>
+    <category id="catalogue" label="11398">
+      <group id="1">
+        <setting id="hide_unreadable_playlists" type="boolean" label="11396">
+          <level>0</level>
+          <default>false</default>
+          <help>11397</help>
+          <control type="toggle" />
+        </setting>
+      </group>
+    </category>
     <category id="maintenance" label="11346">
       <group id="1">
         <setting id="clear_resonance_cache" type="action" label="11348">

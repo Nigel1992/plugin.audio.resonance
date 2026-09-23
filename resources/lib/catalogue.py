@@ -111,13 +111,16 @@ def remember_failed(directory, identity):
 
 class Catalogue:
     def __init__(self, directory, token, session=None, clock=time.time, signed_in=False,
-                 bypass_response_cache=False):
+                 bypass_response_cache=False, hide_unreadable_playlists=False,
+                 spotify_user_id=""):
         self.directory = directory
         self.token = token
         self.http = session or requests.Session()
         self.clock = clock
         self.signed_in = bool(signed_in)
         self.bypass_response_cache = bypass_response_cache
+        self.hide_unreadable_playlists = bool(hide_unreadable_playlists)
+        self.spotify_user_id = str(spotify_user_id or "")
         self.notice = ""
         os.makedirs(directory, exist_ok=True)
         self.db = sqlite3.connect(database_path(directory), timeout=10)
@@ -135,6 +138,36 @@ class Catalogue:
         with self.db:
             self.db.execute("INSERT OR REPLACE INTO pages VALUES (?,?,?)", (key, json.dumps(value), self.clock() + ttl))
         return value
+
+    def _playlist_is_likely_readable(self, item):
+        owner = (item or {}).get("owner") or {}
+        owner_id = str(owner.get("id") or "") if isinstance(owner, dict) else ""
+        if not owner_id:
+            return True
+        if (item or {}).get("collaborative"):
+            return True
+        if not self.spotify_user_id:
+            return True
+        return owner_id == self.spotify_user_id
+
+    def _visible_playlists(self, items):
+        if not self.hide_unreadable_playlists:
+            return items
+        return [item for item in items if self._playlist_is_likely_readable(item)]
+
+    def _ensure_spotify_user_id(self):
+        if self.spotify_user_id:
+            return self.spotify_user_id
+        cached = self.cached("spotify:/me?", stale=True) or {}
+        self.spotify_user_id = str(cached.get("id") or "")
+        if self.spotify_user_id:
+            return self.spotify_user_id
+        try:
+            profile = self.request("spotify", "/me", refresh=True)
+        except Unavailable:
+            return ""
+        self.spotify_user_id = str((profile or {}).get("id") or "")
+        return self.spotify_user_id
 
     def remaining(self, provider):
         row = self.db.execute("SELECT until FROM gates WHERE provider=?", (provider,)).fetchone()
@@ -222,6 +255,7 @@ class Catalogue:
         items = self.cached("imported-playlists", stale=True) or []
         if not items and self.refresh_playlists():
             items = self.cached("imported-playlists", stale=True) or []
+        items = self._visible_playlists(items)
         if not items:
             raise Unavailable("No imported Spotify playlists are available yet")
         return items[offset:offset + 40], offset + 40 if offset + 40 < len(items) else None
@@ -240,10 +274,10 @@ class Catalogue:
         except Forbidden:
             if kind == "playlist":
                 raise Unavailable(
-                    "Spotify does not allow this app to read this playlist because it is "
-                    "not owned by your account and you are not a collaborator. Open it in "
-                    "Spotify and make your own copy of the playlist, then refresh playlists "
-                    "in Resonance."
+                    "Spotify will not let Resonance read this playlist.\n\n"
+                    "Reason: you do not own or collaborate on it.\n\n"
+                    "Make a copy in Spotify, then refresh playlists.\n\n"
+                    "You can hide these in Settings > Catalogue."
                 )
             raise
         items = data.get("items") or []
@@ -340,6 +374,8 @@ class Catalogue:
         it also includes private playlists via playlist-read-private.
         """
         rows, seen, offset = [], set(), 0
+        if self.hide_unreadable_playlists:
+            self._ensure_spotify_user_id()
         for _ in range(max(1, int(pages))):
             try:
                 data = self.request(

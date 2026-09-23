@@ -204,7 +204,9 @@ class CatalogueTests(unittest.TestCase):
         client, http = self.client([Response({}, 403)])
         with self.assertRaises(module.Unavailable) as raised:
             client.tracks("playlist", "a" * 22)
-        self.assertIn("make your own copy", str(raised.exception))
+        message = str(raised.exception)
+        self.assertIn("Spotify will not let Resonance read this playlist.", message)
+        self.assertIn("You can hide these in Settings > Catalogue.", message)
         self.assertEqual(client.remaining("playlists"), 0)
         self.assertEqual(len(http.calls), 1)
 
@@ -218,6 +220,44 @@ class CatalogueTests(unittest.TestCase):
         self.assertEqual([item["name"] for item in items], ["Mine", "Followed only"])
         self.assertIsNone(more)
         self.assertEqual(http.calls, [])
+
+    def test_cached_playlist_listing_can_hide_likely_unreadable_playlists(self):
+        client, http = self.client(
+            [],
+            hide_unreadable_playlists=True,
+            spotify_user_id="user123",
+        )
+        client.save("imported-playlists", [
+            {"id": "a" * 22, "name": "Mine", "owner": {"id": "user123"}},
+            {"id": "b" * 22, "name": "Collaborative", "owner": {"id": "other"}, "collaborative": True},
+            {"id": "c" * 22, "name": "Followed only", "owner": {"id": "other"}},
+            {"id": "d" * 22, "name": "No owner info", "owner": {}},
+        ], ttl=86400)
+        items, more = client.playlists()
+        self.assertEqual([item["name"] for item in items], ["Mine", "Collaborative", "No owner info"])
+        self.assertIsNone(more)
+        self.assertEqual(http.calls, [])
+
+    def test_refresh_hidden_playlist_filter_fetches_current_user(self):
+        self._credentials()
+        profile = {"id": "user123"}
+        playlists = {"items": [
+            {"id": "a" * 22, "name": "Mine", "owner": {"id": "user123"}},
+            {"id": "b" * 22, "name": "Collaborative", "owner": {"id": "other"}, "collaborative": True},
+            {"id": "c" * 22, "name": "Followed only", "owner": {"id": "other"}},
+        ], "next": None}
+        client, http = self.client(
+            [Response(profile), Response(playlists)],
+            hide_unreadable_playlists=True,
+        )
+        self.assertTrue(client.refresh_playlists())
+        items, more = client.playlists()
+        self.assertEqual([call[0] for call in http.calls], [
+            "https://api.spotify.com/v1/me",
+            "https://api.spotify.com/v1/me/playlists",
+        ])
+        self.assertEqual([item["name"] for item in items], ["Mine", "Collaborative"])
+        self.assertIsNone(more)
 
     def test_refresh_playlists_keeps_cache_when_source_fails(self):
         self._credentials()
