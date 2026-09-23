@@ -73,6 +73,35 @@ def _apply_art(item, image):
         item.setArt({"thumb": image, "icon": image, "album.thumb": image, "fanart": image})
 
 
+def _artist_ref(entry, kind):
+    if kind == "artist":
+        return entry.get("id") or "", entry.get("name") or ""
+    artists = entry.get("artists") or []
+    if isinstance(artists, list):
+        for artist in artists:
+            if isinstance(artist, dict) and re.fullmatch(r"[A-Za-z0-9]{22}", str(artist.get("id") or "")):
+                return artist.get("id") or "", artist.get("name") or ""
+    return "", ""
+
+
+def artist_context_menu(entry, kind):
+    artist_id, artist_name = _artist_ref(entry, kind)
+    if not artist_id:
+        return []
+    suffix = " - " + artist_name if artist_name else ""
+    actions = [
+        ("Artist: everything" + suffix, "artist_everything"),
+        ("Artist: top songs" + suffix, "artist_top_tracks"),
+        ("Artist: albums" + suffix, "artist_albums"),
+        ("Artist: singles" + suffix, "artist_singles"),
+        ("Artist: appears on" + suffix, "artist_appears_on"),
+    ]
+    return [
+        (label, "Container.Update(" + url(action=action, id=artist_id, name=artist_name) + ",replace)")
+        for label, action in actions
+    ]
+
+
 def track_item(track, path):
     item = xbmcgui.ListItem(track.get("name") or "Untitled", path=path)
     item.setProperty("IsPlayable", "true")
@@ -87,6 +116,13 @@ def track_item(track, path):
     if re.match(r"\d{4}", date) and int(date[:4]) > 1900:
         info.setYear(int(date[:4]))
     _apply_art(item, _image_url(track) or _image_url(album))
+    return item
+
+
+def directory_item(entry, kind, path):
+    item = xbmcgui.ListItem(entry.get("name") or "Untitled")
+    _apply_art(item, _image_url(entry))
+    item.addContextMenuItems(artist_context_menu(entry, kind))
     return item
 
 
@@ -144,19 +180,54 @@ def render(client, items, kind, more, params):
             client.save("track:" + identity, entry, ttl=86400)
             path = url(action="play", id=identity)
             item = track_item(entry, path)
-            item.addContextMenuItems([("Play this page from here", "RunPlugin(" + url(action="queue", key=page_key, index=index) + ")")])
+            item.addContextMenuItems(
+                [("Play this page from here", "RunPlugin(" + url(action="queue", key=page_key, index=index) + ")")]
+                + artist_context_menu(entry, kind)
+            )
             xbmcplugin.addDirectoryItem(HANDLE, path, item, False)
         else:
             client.save("collection:" + kind + ":" + identity, entry, ttl=86400)
             path = url(action="collection", kind=kind, id=identity, name=entry.get("name", ""))
-            item = xbmcgui.ListItem(entry.get("name") or "Untitled")
-            _apply_art(item, _image_url(entry))
+            item = directory_item(entry, kind, path)
             xbmcplugin.addDirectoryItem(HANDLE, path, item, True)
     if more is not None:
         next_params = dict(params, offset=more)
         row("More...", **next_params)
     if not items:
         row("No results")
+    xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+
+
+def render_artist_everything(client, sections, artist_name, artist_id):
+    xbmcplugin.setContent(HANDLE, "files")
+    if artist_name:
+        xbmcplugin.setProperty(HANDLE, "FolderName", artist_name)
+    for label, kind, items in sections:
+        row("[" + label + "]")
+        for entry in items:
+            identity = entry.get("id") or ""
+            if not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
+                continue
+            if kind == "track":
+                client.save("track:" + identity, entry, ttl=86400)
+                path = url(action="play", id=identity)
+                item = track_item(entry, path)
+                item.addContextMenuItems(artist_context_menu(entry, kind))
+                xbmcplugin.addDirectoryItem(HANDLE, path, item, False)
+            else:
+                client.save("collection:" + kind + ":" + identity, entry, ttl=86400)
+                path = url(action="collection", kind=kind, id=identity, name=entry.get("name", ""))
+                xbmcplugin.addDirectoryItem(HANDLE, path, directory_item(entry, kind, path), True)
+        if kind == "album":
+            more_action = {
+                "Albums": "artist_albums",
+                "Singles": "artist_singles",
+                "Appears on": "artist_appears_on",
+            }.get(label)
+            if more_action:
+                row("More " + label.lower() + "...", more_action, id=artist_id, name=artist_name)
+    if not sections:
+        row("No artist results")
     xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
 
 
@@ -597,6 +668,27 @@ def run():
             items, more = client.tracks(kind, PARAMS["id"], offset)
             xbmcplugin.setProperty(HANDLE, "FolderName", PARAMS.get("name", ""))
             render(client, items, "album" if kind == "artist" else "track", more, dict(PARAMS, offset=offset))
+        elif action == "artist_top_tracks":
+            items, more = client.artist_top_tracks(PARAMS["id"], PARAMS.get("name", ""))
+            xbmcplugin.setProperty(HANDLE, "FolderName", (PARAMS.get("name") or "Artist") + " - Top songs")
+            render(client, items, "track", more, dict(action=action, id=PARAMS["id"], name=PARAMS.get("name", ""), offset=offset))
+        elif action in ("artist_albums", "artist_singles", "artist_appears_on"):
+            group = {
+                "artist_albums": "album",
+                "artist_singles": "single",
+                "artist_appears_on": "appears_on",
+            }[action]
+            title = {
+                "album": "Albums",
+                "single": "Singles",
+                "appears_on": "Appears on",
+            }[group]
+            items, more = client.artist_albums(PARAMS["id"], group, offset)
+            xbmcplugin.setProperty(HANDLE, "FolderName", (PARAMS.get("name") or "Artist") + " - " + title)
+            render(client, items, "album", more, dict(action=action, id=PARAMS["id"], name=PARAMS.get("name", ""), offset=offset))
+        elif action == "artist_everything":
+            sections = client.artist_everything(PARAMS["id"], PARAMS.get("name", ""))
+            render_artist_everything(client, sections, PARAMS.get("name", ""), PARAMS["id"])
         elif action == "play":
             if not spotty_has_credentials():
                 xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem())

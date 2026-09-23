@@ -392,5 +392,49 @@ class CatalogueTests(unittest.TestCase):
         self.assertEqual(items[0]["images"], [{"url": "https://img/album"}])
         self.assertEqual(items[0]["album"]["images"], [{"url": "https://img/album"}])
 
+    def test_artist_top_tracks_uses_spotify_endpoint(self):
+        artist_id = "a" * 22
+        client, http = self.client([Response({"tracks": [{"id": "t" * 22, "name": "Hit"}]})])
+        items, more = client.artist_top_tracks(artist_id)
+        self.assertEqual([item["name"] for item in items], ["Hit"])
+        self.assertIsNone(more)
+        self.assertEqual(http.calls[0][0], "https://api.spotify.com/v1/artists/" + artist_id + "/top-tracks")
+        self.assertEqual(http.calls[0][1]["params"], {"market": "from_token"})
+
+    def test_artist_top_tracks_falls_back_to_search_when_forbidden(self):
+        artist_id = "a" * 22
+        client, http = self.client([
+            Response({}, 403),
+            Response({"tracks": {"items": [{"id": "t" * 22, "name": "Fallback hit"}]}}),
+        ])
+        items, more = client.artist_top_tracks(artist_id, "Artist Name")
+        self.assertEqual([item["name"] for item in items], ["Fallback hit"])
+        self.assertIsNone(more)
+        self.assertEqual([call[0] for call in http.calls], [
+            "https://api.spotify.com/v1/artists/" + artist_id + "/top-tracks",
+            "https://api.spotify.com/v1/search",
+        ])
+        self.assertEqual(http.calls[1][1]["params"], {"q": 'artist:"Artist Name"', "type": "track", "limit": 10, "offset": 0})
+
+    def test_artist_album_groups_use_include_groups(self):
+        artist_id = "a" * 22
+        client, http = self.client([Response({"items": [{"id": "b" * 22, "name": "Single"}], "next": "next"})])
+        items, more = client.artist_albums(artist_id, "single", offset=40)
+        self.assertEqual([item["name"] for item in items], ["Single"])
+        self.assertEqual(more, 80)
+        self.assertEqual(http.calls[0][0], "https://api.spotify.com/v1/artists/" + artist_id + "/albums")
+        self.assertEqual(http.calls[0][1]["params"], {"include_groups": "single", "limit": 40, "offset": 40})
+
+    def test_artist_everything_combines_sections(self):
+        artist_id = "a" * 22
+        client, _ = self.client([
+            Response({"tracks": [{"id": "t" * 22, "name": "Hit"}]}),
+            Response({"items": [{"id": "b" * 22, "name": "Album"}]}),
+            Response({"items": [{"id": "c" * 22, "name": "Single"}]}),
+            Response({"items": [{"id": "d" * 22, "name": "Feature"}]}),
+        ])
+        sections = client.artist_everything(artist_id)
+        self.assertEqual([section[0] for section in sections], ["Top songs", "Albums", "Singles", "Appears on"])
+
 if __name__ == "__main__":
     unittest.main()

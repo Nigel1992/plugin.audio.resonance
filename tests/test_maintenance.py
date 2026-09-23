@@ -2,6 +2,7 @@
 import ast
 import os
 from pathlib import Path
+import shutil
 import sqlite3
 import sys
 import tempfile
@@ -19,16 +20,22 @@ class MaintenanceTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.path = Path(self.temp.name)
-        self.ns = {"os": os, "ADDON_DATA_PATH": str(self.path),
+        self.ns = {"os": os, "ADDON_ID": "plugin.audio.resonance",
+                   "ADDON_DATA_PATH": str(self.path),
+                   "ADDON_PATH": str(self.path / "addon"),
                    "RUNTIME_PATH": str(self.path / "runtime"),
-                   "LEGACY_RUNTIME_PATH": str(self.path / "runtime-v2")}
+                   "LEGACY_RUNTIME_PATH": str(self.path / "runtime-v2"),
+                   "shutil": shutil}
+        temp_path = str(self.path / "temp")
+        self.ns["xbmcvfs"] = Mock()
+        self.ns["xbmcvfs"].translatePath.return_value = temp_path
         for name in ("delete_persistent_spotify_profile", "clear_spotify_account_email_hint",
                      "clear_spotify_account_info", "cache_auth_token",
                      "cache_auth_token_expires_at", "cache_auth_client_id",
                      "set_spotify_connection_status", "terminate_process"):
             self.ns[name] = Mock()
         functions = [node for node in TREE.body if isinstance(node, ast.FunctionDef)
-                     and node.name in ("delete_resonance_credentials", "clear_resonance_cache")]
+                     and node.name in ("delete_resonance_credentials", "clear_resonance_cache", "clear_resonance_addon_cache")]
         exec(compile(ast.Module(body=functions, type_ignores=[]), str(SOURCE), "exec"), self.ns)
 
     def test_logout_removes_vault_and_runtime_backups_but_keeps_settings(self):
@@ -61,6 +68,25 @@ class MaintenanceTests(unittest.TestCase):
         self.assertTrue((self.path / "spotify-credentials.json").exists())
         self.assertTrue((self.path / "settings.xml").exists())
         self.assertFalse((self.path / "spotify-api-gate.json").exists())
+
+    def test_addon_cache_clear_removes_python_and_temp_cache_only(self):
+        addon = self.path / "addon"
+        pycache = addon / "resources" / "lib" / "__pycache__"
+        pycache.mkdir(parents=True)
+        (pycache / "catalogue.pyc").write_text("compiled")
+        (addon / "resources" / "lib" / "keep.py").write_text("source")
+        temp = self.path / "temp"
+        (temp / "plugin.audio.resonance-cache").mkdir(parents=True)
+        (temp / "resonance-qr.png").write_text("png")
+        (temp / "unrelated").write_text("keep")
+
+        self.ns["clear_resonance_addon_cache"]()
+
+        self.assertFalse(pycache.exists())
+        self.assertTrue((addon / "resources" / "lib" / "keep.py").exists())
+        self.assertFalse((temp / "plugin.audio.resonance-cache").exists())
+        self.assertFalse((temp / "resonance-qr.png").exists())
+        self.assertTrue((temp / "unrelated").exists())
 
     def test_service_logout_clears_catalogue_cache_after_credentials(self):
         source = (ROOT / "service.py").read_text()

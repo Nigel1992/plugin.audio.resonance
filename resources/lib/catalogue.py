@@ -290,6 +290,48 @@ class Catalogue:
             if i
         ], offset + limit if data.get("next") else None
 
+    def artist_top_tracks(self, identity, artist_name=""):
+        if not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
+            raise ValueError("Invalid Spotify ID")
+        try:
+            data = self.request("spotify", f"/artists/{identity}/top-tracks", {"market": "from_token"})
+            return [normalize(i, "track") for i in data.get("tracks", []) if i], None
+        except Forbidden:
+            if not artist_name:
+                artist = self.request("spotify", f"/artists/{identity}")
+                artist_name = str((artist or {}).get("name") or "")
+            if not artist_name:
+                raise
+            data = self.request(
+                "spotify",
+                "/search",
+                {"q": 'artist:"' + artist_name.replace('"', "") + '"', "type": "track", "limit": 10, "offset": 0},
+                refresh=True,
+            )
+            page = data.get("tracks") or {}
+            return [normalize(i, "track") for i in page.get("items", []) if i], None
+
+    def artist_albums(self, identity, group="album", offset=0, limit=40):
+        if not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
+            raise ValueError("Invalid Spotify ID")
+        if group not in ("album", "single", "appears_on"):
+            raise ValueError("Unknown artist album group")
+        data = self.request(
+            "spotify",
+            f"/artists/{identity}/albums",
+            {"include_groups": group, "limit": limit, "offset": offset},
+        )
+        return [normalize(i, "album") for i in data.get("items", []) if i], offset + limit if data.get("next") else None
+
+    def artist_everything(self, identity, artist_name=""):
+        sections = [
+            ("Top songs", "track", self.artist_top_tracks(identity, artist_name)[0][:10]),
+            ("Albums", "album", self.artist_albums(identity, "album", limit=10)[0]),
+            ("Singles", "album", self.artist_albums(identity, "single", limit=10)[0]),
+            ("Appears on", "album", self.artist_albums(identity, "appears_on", limit=10)[0]),
+        ]
+        return [(label, kind, items) for label, kind, items in sections if items]
+
     def track(self, identity):
         if not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
             raise ValueError("Invalid Spotify ID")

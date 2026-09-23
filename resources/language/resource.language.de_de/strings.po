@@ -2,7 +2,7 @@
 # Addon Name: Resonance
 # Addon id: plugin.audio.resonance
 # Addon Provider: Nigel1992
-# Resonance release: 1.0.1
+# Resonance release: 1.0.2
 msgid ""
 msgstr ""
 "Project-Id-Version: plugin.audio.resonance\n"
