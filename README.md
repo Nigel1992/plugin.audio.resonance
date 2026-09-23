@@ -14,7 +14,7 @@ through bundled Spotty/librespot playback helpers.
 | Not supported | Windows, macOS, Linux x86/x64 |
 | Catalogue | Regular Spotify Web API with browser PKCE token |
 | Playback | Spotify Device Connect with Spotty/librespot |
-| Version | 1.0.1 |
+| Version | 1.0.2 |
 
 | | |
 | --- | --- |
@@ -23,7 +23,7 @@ through bundled Spotty/librespot playback helpers.
 
 ## Quick Start
 
-1. Download `plugin.audio.resonance-1.0.1.zip` from the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
+1. Download `plugin.audio.resonance-1.0.2.zip` from the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
 2. In Kodi, install it with **Add-ons -> Install from zip file**.
 3. Restart Kodi once.
 4. Open **Add-ons -> Music add-ons -> Resonance**.

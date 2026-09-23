@@ -70,6 +70,10 @@ LOCAL_STREAM_HOST = "127.0.0.1" if platform.system() == "Windows" else "localhos
 # Independent addon instance
 ADDON_ID = "plugin.audio.resonance"
 
+ADDON_PATH = xbmcvfs.translatePath(
+    f"special://home/addons/{ADDON_ID}"
+)
+
 ADDON_DATA_PATH = xbmcvfs.translatePath(
     f"special://profile/addon_data/{ADDON_ID}"
 )
@@ -875,6 +879,38 @@ def clear_resonance_cache() -> None:
             os.remove(os.path.join(ADDON_DATA_PATH, name))
         except FileNotFoundError:
             pass
+
+
+def clear_resonance_addon_cache() -> None:
+    """Delete Kodi/Python runtime cache for this add-on only."""
+    for root, dirs, files in os.walk(ADDON_PATH):
+        for dirname in list(dirs):
+            if dirname == "__pycache__":
+                shutil.rmtree(os.path.join(root, dirname), ignore_errors=True)
+                dirs.remove(dirname)
+        for filename in files:
+            if filename.endswith((".pyc", ".pyo")):
+                try:
+                    os.remove(os.path.join(root, filename))
+                except FileNotFoundError:
+                    pass
+
+    temp_path = xbmcvfs.translatePath("special://temp")
+    try:
+        names = os.listdir(temp_path)
+    except OSError:
+        names = []
+    for name in names:
+        if name.startswith(ADDON_ID) or name.startswith("resonance-"):
+            path = os.path.join(temp_path, name)
+            if os.path.isdir(path):
+                shutil.rmtree(path, ignore_errors=True)
+            else:
+                try:
+                    os.remove(path)
+                except FileNotFoundError:
+                    pass
+
 
 def clear_provider_gate(provider: str) -> None:
     """Remove the rate-limit gate for one provider (e.g. spotify).

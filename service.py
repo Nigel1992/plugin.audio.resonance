@@ -99,7 +99,12 @@ class ResonanceMonitor(xbmc.Monitor):
             self.hide_unreadable_playlists = hide_unreadable_playlists
             try:
                 utils.clear_resonance_cache()
-                xbmc.log("Resonance settings changed: cleared catalogue cache after playlist hide toggle", xbmc.LOGINFO)
+                utils.clear_resonance_addon_cache()
+                xbmc.log("Resonance settings changed: cleared catalogue and addon caches after playlist hide toggle", xbmc.LOGINFO)
+                notify(
+                    "Playlist visibility changed. Resonance cleared its catalogue and addon caches, then refreshed the menu.",
+                    "Resonance settings",
+                )
             except Exception as exc:
                 xbmc.log("Resonance settings cache clear failed: " + type(exc).__name__ + ": " + str(exc), xbmc.LOGWARNING)
         refresh_current_resonance_menu()
