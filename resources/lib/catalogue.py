@@ -8,7 +8,6 @@ import sqlite3
 import time
 from urllib.parse import urlencode
 
-import requests
 
 
 class Unavailable(Exception):
@@ -115,7 +114,10 @@ class Catalogue:
                  spotify_user_id=""):
         self.directory = directory
         self.token = token
-        self.http = session or requests.Session()
+        # Most browse and play invocations use the persistent catalogue cache.
+        # Keep those fast on Kodi's constrained ARM devices by loading the HTTP
+        # stack only when a Spotify API request is actually needed.
+        self.http = session
         self.clock = clock
         self.signed_in = bool(signed_in)
         self.bypass_response_cache = bypass_response_cache
@@ -127,6 +129,9 @@ class Catalogue:
         self.db.execute("CREATE TABLE IF NOT EXISTS pages (key TEXT PRIMARY KEY, value TEXT, expires REAL)")
         self.db.execute("CREATE TABLE IF NOT EXISTS gates (provider TEXT PRIMARY KEY, until REAL)")
         self.db.commit()
+        if not self.spotify_user_id:
+            profile = self.cached("spotify:/me?", stale=True) or {}
+            self.spotify_user_id = str(profile.get("id") or "")
 
     def cached(self, key, stale=False):
         row = self.db.execute("SELECT value, expires FROM pages WHERE key=?", (key,)).fetchone()
@@ -181,8 +186,12 @@ class Catalogue:
         return max(0, int(until - self.clock()))
 
     def request(self, provider, path, params=None, refresh=False):
+        import requests
+
         if provider != "spotify":
             raise ValueError("Unknown catalogue provider")
+        if self.http is None:
+            self.http = requests.Session()
         # Account requests (and their cached responses) belong to the signed-in
         # user. After a logout/account switch they must never be replayed.
         if not self.signed_in:
@@ -247,11 +256,12 @@ class Catalogue:
         return [normalize(i, kind) for i in page.get("items", []) if i], offset + 10 if page.get("next") else None
 
     def playlists(self, offset=0):
-        # Playlists are served from the previously imported list; the Spotify
-        # Web API is not used for this listing. The imported list is account
-        # data, so it stays hidden until the user is signed in again.
+        # Playlist rows are served from the imported cache. Load the account
+        # ID once when needed so followed playlists can be clearly marked.
         if not self.signed_in:
             raise Unavailable("Connect your Spotify account first")
+        if not self.spotify_user_id:
+            self._ensure_spotify_user_id()
         items = self.cached("imported-playlists", stale=True) or []
         if not items and self.refresh_playlists():
             items = self.cached("imported-playlists", stale=True) or []
@@ -269,8 +279,17 @@ class Catalogue:
         # Spotify caps artist album pages at 10 results; larger limits are
         # rejected with 400 "Invalid limit".
         limit = 10 if kind == "artist" else 40
+        params = dict(limit=limit, offset=offset)
+        page_key = "collection-page:" + kind + ":" + identity + ":" + str(offset)
         try:
-            data = self.request("spotify", f"/{kind}s/{identity}/{suffix}", dict(limit=limit, offset=offset))
+            # Playlist contents are stable enough to reuse briefly. This also
+            # lets a return visit render instantly while Spotify is slow.
+            cached_page = self.cached(page_key) if kind == "playlist" else None
+            if cached_page is not None:
+                data = cached_page
+            else:
+                data = self.request("spotify", f"/{kind}s/{identity}/{suffix}", params)
+                self.save(page_key, data, ttl=3600 if kind == "playlist" else 600)
         except Forbidden:
             if kind == "playlist":
                 raise Unavailable(
@@ -336,7 +355,7 @@ class Catalogue:
         if not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
             raise ValueError("Invalid Spotify ID")
         known = self.cached("track:" + identity, stale=True)
-        if known and known.get("duration_ms") and known.get("is_playable") is not None:
+        if known and known.get("duration_ms"):
             return known
         result = self.request("spotify", "/tracks/" + identity)
         normalized = normalize(result)
@@ -460,4 +479,5 @@ class Catalogue:
 
     def close(self):
         self.db.close()
-        self.http.close()
+        if self.http is not None:
+            self.http.close()

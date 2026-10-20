@@ -1,5 +1,18 @@
 Resonance Version 1
 
+v1.0.3 - 2026-10-20
+
+- Added local Kodi Favorites for songs, albums, artists and playlists, grouped into Albums, Artists, Playlists and Songs sections.
+- Favorites are saved as local references and metadata in the add-on profile; they do not write to, download from or sync with Spotify. Clearing the catalogue cache preserves Favorites.
+- Added a context-menu action to play a playlist from a selected track through the remaining playlist.
+- Added a playback status page showing the current Kodi track, configured quality and Spotify Connect pairing.
+- Improved catalogue responsiveness by caching playlist pages and reusing track metadata.
+- Followed and collaborative playlists are marked in the list. Opening a playlist Spotify blocks now explains the limitation and offers hide, QR and refresh options.
+- Added a hide-unreadable-followed-playlists option from the playlist help flow.
+- Updated search navigation to retain the entered query when returning from a browsed item.
+- Documented local Favorites behavior and Spotify Web API limitations.
+- Spotify library write actions are not included. Spotify migrated library writes to `PUT /me/library` in its February 2026 API changes; local Kodi Favorites do not use that endpoint.
+
 v1.0.2 - 2026-09-23
 
 - Added artist context menus from track, album and artist rows.
