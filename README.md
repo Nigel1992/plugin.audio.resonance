@@ -21,7 +21,7 @@ through bundled Spotty/librespot playback helpers.
 | Not supported | Windows, macOS, Linux x86/x64 |
 | Catalogue | Regular Spotify Web API with browser PKCE token |
 | Playback | Spotify Device Connect with Spotty/librespot |
-| Version | 1.0.2 |
+| Version | 1.0.3 |
 
 | | |
 | --- | --- |
@@ -30,7 +30,7 @@ through bundled Spotty/librespot playback helpers.
 
 ## Quick Start
 
-1. Download `plugin.audio.resonance-1.0.2.zip` from the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
+1. Download `plugin.audio.resonance-1.0.3.zip` from the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
 2. In Kodi, install it with **Add-ons -> Install from zip file**.
 3. Restart Kodi once.
 4. Open **Add-ons -> Music add-ons -> Resonance**.
@@ -49,6 +49,11 @@ https://resonance-spotify-callback.vercel.app/api/callback
 - Open Spotify track, album, playlist and artist links or URIs.
 - Play individual tracks.
 - Queue the rest of the current page from a selected track.
+- Queue the rest of a playlist from a selected track.
+- Keep local Kodi Favorites for songs, albums, artists and playlists, grouped by type.
+- View current playback, configured audio quality and Spotify Connect pairing status.
+- Identify followed and shared playlists and get guidance when Spotify blocks playlist contents.
+- Open supported artist views from track, album and artist context menus.
 - Cache successful catalogue responses.
 - Refresh playlist membership in the background while signed in.
 
@@ -116,13 +121,31 @@ code)** and paste the `code` value from the browser address bar.
 
 - Open **Playlists** to browse account playlists.
 - Open **Search** and choose tracks, albums, artists or playlists.
+- Add a song, album, artist or playlist to **Favorites** from its context menu. Open **Favorites** to browse the Albums, Artists, Playlists and Songs sections.
 - Select a track to play it.
 - Use a track context menu to start playback from that row through the rest of the current page.
+- From a playlist track, choose **Play playlist from here** to queue that song and the remaining playlist tracks.
 - Use **Open Spotify link** for `open.spotify.com/...` URLs or `spotify:...` URIs.
-- Use **Account and status** to refresh playlists, re-pair playback, run setup or change playback quality.
+- Use **Playback status** to see the current Kodi track, configured Spotify bitrate and playback pairing.
+- Use **Account and status** to refresh playlists, re-pair playback or run setup.
 
 Playlist data refreshes roughly every 30 minutes while signed in. A manual
 refresh is available from **Account and status**.
+
+### Local Favorites
+
+Favorites are Resonance bookmarks stored in the add-on profile as
+`favorites.json`. They are organized into **Albums**, **Artists**, **Playlists**
+and **Songs**. Adding or removing a Favorite only changes this local file; it
+does not make a Spotify API write, create a Spotify playlist, or save an item to
+Spotify's Library. **Clear cache** leaves Favorites intact.
+
+The file stores Spotify IDs and a snapshot of item metadata, not audio. Favorites
+do not sync to other Kodi devices and are lost if the add-on profile is deleted
+or Kodi's add-on data is cleared. Browsing a saved reference or playing a song
+still needs a working Spotify sign-in, network access and an item that remains
+available to the account. A local Favorite for a playlist does not grant access
+to its tracks.
 
 ### Settings
 
@@ -154,8 +177,10 @@ refresh is available from **Account and status**.
 ### Limits
 
 - Spotify Premium is required for playback.
-- The add-on does not edit your Spotify library or playlists.
-- Lyrics, podcasts, audiobooks, recently played, saved-library browsing and top lists are not included.
+- Favorites store local Spotify item references and metadata only. They do not cache audio, work offline, sync to Spotify or other Kodi devices, or grant additional account access. If an item is deleted, region-blocked or no longer readable by the account, its Favorite may no longer open.
+- Resonance does not currently save items to your Spotify Library or edit Spotify playlists. Spotify's February 2026 API migration replaced the older item-specific library write endpoints with `PUT /me/library` and changed related scopes. Resonance avoids those write endpoints and their extra permissions; local Favorites remain Kodi-only. See Spotify's [February 2026 migration guide](https://developer.spotify.com/documentation/web-api/tutorials/february-2026-migration-guide).
+- Spotify only allows playlist-item reads for playlists you own or collaborate on. Saving a followed playlist as a local Kodi Favorite does not grant access to its songs or clone it. See Spotify's [Get Playlist Items reference](https://developer.spotify.com/documentation/web-api/reference/get-playlists-items).
+- Lyrics, podcasts, audiobooks, recently played and top lists are not included.
 - Spotify Web API availability, account permissions, app Development Mode restrictions and rate limits determine what catalogue pages can be loaded.
 - Playback is streaming-only; offline downloads are not supported.
 
