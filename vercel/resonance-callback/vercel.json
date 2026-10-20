@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/api/callback", "destination": "/api/spcheck" },
+    { "source": "/api/poll", "destination": "/api/spcheck" },
+    { "source": "/api/status", "destination": "/api/spcheck" }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "resonance-spotify-callback",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@upstash/redis": "^1.34.3"
+  }
+}

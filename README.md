@@ -101,6 +101,58 @@ https://resonance-spotify-callback.vercel.app/api/callback
 6. Paste the Client ID into **Spotify Web API client ID**.
 7. Leave **Web Auth redirect URI** set to the hosted callback URL above unless you run your own callback relay.
 
+### Host Your Own Spotify Callback Relay on Vercel
+
+The default callback is hosted by the Resonance project. If you prefer to
+control the callback deployment and its temporary storage yourself, deploy the
+included relay from your own GitHub and Vercel accounts:
+
+1. Fork [the Resonance repository](https://github.com/Nigel1992/plugin.audio.resonance)
+   to your GitHub account. Review the source in
+   [`vercel/resonance-callback`](https://github.com/Nigel1992/plugin.audio.resonance/tree/main/vercel/resonance-callback)
+   before deploying it.
+2. In Vercel, choose **Add New → Project**, import your fork, and set **Root
+   Directory** to `vercel/resonance-callback`. Keep the included `api/`,
+   `package.json`, and `vercel.json` files. Deploy the project.
+3. For automatic code delivery to Kodi, add an Upstash Redis database to the
+   Vercel project using the [Vercel Marketplace integration](https://vercel.com/marketplace/upstash).
+   The relay needs a REST URL and token. It recognizes
+   `KV_REST_API_URL` with `KV_REST_API_TOKEN`, or
+   `UPSTASH_REDIS_REST_URL` with `UPSTASH_REDIS_REST_TOKEN`. The integration
+   normally adds these to the project environment. Redeploy after connecting
+   the database. Choose a plan that fits your use; the provider may charge for
+   usage.
+4. Check `https://<your-project>.vercel.app/api/status`. It should return
+   `{"ok":true,"service":"resonance-callback"}`. With Redis connected,
+   `https://<your-project>.vercel.app/api/poll?state=manual-check` should return
+   `{"waiting":true}`.
+5. In the Spotify Developer Dashboard for the Client ID used by Resonance, add
+   this exact HTTPS Redirect URI, replacing the project name:
+
+   ```text
+   https://<your-project>.vercel.app/api/callback
+   ```
+
+   Spotify requires the redirect URI in the authorization request to exactly
+   match an entry in the app settings. See Spotify's
+   [redirect URI requirements](https://developer.spotify.com/documentation/web-api/concepts/redirect_uri).
+6. In Kodi, open **Resonance → Settings → Advanced** and set **Web Auth redirect
+   URI** to that same `/api/callback` URL. Save it, then start browser sign-in
+   again.
+
+The relay temporarily stores the authorization code in Redis for up to 10
+minutes, keyed by the one-time OAuth `state`; Kodi polls for it, and the relay
+deletes it when delivered. The code is exchanged for tokens by Kodi using its
+PKCE verifier. The relay does not need your Spotify Client Secret. Anyone
+operating the deployed relay and its storage controls that part of the login
+flow, which is why you may choose to run your own.
+
+Redis is needed for automatic polling. Without Redis, the callback still shows
+the code in the browser, so you can use Resonance's **Paste code** fallback;
+automatic polling will report that storage is not configured. Keep the relay
+and its Redis credentials private to your own Vercel project, and do not commit
+database tokens into the fork.
+
 ### Sign In For Catalogue Browsing
 
 1. Open **Resonance -> Set up Spotify** or **Settings -> Account & Connection -> Set up Spotify**.
