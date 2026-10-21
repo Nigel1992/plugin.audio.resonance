@@ -25,37 +25,24 @@
         <website>https://github.com/Nigel1992/plugin.audio.resonance</website>
         <news>[B]1.1.0[/B]
 - Added Your Spotify Library: Liked Songs, Saved Albums, Followed Artists and Saved and Followed Playlists.
-- Added Spotify write actions: like or unlike a track, save or remove an album, add a track to one of your playlists, remove a track from one of your playlists, and unfollow a playlist or artist.
-- The track and album context menus now hide the action that would not change anything, such as Like on Spotify for a track that is already liked.
+- Added Spotify write actions: like or unlike a track, save or remove an album, add or remove a track in your own playlists, create a new playlist, and unfollow a playlist or artist.
+- The context menu only offers the action that changes something, so Like on Spotify is hidden for a track that is already liked.
 - Every menu row has its own bundled icon, so the menus look the same in every skin.
-- The Account and status page is grouped into Account, Catalogue, Playback and Maintenance, and the Playback status page was reworked to match.
+- The Account and status page is grouped into Account, Catalogue, Playback and Maintenance.
 - Removed the local Kodi Favorites, the playlist search category and the Open Spotify link row. Spotify links still open through the open_link action.
-- Upgrading from 1.0.x needs one Reauthorize Spotify in Account and status to approve the new library and playlist permissions.
+- Upgrading from 1.0.x needs one Reauthorize Spotify to approve the new library and playlist permissions.
 
 [B]1.0.3[/B]
-- Added local Kodi Favorites for songs, albums, artists and playlists, grouped into sections.
-- Added playlist playback from a selected track through the remaining playlist.
-- Added a playback status page with the current track, quality and Spotify Connect pairing.
-- Improved playlist responsiveness with cached pages and reused track metadata.
-- Followed and shared playlists are marked, with help and options when Spotify blocks playlist contents.
-- Improved search navigation so results retain the query when browsing into items.
+- Added local Kodi Favorites, playlist playback from a selected track and a playback status page.
 
 [B]1.0.2[/B]
-- Added artist context menus from track, album and artist rows.
-- Added artist top songs, albums, singles, appears-on and combined artist overview pages.
-- Artist top songs falls back to search when Spotify blocks the top-tracks endpoint.
+- Added artist context menus and artist overview pages.
 
 [B]1.0.1[/B]
-- Hotfix: preserve the Spotify browser-login refresh token when Spotify refresh responses omit a replacement token, so catalogue sign-in survives access-token expiry and addon restarts.
-- Added the option to hide playlists Resonance cannot read and refresh the current menu when changed.
+- Fixed the browser-login refresh token so the catalogue sign-in survives an access-token expiry.
 
 [B]1.0.0[/B]
-- Version 1 release of Resonance for Kodi.
-- Spotify Web API-only catalogue: search, playlists, albums, artists, links and track metadata use the browser PKCE token.
-- Single setup flow: Spotify Connect pairing for playback first, then browser PKCE sign-in for the catalogue.
-- Hosted callback relay for the browser sign-in (https://resonance-spotify-callback.vercel.app/api/callback) with paste-code fallback; configurable Client ID and redirect URI in Settings.
-- Persistent catalogue cache, loopback audio streaming service and shared provider rate-limit/cooldown handling.
-- Supported target: LibreELEC on Raspberry Pi ARM/AArch64. Android ARM is experimental. Windows, macOS and Linux x86/x64 are not supported in this release.</news>
+- Version 1 release of Resonance for Kodi on LibreELEC for Raspberry Pi.</news>
         <assets>
             <icon>resources/logo.png</icon>
             <fanart>resources/fanart.jpg</fanart>
