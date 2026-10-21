@@ -4,7 +4,6 @@ import hashlib
 import json
 import os
 import re
-import sqlite3
 import sys
 import time
 from urllib.parse import parse_qsl, urlencode, urlparse
@@ -35,141 +34,97 @@ def token():
     return get_cached_auth_token()
 
 
+ICON_DIR = os.path.join(ADDON.getAddonInfo("path"), "resources", "media")
+
+# Every menu row carries its own bundled icon so the menu looks the same in
+# every skin. Skin-provided "Default*.png" artwork is not used because the
+# names differ per skin and many skins do not ship all of them.
 MENU_ICONS = {
-    "setup": "DefaultAddonProgram.png",
-    "playlists": "DefaultMusicPlaylists.png",
-    "favorites": "DefaultMusicAlbums.png",
-    "search_menu": "DefaultAddonsSearch.png",
-    "open_link": "DefaultFile.png",
-    "status": "DefaultAddonService.png",
-    "refresh_playlists": "DefaultRefresh.png",
-    "playback_quality": "DefaultAudioSettings.png",
-    "sign_out": "DefaultUser.png",
-    "clear_cache": "DefaultHardDisk.png",
+    "spotify_library_menu": "library.png",
+    "search_menu": "search.png",
+    "search": "search.png",
+    "setup": "setup.png",
+    "playback_status": "playback.png",
+    "status": "account.png",
+    "liked_songs": "songs.png",
+    "saved_albums": "albums.png",
+    "followed_artists": "artists.png",
+    "saved_playlists": "playlists.png",
+    "playlists": "playlists.png",
+    "refresh_playlists": "refresh.png",
+    "web_login": "key.png",
+    "web_login_paste": "key.png",
+    "connect_playback": "cast.png",
+    "playback_quality": "quality.png",
+    "sign_out": "sign_out.png",
+    "clear_cache": "cache.png",
+    "open_link": "link.png",
 }
+
+
+def icon_path(name):
+    """Resolve a bundled menu icon name to an absolute path."""
+    if not name:
+        return ""
+    if os.path.isabs(name):
+        return name
+    return os.path.join(ICON_DIR, name)
 
 
 def row(label, action=None, icon=None, **params):
     item = xbmcgui.ListItem(label)
-    # Explicit art stops Kodi probing action paths for a thumbnail.
-    art = icon or MENU_ICONS.get(action) or os.path.join(ADDON.getAddonInfo("path"), "resources", "logo.png")
+    # Explicit art stops Kodi probing action paths for a thumbnail. Rows that
+    # only carry information get the neutral info glyph.
+    art = icon_path(icon or MENU_ICONS.get(action) or "info.png")
     item.setArt({"icon": art, "thumb": art})
     item.setProperty("IsPlayable", "false")
     # Folder items so a click runs the action; the handler then reloads status.
     xbmcplugin.addDirectoryItem(HANDLE, url(action=action, **params) if action else "", item, bool(action))
 
 
-def load_favorites():
-    try:
-        with open(os.path.join(DATA, "favorites.json"), "r", encoding="utf-8") as stream:
-            value = json.load(stream)
-        return value if isinstance(value, dict) else {}
-    except (OSError, ValueError, TypeError):
-        return {}
+def spotify_write_context_menu(entry, kind, liked=None, saved=None):
+    """Return Spotify library/playlist actions for supported rows.
+
+    ``liked`` and ``saved`` hold the ids Spotify already keeps in the account
+    library. They are ``None`` when Spotify could not answer, in which case
+    both the add and the remove action are offered so nothing is hidden by a
+    failed check.
+    """
+    identity = str(entry.get("id") or "")
+    if kind == "track" and re.fullmatch(r"[A-Za-z0-9]{22}", identity):
+        actions = []
+        if liked is None or identity not in liked:
+            actions.append(("Like on Spotify", "RunPlugin(" + url(action="spotify_library", kind="track", id=identity, save="1") + ")"))
+        if liked is None or identity in liked:
+            actions.append(("Unlike on Spotify", "RunPlugin(" + url(action="spotify_library", kind="track", id=identity, save="0") + ")"))
+        actions.append(("Add to Spotify playlist...", "RunPlugin(" + url(action="choose_playlist", id=identity) + ")"))
+        actions.append(("Remove from Spotify playlist...", "RunPlugin(" + url(action="remove_from_playlist", id=identity) + ")"))
+        return actions
+    if kind == "album" and re.fullmatch(r"[A-Za-z0-9]{22}", identity):
+        actions = []
+        if saved is None or identity not in saved:
+            actions.append(("Save album on Spotify", "RunPlugin(" + url(action="spotify_library", kind="album", id=identity, save="1") + ")"))
+        if saved is None or identity in saved:
+            actions.append(("Remove album from Spotify library", "RunPlugin(" + url(action="spotify_library", kind="album", id=identity, save="0") + ")"))
+        return actions
+    return []
 
 
-def save_favorites(favorites):
-    os.makedirs(DATA, exist_ok=True)
-    path = os.path.join(DATA, "favorites.json")
-    temp = path + ".tmp"
-    with open(temp, "w", encoding="utf-8") as stream:
-        json.dump(favorites, stream, ensure_ascii=False)
-    os.replace(temp, path)
-
-
-def favorite_key(kind, identity):
-    return str(kind) + ":" + str(identity)
-
-
-def favorite_context_menu(entry, kind, favorites=None):
-    identity = entry.get("id") or ""
-    if not identity:
+def playlist_context_menu(entry, client=None):
+    """Return library actions for a playlist row this account follows."""
+    identity = str(entry.get("id") or "")
+    owner = entry.get("owner") or {}
+    owner_id = str(owner.get("id") or "") if isinstance(owner, dict) else ""
+    user_id = str(getattr(client, "spotify_user_id", "") or "")
+    if not re.fullmatch(r"[A-Za-z0-9]{22}", identity) or not owner_id or not user_id:
         return []
-    favorites = favorites if favorites is not None else load_favorites()
-    key = favorite_key(kind, identity)
-    label = "Remove from Favorites" if key in favorites else "Add to Favorites"
-    return [(label, "RunPlugin(" + url(action="toggle_favorite", kind=kind, id=identity) + ")")]
-
-
-def render_favorites():
-    favorites = load_favorites()
-    xbmcplugin.setContent(HANDLE, "files")
-    for kind, label in (("album", "Albums"), ("artist", "Artists"),
-                        ("playlist", "Playlists"), ("track", "Songs")):
-        count = sum(
-            1 for key, entry in favorites.items()
-            if isinstance(entry, dict)
-            and str(entry.get("type") or key.split(":", 1)[0]) == kind
-        )
-        row("{} ({})".format(label, count), "favorites_category", kind=kind)
-    if not favorites:
-        row("Your saved items will appear in these sections")
-    xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
-
-
-def render_favorites_category(kind):
-    favorites = load_favorites()
-    xbmcplugin.setContent(HANDLE, {"track": "songs", "album": "albums"}.get(kind, "files"))
-    for key, entry in favorites.items():
-        if not isinstance(entry, dict):
-            continue
-        entry_kind = str(entry.get("type") or key.split(":", 1)[0])
-        if entry_kind != kind:
-            continue
-        identity = str(entry.get("id") or key.split(":", 1)[-1])
-        if not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
-            continue
-        name = entry.get("name") or "Untitled"
-        if kind == "track":
-            client_cache_track = dict(entry)
-            path = url(action="play", id=identity)
-            item = track_item(client_cache_track, path)
-            item.addContextMenuItems(
-                favorite_context_menu(entry, kind, favorites) + artist_context_menu(entry, kind)
-            )
-            xbmcplugin.addDirectoryItem(HANDLE, path, item, False)
-        elif kind in ("album", "artist", "playlist"):
-            path = url(action="collection", kind=kind, id=identity, name=name)
-            item = directory_item(entry, kind, path, favorites)
-            xbmcplugin.addDirectoryItem(HANDLE, path, item, True)
-    if not favorites:
-        row("No favorites in this section yet")
-    elif not any(
-        isinstance(entry, dict)
-        and str(entry.get("type") or key.split(":", 1)[0]) == kind
-        for key, entry in favorites.items()
-    ):
-        row("No favorites in this section yet")
-    xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
-
-
-def toggle_favorite(kind, identity):
-    favorites = load_favorites()
-    key = favorite_key(kind, identity)
-    if key in favorites:
-        del favorites[key]
-        message = "Removed from Favorites"
-    else:
-        cache_key = ("track:" if kind == "track" else "collection:" + kind + ":") + identity
-        entry = None
-        try:
-            db = sqlite3.connect(catalogue.database_path(DATA), timeout=5)
-            try:
-                cached = db.execute("SELECT value FROM pages WHERE key=?", (cache_key,)).fetchone()
-                entry = json.loads(cached[0]) if cached else None
-            finally:
-                db.close()
-        except (sqlite3.Error, ValueError, TypeError):
-            entry = None
-        if not isinstance(entry, dict):
-            xbmcgui.Dialog().notification("Resonance", "Could not find this item to add to Favorites")
-            return
-        entry["type"] = kind
-        favorites[key] = entry
-        message = "Added to Favorites"
-    save_favorites(favorites)
-    xbmcgui.Dialog().notification("Resonance", message)
-    xbmc.executebuiltin("Container.Refresh")
+    if owner_id == user_id:
+        # Owned playlists are not followed, so there is nothing to unfollow.
+        return []
+    return [(
+        "Unfollow playlist",
+        "RunPlugin(" + url(action="unfollow_playlist", id=identity, name=entry.get("name") or "") + ")",
+    )]
 
 
 def _image_url(entry):
@@ -199,7 +154,7 @@ def _artist_ref(entry, kind):
     return "", ""
 
 
-def artist_context_menu(entry, kind):
+def artist_context_menu(entry, kind, followed=None):
     artist_id, artist_name = _artist_ref(entry, kind)
     if not artist_id:
         return []
@@ -211,10 +166,17 @@ def artist_context_menu(entry, kind):
         ("Artist: singles" + suffix, "artist_singles"),
         ("Artist: appears on" + suffix, "artist_appears_on"),
     ]
-    return [
+    items = [
         (label, "Container.Update(" + url(action=action, id=artist_id, name=artist_name) + ")")
         for label, action in actions
     ]
+    if kind == "artist" and followed is not None and artist_id in followed:
+        # Only artists the account follows can be unfollowed.
+        items.append((
+            "Unfollow artist" + suffix,
+            "RunPlugin(" + url(action="unfollow_artist", id=artist_id, name=artist_name) + ")",
+        ))
+    return items
 
 
 def track_item(track, path):
@@ -234,55 +196,95 @@ def track_item(track, path):
     return item
 
 
-def directory_item(entry, kind, path, favorites=None):
+def directory_item(entry, kind, path, client=None, saved=None, followed=None):
     item = xbmcgui.ListItem(entry.get("name") or "Untitled")
     _apply_art(item, _image_url(entry))
     item.addContextMenuItems(
-        favorite_context_menu(entry, kind, favorites) + artist_context_menu(entry, kind)
+        spotify_write_context_menu(entry, kind, saved=saved)
+        + playlist_context_menu(entry, client)
+        + artist_context_menu(entry, kind, followed=followed)
     )
     return item
 
 
+def owned_playlists(client):
+    """Return every playlist owned by the signed-in account."""
+    owned = []
+    offset = 0
+    while True:
+        items, more = client.playlists(offset)
+        owned.extend(
+            item for item in items
+            if str((item.get("owner") or {}).get("id") or "") == str(client.spotify_user_id or "")
+        )
+        if more is None:
+            return owned
+        offset = more
+
+
+def section(label):
+    """Add a section header to the current listing."""
+    row("[COLOR skyblue][" + label + "][/COLOR]", icon="section.png")
+
+
 def status(client):
+    """Render the account and status page.
+
+    The page is grouped into short sections with one icon per row so the
+    state of the add-on can be read at a glance instead of reading long
+    sentences.
+    """
     from utils import get_playback_settings, get_spotify_device_name, resonance_signed_in, spotty_has_credentials
 
     signed_in = resonance_signed_in()
-    row("Resonance (Spotify) - " + ("Signed in" if signed_in else "Signed out"))
-    if not signed_in:
-        row("To sign in or retry: Settings > Account & Connection")
-        row("Playlists: sign in to load your public playlists")
-        row("Set up Spotify", "setup")
+    account_state = xbmcgui.Window(10000).getProperty("resonance.status")
+
+    section("ACCOUNT")
+    if signed_in:
+        row(account_state or "Signed in", icon="account.png")
+        row("Reauthorize Spotify", "web_login", icon="key.png")
+    else:
+        row(account_state or "Signed out", icon="account.png")
+        row("Sign in with Spotify", "web_login", icon="key.png")
+        row("Set up Spotify", "setup", icon="setup.png")
         try:
             import web_auth
             from utils import get_spotify_webapi_client_id
             if web_auth.load_login_request(DATA, get_spotify_webapi_client_id(), clock=time.time):
-                row("Resume browser sign-in (paste code)", "web_login_paste")
+                row("Resume browser sign-in", "web_login_paste", icon="key.png")
         except Exception:
             pass
+
+    section("CATALOGUE")
+    refreshed = client.cached("playlists-refreshed", stale=True)
+    if isinstance(refreshed, dict) and refreshed.get("count"):
+        count = int(refreshed.get("count") or 0)
+        stamp = float(refreshed.get("at") or 0)
+        when = time.strftime("%d %b %H:%M", time.localtime(stamp)) if stamp else "unknown"
+        row(f"{count} playlist{'s' if count != 1 else ''} · {when}", "refresh_playlists", icon="refresh.png")
     else:
-        refreshed = client.cached("playlists-refreshed", stale=True)
-        if isinstance(refreshed, dict) and refreshed.get("count"):
-            count = int(refreshed.get("count") or 0)
-            stamp = float(refreshed.get("at") or 0)
-            when = time.strftime("%d %b %H:%M", time.localtime(stamp)) if stamp else "unknown"
-            row(f"Playlists: {count} playlist{'s' if count != 1 else ''} - updated {when} (click to manually refresh)", "refresh_playlists")
-        else:
-            row("Playlists: not loaded yet > tap to refresh now", "refresh_playlists")
-        if not token():
-            row("Search and playlists token: not set > run setup", "setup")
-        device = get_spotify_device_name()
-        if spotty_has_credentials():
-            row("Playback: paired with '" + device + "' (tap to re-pair)", "connect_playback")
-        else:
-            row("Playback: not paired > run setup", "setup")
-    row("Playback: " + get_playback_settings()[0] + " kbps (select to change)", "playback_quality")
-    row("Coming soon: Podcasts and audiobooks")
+        row("Playlists not loaded", "refresh_playlists", icon="refresh.png")
+    if not token():
+        row("Catalogue token missing", "setup", icon="setup.png")
+
+    section("PLAYBACK")
+    row("Playback status", "playback_status", icon="playback.png")
+    if spotty_has_credentials():
+        row("Connect: " + get_spotify_device_name(), "connect_playback", icon="cast.png")
+    else:
+        row("Not paired", "setup", icon="setup.png")
+    row("Quality: " + get_playback_settings()[0] + " kbps", "playback_quality", icon="quality.png")
+
+    section("MAINTENANCE")
+    row("Clear cache", "clear_cache", icon="cache.png")
+    row("Sign out", "sign_out", icon="sign_out.png")
     xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
 
 
 def playback_status():
     from utils import get_playback_settings, get_spotify_device_name, spotty_has_credentials
 
+    section("NOW PLAYING")
     try:
         player = xbmc.Player()
         if player.isPlayingAudio():
@@ -291,23 +293,53 @@ def playback_status():
             artists = tag.getArtist() or []
             if isinstance(artists, str):
                 artists = [artists]
-            label = "Now playing: " + title
+            label = title
             if artists:
                 label += " - " + " / ".join(artists)
-            row(label)
+            row(label, icon="playback.png")
         else:
-            row("Now playing: nothing")
+            row("Nothing playing", icon="playback.png")
     except Exception:
-        row("Now playing: unavailable")
-    row("Audio quality: " + get_playback_settings()[0] + " kbps", "playback_quality")
+        row("Playback unavailable", icon="playback.png")
+
+    section("SETTINGS")
+    row("Quality: " + get_playback_settings()[0] + " kbps", "playback_quality", icon="quality.png")
     if spotty_has_credentials():
-        row("Spotify Connect: paired with " + get_spotify_device_name(), "connect_playback")
+        row("Connect: " + get_spotify_device_name(), "connect_playback", icon="cast.png")
     else:
-        row("Spotify Connect: not paired", "setup")
-    status_text = xbmcgui.Window(10000).getProperty("resonance.status")
-    if status_text:
-        row("Spotify account: " + status_text)
+        row("Not paired", "setup", icon="setup.png")
+    account_state = xbmcgui.Window(10000).getProperty("resonance.status")
+    if account_state:
+        section("ACCOUNT")
+        row(account_state, icon="account.png")
     xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+
+
+def _library_ids(client, identities, kind, params):
+    """Return the ids on this page that Spotify already keeps in the library.
+
+    The answer is ``None`` when Spotify could not be asked, so the context
+    menu keeps offering both the add and the remove action.
+    """
+    try:
+        if kind == "track":
+            if params.get("action") == "liked_songs":
+                # Every track in Liked Songs is liked by definition.
+                return {str(identity) for identity in identities}
+            return client.liked_track_ids(identities)
+        if kind == "album":
+            if params.get("action") == "saved_albums":
+                # Every album in Saved Albums is saved by definition.
+                return {str(identity) for identity in identities}
+            return client.saved_album_ids(identities)
+        if kind == "artist":
+            if params.get("action") == "followed_artists":
+                # Every artist in Followed Artists is followed by definition.
+                return {str(identity) for identity in identities}
+            return client.saved_artist_ids(identities)
+    except Exception:
+        return None
+    return None
 
 
 def render(client, items, kind, more, params):
@@ -317,9 +349,9 @@ def render(client, items, kind, more, params):
     if client.notice:
         row(client.notice)
     page_key = hashlib.sha256(json.dumps(params, sort_keys=True).encode()).hexdigest()
-    favorites = load_favorites()
     if kind == "track":
         client.save("queue:" + page_key, items, ttl=86400)
+    library = _library_ids(client, [entry.get("id") for entry in items], kind, params)
     for index, entry in enumerate(items):
         identity = entry.get("id") or ""
         if not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
@@ -336,7 +368,7 @@ def render(client, items, kind, more, params):
                 context.append(("Play playlist from here", "RunPlugin(" + url(
                     action="queue_playlist", id=params["id"], offset=start_index
                 ) + ")"))
-            item.addContextMenuItems(context + favorite_context_menu(entry, kind, favorites)
+            item.addContextMenuItems(context + spotify_write_context_menu(entry, kind, liked=library)
                                      + artist_context_menu(entry, kind))
             xbmcplugin.addDirectoryItem(HANDLE, path, item, False)
         else:
@@ -353,10 +385,17 @@ def render(client, items, kind, more, params):
                     else:
                         marker = "[COLOR orange][FOLLOWED][/COLOR] "
                     display_entry["name"] = marker + (entry.get("name") or "Untitled")
-            item = directory_item(display_entry, kind, path, favorites)
+            item = directory_item(
+                display_entry, kind, path, client=client,
+                saved=library if kind == "album" else None,
+                followed=library if kind == "artist" else None,
+            )
             xbmcplugin.addDirectoryItem(HANDLE, path, item, True)
     if more is not None:
-        next_params = dict(params, offset=more)
+        if params.get("action") == "followed_artists":
+            next_params = dict(params, after=more)
+        else:
+            next_params = dict(params, offset=more)
         row("More...", **next_params)
     if not items:
         row("No results")
@@ -364,10 +403,20 @@ def render(client, items, kind, more, params):
 
 
 def render_artist_everything(client, sections, artist_name, artist_id):
-    favorites = load_favorites()
     xbmcplugin.setContent(HANDLE, "files")
     if artist_name:
         xbmcplugin.setProperty(HANDLE, "FolderName", artist_name)
+    # One library lookup for the whole page keeps the request count low.
+    track_ids = []
+    album_ids = []
+    for label, kind, items in sections:
+        for entry in items:
+            if kind == "track":
+                track_ids.append(entry.get("id"))
+            elif kind == "album":
+                album_ids.append(entry.get("id"))
+    liked = _library_ids(client, track_ids, "track", {}) if track_ids else None
+    saved = _library_ids(client, album_ids, "album", {}) if album_ids else None
     for label, kind, items in sections:
         row("[" + label + "]")
         for entry in items:
@@ -378,13 +427,13 @@ def render_artist_everything(client, sections, artist_name, artist_id):
                 client.save("track:" + identity, entry, ttl=86400)
                 path = url(action="play", id=identity)
                 item = track_item(entry, path)
-                item.addContextMenuItems(favorite_context_menu(entry, kind, favorites)
+                item.addContextMenuItems(spotify_write_context_menu(entry, kind, liked=liked)
                                          + artist_context_menu(entry, kind))
                 xbmcplugin.addDirectoryItem(HANDLE, path, item, False)
             else:
                 client.save("collection:" + kind + ":" + identity, entry, ttl=86400)
                 path = url(action="collection", kind=kind, id=identity, name=entry.get("name", ""))
-                xbmcplugin.addDirectoryItem(HANDLE, path, directory_item(entry, kind, path, favorites), True)
+                xbmcplugin.addDirectoryItem(HANDLE, path, directory_item(entry, kind, path, client=client, saved=saved), True)
         if kind == "album":
             more_action = {
                 "Albums": "artist_albums",
@@ -773,34 +822,35 @@ def run():
     action = PARAMS.get("action", "home")
     if action == "home":
         # Account-specific rows disappear after logout; the public catalogue
-        # (search and Spotify links) keeps working without an account.
+        # (search) keeps working without an account.
         if resonance_signed_in():
-            row("Playlists", "playlists")
-            row("Favorites", "favorites")
+            row("Your Spotify Library", "spotify_library_menu")
             row("Search", "search_menu")
             if not spotty_has_credentials():
                 row("Set up Spotify", "setup")
         else:
-            row("Favorites", "favorites")
             row("Search", "search_menu")
             row("Set up Spotify", "setup")
-        row("Open Spotify link", "open_link")
         row("Playback status", "playback_status")
         row("Account and status", "status")
         xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
         return
-    if action == "favorites":
-        render_favorites()
-        return
-    if action == "favorites_category":
-        render_favorites_category(PARAMS.get("kind", ""))
-        return
-    if action == "toggle_favorite":
-        toggle_favorite(PARAMS.get("kind", ""), PARAMS.get("id", ""))
+    if action == "spotify_library_menu":
+        row("Liked Songs", "liked_songs")
+        row("Saved Albums", "saved_albums")
+        row("Followed Artists", "followed_artists")
+        row("Saved and Followed Playlists", "saved_playlists")
+        xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
         return
     if action == "search_menu":
-        for kind, label in (("track", "Songs"), ("album", "Albums"), ("artist", "Artists"), ("playlist", "Playlists")):
-            row(label, "search", kind=kind)
+        # Playlists are not searchable. Spotify only returns playlist items to
+        # the owner and collaborators, so a global playlist search could only
+        # list playlists that Resonance cannot open. Playlists stay reachable
+        # through Your Spotify Library.
+        for kind, label, icon in (("track", "Songs", "songs.png"),
+                                  ("album", "Albums", "albums.png"),
+                                  ("artist", "Artists", "artists.png")):
+            row(label, "search", icon=icon, kind=kind)
         xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
         return
     if action == "playback_status":
@@ -875,6 +925,86 @@ def run():
                 updated = False
             xbmcgui.Dialog().notification("Resonance", "Playlists updated" if updated else "Could not refresh playlists")
             status(client)
+        elif action == "spotify_library":
+            kind = PARAMS.get("kind", "track")
+            identity = PARAMS.get("id", "")
+            save = PARAMS.get("save") == "1"
+            label = ("Like" if kind == "track" else "Save") if save else ("Unlike" if kind == "track" else "Remove")
+            if xbmcgui.Dialog().yesno("Spotify", f"{label} this {kind} in your Spotify library?"):
+                client.save_library_item(kind, identity, save=save)
+                result = ("Saved to Spotify Your Library → Albums" if kind == "album" and save
+                          else "Removed from Spotify Your Library → Albums" if kind == "album"
+                          else ("Liked on Spotify" if save else "Removed from Spotify Liked Songs"))
+                xbmcgui.Dialog().ok("Resonance", result)
+                from utils import clear_resonance_cache
+                clear_resonance_cache()
+                xbmc.executebuiltin("Container.Refresh")
+            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+        elif action == "choose_playlist":
+            track_id = PARAMS.get("id", "")
+            owned = owned_playlists(client)
+            if not owned:
+                raise catalogue.Unavailable("No playlists owned by this Spotify account were found")
+            choice = xbmcgui.Dialog().select(
+                "Add track to Spotify playlist",
+                [item.get("name") or "Untitled" for item in owned],
+            )
+            if choice >= 0:
+                target = owned[choice]
+                if xbmcgui.Dialog().yesno("Spotify", "Add this track to '{}' ?".format(target.get("name") or "Untitled")):
+                    client.add_track_to_playlist(target["id"], track_id)
+                    xbmcgui.Dialog().notification("Resonance", "Track added to " + (target.get("name") or "playlist"))
+                    from utils import clear_resonance_cache
+                    clear_resonance_cache()
+            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+        elif action == "remove_from_playlist":
+            track_id = PARAMS.get("id", "")
+            owned = owned_playlists(client)
+            if not owned:
+                raise catalogue.Unavailable("No playlists owned by this Spotify account were found")
+            choice = xbmcgui.Dialog().select(
+                "Remove track from Spotify playlist",
+                [item.get("name") or "Untitled" for item in owned],
+            )
+            if choice >= 0:
+                target = owned[choice]
+                name = target.get("name") or "Untitled"
+                if xbmcgui.Dialog().yesno("Spotify", "Remove this track from '{}' ?".format(name)):
+                    client.remove_track_from_playlist(target["id"], track_id)
+                    xbmcgui.Dialog().notification("Resonance", "Track removed from " + name)
+                    from utils import clear_resonance_cache
+                    clear_resonance_cache()
+            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+        elif action == "unfollow_playlist":
+            identity = PARAMS.get("id", "")
+            name = PARAMS.get("name", "") or "this playlist"
+            if xbmcgui.Dialog().yesno(
+                "Spotify",
+                "Unfollow '{}'?\n\nIt leaves Your Spotify Library. The playlist itself is not deleted.".format(name),
+                nolabel="Cancel",
+                yeslabel="Unfollow",
+            ):
+                client.save_library_item("playlist", identity, save=False)
+                from utils import clear_resonance_cache
+                clear_resonance_cache()
+                xbmcgui.Dialog().notification("Resonance", "Playlist unfollowed")
+                xbmc.executebuiltin("Container.Refresh")
+            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+        elif action == "unfollow_artist":
+            identity = PARAMS.get("id", "")
+            name = PARAMS.get("name", "") or "this artist"
+            if xbmcgui.Dialog().yesno(
+                "Spotify",
+                "Unfollow '{}'?\n\nThe artist leaves your Followed Artists list. The artist itself is not deleted.".format(name),
+                nolabel="Cancel",
+                yeslabel="Unfollow",
+            ):
+                client.save_library_item("artist", identity, save=False)
+                from utils import clear_resonance_cache
+                clear_resonance_cache()
+                xbmcgui.Dialog().notification("Resonance", "Artist unfollowed")
+                xbmc.executebuiltin("Container.Refresh")
+            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
         elif action == "playback_quality":
             from utils import get_playback_settings
             qualities = ("96", "160", "320")
@@ -888,6 +1018,23 @@ def run():
         elif action == "playlists":
             items, more = client.playlists(offset)
             render(client, items, "playlist", more, dict(action="playlists", offset=offset))
+        elif action == "saved_playlists":
+            items, more = client.playlists(offset)
+            xbmcplugin.setProperty(HANDLE, "FolderName", "Saved and Followed Playlists")
+            render(client, items, "playlist", more, dict(action="saved_playlists", offset=offset))
+        elif action == "liked_songs":
+            items, more = client.liked_songs(offset)
+            xbmcplugin.setProperty(HANDLE, "FolderName", "Liked Songs")
+            render(client, items, "track", more, dict(action="liked_songs", offset=offset))
+        elif action == "saved_albums":
+            items, more = client.saved_albums(offset)
+            xbmcplugin.setProperty(HANDLE, "FolderName", "Saved Albums")
+            render(client, items, "album", more, dict(action="saved_albums", offset=offset))
+        elif action == "followed_artists":
+            after = PARAMS.get("after", "")
+            items, more = client.followed_artists(after)
+            xbmcplugin.setProperty(HANDLE, "FolderName", "Followed Artists")
+            render(client, items, "artist", more, dict(action="followed_artists", after=after))
         elif action == "search":
             kind = PARAMS.get("kind", "track")
             query = PARAMS.get("q")
@@ -1031,7 +1178,13 @@ def run():
             row("Resonance", "home")
             xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
     except (catalogue.Unavailable, ValueError, KeyError) as exc:
-        if action == "play":
+        if action in ("spotify_library", "choose_playlist", "remove_from_playlist", "unfollow_playlist", "unfollow_artist"):
+            message = str(exc)
+            if "refused" in message.lower() or "403" in message:
+                message += "\n\nSpotify may not have granted Resonance permission for this change yet. Choose Reauthorize Spotify under Account and status, then approve the requested permissions."
+            xbmcgui.Dialog().ok("Spotify change failed", message)
+            xbmcplugin.endOfDirectory(HANDLE, succeeded=False, cacheToDisc=False)
+        elif action == "play":
             xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem())
             xbmcgui.Dialog().notification("Resonance", str(exc))
         elif action == "queue":
@@ -1049,7 +1202,10 @@ def run():
             xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
     except Exception as exc:
         xbmc.log("Resonance plugin error: " + type(exc).__name__ + ": " + str(exc), xbmc.LOGERROR)
-        if action == "play":
+        if action in ("spotify_library", "choose_playlist", "remove_from_playlist", "unfollow_playlist", "unfollow_artist"):
+            xbmcgui.Dialog().ok("Spotify change failed", "Resonance could not complete the Spotify request. Check the Kodi log for details.")
+            xbmcplugin.endOfDirectory(HANDLE, succeeded=False, cacheToDisc=False)
+        elif action == "play":
             xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem())
         elif action not in ("queue", "queue_playlist"):
             row("Unable to load this page")

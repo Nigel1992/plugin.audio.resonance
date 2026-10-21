@@ -55,6 +55,13 @@ class Flaky:
 
 
 class TestPkce(unittest.TestCase):
+    def test_default_scope_includes_library_and_playlist_writes(self):
+        self.assertIn("user-library-read", module.DEFAULT_SCOPE)
+        self.assertIn("user-library-modify", module.DEFAULT_SCOPE)
+        self.assertIn("playlist-modify-private", module.DEFAULT_SCOPE)
+        self.assertIn("playlist-modify-public", module.DEFAULT_SCOPE)
+        self.assertIn("user-follow-read", module.DEFAULT_SCOPE)
+
     def test_pair_matches(self):
         verifier, challenge = module.pkce_pair()
         import base64

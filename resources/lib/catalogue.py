@@ -228,7 +228,11 @@ class Catalogue:
                     raise Forbidden("Spotify refused this request (HTTP 403)")
                 response.raise_for_status()
                 data = response.json()
-                if not isinstance(data, dict) or data.get("success") is False:
+                if isinstance(data, dict):
+                    if data.get("success") is False:
+                        raise ValueError("provider returned an unsuccessful response")
+                elif not isinstance(data, list):
+                    # Spotify answers some endpoints with a bare JSON array.
                     raise ValueError("provider returned an unsuccessful response")
             except (requests.RequestException, ValueError) as exc:
                 self.db.execute("INSERT OR REPLACE INTO gates VALUES (?,?)", (error_gate, self.clock() + 30))
@@ -248,8 +252,126 @@ class Catalogue:
             if self.db.in_transaction:
                 self.db.rollback()
 
+    def write_request(self, method, path, params=None, body=None):
+        """Send an authenticated Spotify write request without caching it."""
+        import requests
+
+        if not self.signed_in:
+            raise Unavailable("Connect your Spotify account first")
+        if self.http is None:
+            self.http = requests.Session()
+        token = self.token()
+        if not token:
+            raise Unavailable("Connect your Spotify account first")
+        headers = {"Authorization": "Bearer " + token}
+        try:
+            response = self.http.request(
+                method, "https://api.spotify.com/v1" + path,
+                params=params, json=body, headers=headers, timeout=(3, 10),
+            )
+            if response.status_code == 429:
+                try:
+                    delay = max(1, int(response.headers.get("Retry-After", "300")))
+                except (TypeError, ValueError):
+                    delay = 300
+                with self.db:
+                    self.db.execute("INSERT OR REPLACE INTO gates VALUES (?,?)", ("spotify", self.clock() + delay))
+                raise Unavailable("Spotify is temporarily rate limited")
+            if response.status_code == 403:
+                raise Forbidden("Spotify refused this change")
+            response.raise_for_status()
+            try:
+                return response.json()
+            except ValueError:
+                return {}
+        except (requests.RequestException, ValueError) as exc:
+            raise Unavailable("Spotify could not complete this change") from exc
+
+    def save_library_item(self, kind, identity, save=True):
+        if kind not in ("track", "album", "playlist", "artist") or not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
+            raise ValueError("Invalid Spotify library item")
+        uri = f"spotify:{kind}:{identity}"
+        self.write_request("PUT" if save else "DELETE", "/me/library", params={"uris": uri})
+
+    def add_track_to_playlist(self, playlist_id, track_id):
+        if not re.fullmatch(r"[A-Za-z0-9]{22}", playlist_id) or not re.fullmatch(r"[A-Za-z0-9]{22}", track_id):
+            raise ValueError("Invalid playlist or track ID")
+        return self.write_request(
+            "POST", f"/playlists/{playlist_id}/items",
+            body={"uris": [f"spotify:track:{track_id}"]},
+        )
+
+    def remove_track_from_playlist(self, playlist_id, track_id):
+        """Remove one track from a playlist this account owns."""
+        if not re.fullmatch(r"[A-Za-z0-9]{22}", playlist_id) or not re.fullmatch(r"[A-Za-z0-9]{22}", track_id):
+            raise ValueError("Invalid playlist or track ID")
+        return self.write_request(
+            "DELETE", f"/playlists/{playlist_id}/items",
+            body={"items": [{"uri": f"spotify:track:{track_id}"}]},
+        )
+
+    def library_contains(self, uris):
+        """Return the subset of ``uris`` that is in the account library.
+
+        Spotify answers with a JSON array of booleans, one per requested URI.
+        ``None`` is returned when the library could not be read, so callers can
+        tell "not saved" apart from "unknown" and offer both actions.
+        """
+        wanted = [str(uri) for uri in uris if str(uri or "")]
+        if not wanted:
+            return set()
+        if not self.signed_in:
+            # Without an account the library state is unknown, not empty.
+            return None
+        found = set()
+        for start in range(0, len(wanted), 40):
+            chunk = wanted[start:start + 40]
+            try:
+                data = self.request("spotify", "/me/library/contains", {"uris": ",".join(chunk)})
+            except Unavailable:
+                return None
+            flags = data if isinstance(data, list) else []
+            for uri, flag in zip(chunk, flags):
+                if flag:
+                    found.add(uri)
+        return found
+
+    def liked_track_ids(self, identities):
+        """Return the ids from ``identities`` that are in Liked Songs."""
+        ids = [str(identity) for identity in identities
+               if re.fullmatch(r"[A-Za-z0-9]{22}", str(identity or ""))]
+        found = self.library_contains("spotify:track:" + identity for identity in ids)
+        if found is None:
+            return None
+        return {uri.rsplit(":", 1)[-1] for uri in found}
+
+    def saved_album_ids(self, identities):
+        """Return the ids from ``identities`` that are in the saved albums."""
+        ids = [str(identity) for identity in identities
+               if re.fullmatch(r"[A-Za-z0-9]{22}", str(identity or ""))]
+        found = self.library_contains("spotify:album:" + identity for identity in ids)
+        if found is None:
+            return None
+        return {uri.rsplit(":", 1)[-1] for uri in found}
+
+    def saved_artist_ids(self, identities):
+        """Return the ids from ``identities`` that the account follows."""
+        ids = [str(identity) for identity in identities
+               if re.fullmatch(r"[A-Za-z0-9]{22}", str(identity or ""))]
+        found = self.library_contains("spotify:artist:" + identity for identity in ids)
+        if found is None:
+            return None
+        return {uri.rsplit(":", 1)[-1] for uri in found}
+
     def search(self, query, kind, offset=0):
-        if kind not in ("track", "album", "artist", "playlist"):
+        if kind == "playlist":
+            # Spotify only returns playlist items to the owner and collaborators.
+            # A playlist search could therefore only list playlists that
+            # Resonance cannot open, so the category is not offered.
+            raise ValueError(
+                "Playlist search is unavailable. Open playlists from Your Spotify Library."
+            )
+        if kind not in ("track", "album", "artist"):
             raise ValueError("Unknown search category")
         data = self.request("spotify", "/search", dict(q=query, type=kind, limit=10, offset=offset))
         page = data.get(kind + "s") or {}
@@ -269,6 +391,52 @@ class Catalogue:
         if not items:
             raise Unavailable("No imported Spotify playlists are available yet")
         return items[offset:offset + 40], offset + 40 if offset + 40 < len(items) else None
+
+    def liked_songs(self, offset=0):
+        """Return a page of the current user's saved tracks (Liked Songs)."""
+        if not self.signed_in:
+            raise Unavailable("Connect your Spotify account first")
+        params = dict(limit=50, offset=offset)
+        try:
+            data = self.request("spotify", "/me/tracks", params)
+        except Forbidden as exc:
+            raise Unavailable(
+                "Spotify has not granted Resonance permission to read Liked Songs.\n\n"
+                "Sign in again from Account and status to approve the library permission."
+            ) from exc
+        items = data.get("items") or []
+        tracks = [normalize(item.get("track") or {}, "track") for item in items if item]
+        more = offset + len(items) if data.get("next") else None
+        return tracks, more
+
+    def saved_albums(self, offset=0):
+        """Return a page of albums saved in the current user's library."""
+        if not self.signed_in:
+            raise Unavailable("Connect your Spotify account first")
+        data = self.request("spotify", "/me/albums", {"limit": 50, "offset": offset})
+        items = data.get("items") or []
+        albums = [normalize(item.get("album") or {}, "album") for item in items if item]
+        return albums, (offset + len(items) if data.get("next") else None)
+
+    def followed_artists(self, after=""):
+        """Return a page of followed artists using Spotify's cursor pagination."""
+        if not self.signed_in:
+            raise Unavailable("Connect your Spotify account first")
+        params = {"type": "artist", "limit": 50}
+        if after:
+            params["after"] = after
+        try:
+            data = self.request("spotify", "/me/following", params)
+        except Forbidden as exc:
+            raise Unavailable(
+                "Spotify has not granted Resonance permission to read followed artists.\n\n"
+                "Reauthorize Spotify from Account and status to approve that permission."
+            ) from exc
+        artists_data = data.get("artists") or {}
+        items = artists_data.get("items") or []
+        next_cursor = ((items[-1].get("id") if items else "")
+                       if artists_data.get("next") else None)
+        return [normalize(item, "artist") for item in items if item], next_cursor
 
     def tracks(self, kind, identity, offset=0):
         if not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
