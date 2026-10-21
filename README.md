@@ -21,7 +21,7 @@ through bundled Spotty/librespot playback helpers.
 | Not supported | Windows, macOS, Linux x86/x64 |
 | Catalogue | Regular Spotify Web API with browser PKCE token |
 | Playback | Spotify Device Connect with Spotty/librespot |
-| Version | 1.0.3 |
+| Version | 1.1.0 |
 
 | | |
 | --- | --- |
@@ -30,12 +30,18 @@ through bundled Spotty/librespot playback helpers.
 
 ## Quick Start
 
-1. Download `plugin.audio.resonance-1.0.3.zip` from the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
+1. Download `plugin.audio.resonance-1.1.0.zip` from the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
 2. In Kodi, install it with **Add-ons -> Install from zip file**.
 3. Restart Kodi once.
 4. Open **Add-ons -> Music add-ons -> Resonance**.
 5. Create a Spotify Developer app, add the redirect URI below, and paste its Client ID into **Settings -> Advanced**.
 6. Use **Set up Spotify**. Resonance pairs playback first, then shows a QR code and URL for browser sign-in.
+
+### Upgrading from 1.0.x
+
+1. Install the new zip over the old version and restart Kodi.
+2. Open **Account and status** and choose **Reauthorize Spotify** once. Spotify asks for the library and playlist permissions that the new write actions need.
+3. The local Favorites are gone. Use **Your Spotify Library** and the Spotify write actions instead: liked tracks, saved albums, followed artists and your playlists are read straight from Spotify.
 
 ```text
 https://resonance-spotify-callback.vercel.app/api/callback
@@ -43,15 +49,21 @@ https://resonance-spotify-callback.vercel.app/api/callback
 
 ## Features
 
-- Search Spotify tracks, albums, artists and playlists.
+- Search Spotify tracks, albums and artists.
+- Browse and play tracks from your Spotify Liked Songs library.
+- Browse saved albums, followed artists, and saved or followed playlists in **Your Spotify Library**.
+- Like or unlike tracks and save or remove albums in your Spotify library.
+- Add tracks to playlists owned by your Spotify account, or remove a track from one of them.
+- Unfollow a playlist or artist that you follow, so it leaves **Your Spotify Library**.
 - Browse your Spotify playlists, including private playlists available to your account.
 - Browse album tracks, playlist tracks and artist albums.
-- Open Spotify track, album, playlist and artist links or URIs.
+- Open Spotify track, album, playlist and artist links or URIs through the plugin's `open_link` action.
 - Play individual tracks.
 - Queue the rest of the current page from a selected track.
 - Queue the rest of a playlist from a selected track.
-- Keep local Kodi Favorites for songs, albums, artists and playlists, grouped by type.
 - View current playback, configured audio quality and Spotify Connect pairing status.
+- Read the account and status page at a glance: it is grouped into Account, Catalogue, Playback and Maintenance, with one icon per row.
+- Give every menu row its own icon, bundled with the add-on, so the menus look the same in every skin.
 - Identify followed and shared playlists and get guidance when Spotify blocks playlist contents.
 - Open supported artist views from track, album and artist context menus.
 - Cache successful catalogue responses.
@@ -71,7 +83,7 @@ tokens. The add-on presents them as one setup flow.
 | Purpose | Method | Used for |
 | --- | --- | --- |
 | Playback | Spotify Device Connect | Pairing the Kodi box as a Spotify playback device |
-| Catalogue | Browser sign-in with PKCE | Search, playlists, albums, artists, links and track metadata |
+| Catalogue | Browser sign-in with PKCE | Search, playlists, Liked Songs, saved albums, followed artists, links and track metadata |
 
 ### Pair Playback
 
@@ -171,33 +183,21 @@ code)** and paste the `code` value from the browser address bar.
 
 ### Usage
 
-- Open **Playlists** to browse account playlists.
-- Open **Search** and choose tracks, albums, artists or playlists.
-- Add a song, album, artist or playlist to **Favorites** from its context menu. Open **Favorites** to browse the Albums, Artists, Playlists and Songs sections.
+- Open **Your Spotify Library** to browse Liked Songs, Saved Albums, Followed Artists, and Saved and Followed Playlists.
+- Open **Search** and choose tracks, albums or artists.
+- Use a track context menu to like/unlike it on Spotify or add it to one of your own playlists. Album context menus can save or remove the album from your Spotify library. These actions update your Spotify account.
+- The context menu only offers the action that makes sense: **Like on Spotify** is hidden for tracks that are already in Liked Songs, and **Save album on Spotify** is hidden for albums that are already in your library. Both appear again when Spotify cannot answer the check.
+- Use a track context menu to remove the track from one of your own playlists, or to unfollow a playlist from **Saved and Followed Playlists** and an artist from **Followed Artists**. Unfollowing only removes the item from your library; Spotify keeps the playlist or artist itself.
 - Select a track to play it.
 - Use a track context menu to start playback from that row through the rest of the current page.
 - From a playlist track, choose **Play playlist from here** to queue that song and the remaining playlist tracks.
-- Use **Open Spotify link** for `open.spotify.com/...` URLs or `spotify:...` URIs.
+- Spotify links are no longer on the main menu. Open `open.spotify.com/...` URLs or `spotify:...` URIs with the plugin's `open_link` action, for example from a Kodi favourites entry pointing at `plugin://plugin.audio.resonance/?action=open_link`.
 - Use **Playback status** to see the current Kodi track, configured Spotify bitrate and playback pairing.
-- Use **Account and status** to refresh playlists, re-pair playback or run setup.
+- Use **Account and status** to see the state of the add-on at a glance. The page is grouped into **Account** (sign-in state, reauthorize), **Catalogue** (playlists, token), **Playback** (status, pairing, quality) and **Maintenance** (clear cache, sign out). Every row has its own icon, so the page can be scanned without reading long sentences.
+- Existing users need to choose **Reauthorize Spotify** under **Account and status** and approve the Spotify library, playlist, and followed-artist permissions before using these views or Spotify write actions.
 
 Playlist data refreshes roughly every 30 minutes while signed in. A manual
 refresh is available from **Account and status**.
-
-### Local Favorites
-
-Favorites are Resonance bookmarks stored in the add-on profile as
-`favorites.json`. They are organized into **Albums**, **Artists**, **Playlists**
-and **Songs**. Adding or removing a Favorite only changes this local file; it
-does not make a Spotify API write, create a Spotify playlist, or save an item to
-Spotify's Library. **Clear cache** leaves Favorites intact.
-
-The file stores Spotify IDs and a snapshot of item metadata, not audio. Favorites
-do not sync to other Kodi devices and are lost if the add-on profile is deleted
-or Kodi's add-on data is cleared. Browsing a saved reference or playing a song
-still needs a working Spotify sign-in, network access and an item that remains
-available to the account. A local Favorite for a playlist does not grant access
-to its tracks.
 
 ### Settings
 
@@ -229,9 +229,9 @@ to its tracks.
 ### Limits
 
 - Spotify Premium is required for playback.
-- Favorites store local Spotify item references and metadata only. They do not cache audio, work offline, sync to Spotify or other Kodi devices, or grant additional account access. If an item is deleted, region-blocked or no longer readable by the account, its Favorite may no longer open.
-- Resonance does not currently save items to your Spotify Library or edit Spotify playlists. Spotify's February 2026 API migration replaced the older item-specific library write endpoints with `PUT /me/library` and changed related scopes. Resonance avoids those write endpoints and their extra permissions; local Favorites remain Kodi-only. See Spotify's [February 2026 migration guide](https://developer.spotify.com/documentation/web-api/tutorials/february-2026-migration-guide).
-- Spotify only allows playlist-item reads for playlists you own or collaborate on. Saving a followed playlist as a local Kodi Favorite does not grant access to its songs or clone it. See Spotify's [Get Playlist Items reference](https://developer.spotify.com/documentation/web-api/reference/get-playlists-items).
+- Spotify write actions use the current library and playlist endpoints. Like/unlike, save/remove album and unfollow playlist or artist use `PUT/DELETE /me/library`; adding a track uses `POST /playlists/{id}/items` and removing one uses `DELETE /playlists/{id}/items`. The state of the library is read with `GET /me/library/contains`, so the context menu can hide actions that would not change anything. The account must authorize the corresponding library and playlist modification scopes. See Spotify's [February 2026 migration guide](https://developer.spotify.com/documentation/web-api/tutorials/february-2026-migration-guide).
+- Spotify only allows playlist-item reads for playlists you own or collaborate on. See Spotify's [Get Playlist Items reference](https://developer.spotify.com/documentation/web-api/reference/get-playlists-items).
+- There is no playlist search. Because Spotify never shares playlist contents with followers, a playlist search could only list playlists Resonance cannot open. Playlists stay available through **Your Spotify Library** and the `open_link` action.
 - Lyrics, podcasts, audiobooks, recently played and top lists are not included.
 - Spotify Web API availability, account permissions, app Development Mode restrictions and rate limits determine what catalogue pages can be loaded.
 - Playback is streaming-only; offline downloads are not supported.
@@ -304,6 +304,7 @@ Important paths:
 | `plugin.py` | Kodi plugin/browser entry point |
 | `service.py` | Background service for auth renewal, playlist refresh and audio streaming |
 | `resources/settings.xml` | Add-on settings |
+| `resources/media/` | Menu icons bundled with the add-on |
 | `resources/lib/catalogue.py` | Spotify Web API catalogue, cache and cooldown handling |
 | `resources/lib/web_auth.py` | Browser PKCE login and token refresh |
 | `resources/lib/qr_dialog.py` | Local QR-code popup helper for login links |

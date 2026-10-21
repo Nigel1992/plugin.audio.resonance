@@ -1,5 +1,21 @@
 Resonance Version 1
 
+v1.1.0 - 2026-10-22
+
+- Added Your Spotify Library with Liked Songs, Saved Albums, Followed Artists and Saved and Followed Playlists views.
+- Added Spotify write actions: like or unlike a track, save or remove an album from the Spotify library, add a track to a playlist owned by the account, remove a track from one of those playlists, and unfollow a playlist or an artist.
+- The track and album context menus now show only the action that changes something: Like on Spotify is hidden for a track that is already liked, Unlike on Spotify is hidden for a track that is not, and Save album on Spotify is hidden for an album that is already saved. Both actions return when Spotify cannot answer the check.
+- The library state is read with GET /me/library/contains, so one request per page decides the whole context menu. Liked Songs and Saved Albums need no request at all.
+- Added bundled menu icons for every row, so the menus look the same in every skin and no longer depend on skin-specific Default*.png artwork.
+- The Account and status page is regrouped into Account, Catalogue, Playback and Maintenance sections with one icon per row and short labels.
+- The Playback status page was reworked to match, with the account state in its own section.
+- Removed the local Kodi Favorites. Spotify library writes now cover the same need directly.
+- Removed the playlist search category. Spotify never shares playlist contents with followers, so a playlist search could only list playlists Resonance cannot open.
+- Removed the Open Spotify link row from the main menu. Spotify links still open through the open_link action, for example from a Kodi favourites entry.
+- Playlists you own are now listed across every page of your playlists, not only the first 40.
+- Upgrading from 1.0.x needs one Reauthorize Spotify from Account and status, so Spotify can approve the new library and playlist permissions.
+- Documented the write actions, the library endpoints and the new account page in the README.
+
 v1.0.3 - 2026-10-20
 
 - Added local Kodi Favorites for songs, albums, artists and playlists, grouped into Albums, Artists, Playlists and Songs sections.
