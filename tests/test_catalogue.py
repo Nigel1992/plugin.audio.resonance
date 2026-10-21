@@ -24,6 +24,16 @@ class Response:
         return self.data
 
 
+class FailingResponse(Response):
+    """Response that fails like the real HTTP client does."""
+
+    def raise_for_status(self):
+        if self.status_code >= 400:
+            import requests
+
+            raise requests.HTTPError()
+
+
 class Session:
     def __init__(self, responses):
         self.responses, self.calls = list(responses), []
@@ -34,6 +44,10 @@ class Session:
 
     def post(self, url, **kwargs):
         self.calls.append((url, kwargs))
+        return self.responses.pop(0)
+
+    def request(self, method, url, **kwargs):
+        self.calls.append((method + " " + url, kwargs))
         return self.responses.pop(0)
 
     def close(self):
@@ -80,6 +94,121 @@ class CatalogueTests(unittest.TestCase):
         with self.assertRaises(module.Unavailable):
             client.search("query", "track")
         self.assertEqual(len(http.calls), 1)
+
+    def test_playlist_search_is_rejected_without_a_request(self):
+        # Spotify only shares playlist contents with the owner and
+        # collaborators, so a playlist search could only return playlists that
+        # Resonance cannot open.
+        client, http = self.client([])
+        with self.assertRaises(ValueError):
+            client.search("query", "playlist")
+        self.assertEqual(http.calls, [])
+
+    def test_liked_songs_reads_saved_tracks_and_paginates(self):
+        client, http = self.client([Response({"items": [
+            {"track": {"id": "a" * 22, "name": "Song", "artists": [{"name": "Artist"}]}}
+        ], "next": "more"})])
+        items, more = client.liked_songs()
+        self.assertEqual(items[0]["name"], "Song")
+        self.assertEqual(items[0]["type"], "track")
+        self.assertEqual(more, 1)
+        self.assertEqual(http.calls[0][0], "https://api.spotify.com/v1/me/tracks")
+        self.assertEqual(http.calls[0][1]["params"], {"limit": 50, "offset": 0})
+
+    def test_saved_albums_reads_album_objects_and_paginates(self):
+        client, http = self.client([Response({"items": [
+            {"album": {"id": "b" * 22, "name": "Moon Music", "artists": [{"name": "Coldplay"}]}}
+        ], "next": "more"})])
+        items, more = client.saved_albums()
+        self.assertEqual(items[0]["name"], "Moon Music")
+        self.assertEqual(items[0]["type"], "album")
+        self.assertEqual(more, 1)
+        self.assertEqual(http.calls[0][0], "https://api.spotify.com/v1/me/albums")
+
+    def test_followed_artists_uses_cursor_pagination(self):
+        client, http = self.client([Response({"artists": {
+            "items": [{"id": "c" * 22, "name": "Coldplay"}], "next": "more"
+        }})])
+        items, after = client.followed_artists()
+        self.assertEqual(items[0]["name"], "Coldplay")
+        self.assertEqual(after, "c" * 22)
+        self.assertEqual(http.calls[0][0], "https://api.spotify.com/v1/me/following")
+        self.assertEqual(http.calls[0][1]["params"], {"type": "artist", "limit": 50})
+
+    def test_liked_songs_explains_missing_scope(self):
+        client, _ = self.client([Response({}, 403)])
+        with self.assertRaises(module.Unavailable) as raised:
+            client.liked_songs()
+        self.assertIn("permission to read Liked Songs", str(raised.exception))
+
+    def test_save_and_remove_track_use_spotify_library_endpoint(self):
+        client, http = self.client([Response({}), Response({})])
+        client.save_library_item("track", "a" * 22, save=True)
+        client.save_library_item("track", "a" * 22, save=False)
+        self.assertEqual(http.calls[0][0], "PUT https://api.spotify.com/v1/me/library")
+        self.assertEqual(http.calls[0][1]["params"], {"uris": "spotify:track:" + "a" * 22})
+        self.assertEqual(http.calls[1][0], "DELETE https://api.spotify.com/v1/me/library")
+
+    def test_add_track_to_playlist_uses_current_items_endpoint(self):
+        client, http = self.client([Response({"snapshot_id": "snapshot"})])
+        client.add_track_to_playlist("p" * 22, "t" * 22)
+        self.assertEqual(http.calls[0][0], "POST https://api.spotify.com/v1/playlists/" + "p" * 22 + "/items")
+        self.assertEqual(http.calls[0][1]["json"], {"uris": ["spotify:track:" + "t" * 22]})
+
+    def test_remove_track_from_playlist_uses_current_items_endpoint(self):
+        client, http = self.client([Response({"snapshot_id": "snapshot"})])
+        client.remove_track_from_playlist("p" * 22, "t" * 22)
+        self.assertEqual(http.calls[0][0], "DELETE https://api.spotify.com/v1/playlists/" + "p" * 22 + "/items")
+        self.assertEqual(http.calls[0][1]["json"], {"items": [{"uri": "spotify:track:" + "t" * 22}]})
+
+    def test_unfollow_playlist_removes_it_from_the_library(self):
+        client, http = self.client([Response({})])
+        client.save_library_item("playlist", "p" * 22, save=False)
+        self.assertEqual(http.calls[0][0], "DELETE https://api.spotify.com/v1/me/library")
+        self.assertEqual(http.calls[0][1]["params"], {"uris": "spotify:playlist:" + "p" * 22})
+
+    def test_unfollow_artist_removes_it_from_the_library(self):
+        client, http = self.client([Response({})])
+        client.save_library_item("artist", "a" * 22, save=False)
+        self.assertEqual(http.calls[0][0], "DELETE https://api.spotify.com/v1/me/library")
+        self.assertEqual(http.calls[0][1]["params"], {"uris": "spotify:artist:" + "a" * 22})
+
+    def test_saved_artist_ids_use_the_library_contains_endpoint(self):
+        client, http = self.client([Response([True])])
+        found = client.saved_artist_ids(["a" * 22])
+        self.assertEqual(found, {"a" * 22})
+        self.assertEqual(
+            http.calls[0][1]["params"],
+            {"uris": "spotify:artist:" + "a" * 22},
+        )
+
+    def test_liked_track_ids_use_the_library_contains_endpoint(self):
+        client, http = self.client([Response([True, False])])
+        found = client.liked_track_ids(["a" * 22, "b" * 22])
+        self.assertEqual(found, {"a" * 22})
+        self.assertEqual(http.calls[0][0], "https://api.spotify.com/v1/me/library/contains")
+        self.assertEqual(
+            http.calls[0][1]["params"],
+            {"uris": "spotify:track:" + "a" * 22 + ",spotify:track:" + "b" * 22},
+        )
+
+    def test_saved_album_ids_use_the_library_contains_endpoint(self):
+        client, http = self.client([Response([False])])
+        found = client.saved_album_ids(["b" * 22])
+        self.assertEqual(found, set())
+        self.assertEqual(
+            http.calls[0][1]["params"],
+            {"uris": "spotify:album:" + "b" * 22},
+        )
+
+    def test_library_contains_is_unknown_when_spotify_cannot_answer(self):
+        client, http = self.client([FailingResponse({}, 500)])
+        self.assertIsNone(client.liked_track_ids(["a" * 22]))
+
+    def test_library_contains_is_unknown_without_an_account(self):
+        client, http = self.client([], signed_in=False)
+        self.assertIsNone(client.liked_track_ids(["a" * 22]))
+        self.assertEqual(http.calls, [])
 
     def test_cache_bypass_still_respects_rate_limit(self):
         client, http = self.client([Response({}, 429, {"Retry-After": "60"})])

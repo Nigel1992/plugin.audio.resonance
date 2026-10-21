@@ -36,6 +36,11 @@ DEFAULT_SCOPE = [
     "playlist-read-private",
     "playlist-read-collaborative",
     "user-read-private",
+    "user-library-read",
+    "user-library-modify",
+    "playlist-modify-private",
+    "playlist-modify-public",
+    "user-follow-read",
 ]
 TOKEN_LIFETIME = 3600
 
