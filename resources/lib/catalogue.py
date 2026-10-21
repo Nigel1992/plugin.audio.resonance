@@ -310,6 +310,43 @@ class Catalogue:
             body={"items": [{"uri": f"spotify:track:{track_id}"}]},
         )
 
+    def playlist_edit_access(self, playlist_id, owner_id=""):
+        """Return whether the account may change the items of a playlist.
+
+        ``owner_id`` is the owner that came with the playlist row, so the
+        common case needs no request at all. Without it the playlist itself
+        is read once. Collaborative playlists count as editable, because the
+        account can be a collaborator of them.
+        """
+        if not re.fullmatch(r"[A-Za-z0-9]{22}", playlist_id or ""):
+            return False
+        user_id = str(self._ensure_spotify_user_id() or "")
+        if owner_id:
+            return bool(user_id) and str(owner_id) == user_id
+        try:
+            data = self.request("spotify", f"/playlists/{playlist_id}")
+        except Unavailable:
+            return False
+        owner = data.get("owner") or {}
+        owner = str(owner.get("id") or "") if isinstance(owner, dict) else ""
+        if owner and user_id and owner == user_id:
+            return True
+        return bool(data.get("collaborative"))
+
+    def create_playlist(self, name, description="", public=False):
+        """Create a playlist owned by the signed-in account.
+
+        Spotify returns the new playlist, so the caller can add tracks to it
+        right away.
+        """
+        title = str(name or "").strip()
+        if not title:
+            raise ValueError("A playlist name is required")
+        body = {"name": title, "public": bool(public)}
+        if description:
+            body["description"] = str(description)
+        return self.write_request("POST", "/me/playlists", body=body)
+
     def library_contains(self, uris):
         """Return the subset of ``uris`` that is in the account library.
 

@@ -161,6 +161,46 @@ class CatalogueTests(unittest.TestCase):
         self.assertEqual(http.calls[0][0], "DELETE https://api.spotify.com/v1/playlists/" + "p" * 22 + "/items")
         self.assertEqual(http.calls[0][1]["json"], {"items": [{"uri": "spotify:track:" + "t" * 22}]})
 
+    def test_create_playlist_posts_to_the_current_endpoint(self):
+        client, http = self.client([Response({"id": "p" * 22, "name": "Road trip"})])
+        created = client.create_playlist("Road trip")
+        self.assertEqual(created["id"], "p" * 22)
+        self.assertEqual(http.calls[0][0], "POST https://api.spotify.com/v1/me/playlists")
+        self.assertEqual(http.calls[0][1]["json"], {"name": "Road trip", "public": False})
+
+    def test_create_playlist_needs_a_name(self):
+        client, http = self.client([])
+        with self.assertRaises(ValueError):
+            client.create_playlist("   ")
+        self.assertEqual(http.calls, [])
+
+    def test_playlist_edit_access_uses_the_owner_from_the_row(self):
+        client, http = self.client([], spotify_user_id="u" * 22)
+        self.assertTrue(client.playlist_edit_access("p" * 22, "u" * 22))
+        self.assertFalse(client.playlist_edit_access("p" * 22, "o" * 22))
+        self.assertEqual(http.calls, [])
+
+    def test_playlist_edit_access_reads_the_playlist_when_no_owner_is_known(self):
+        client, http = self.client(
+            [Response({"id": "p" * 22, "owner": {"id": "u" * 22}})],
+            spotify_user_id="u" * 22,
+        )
+        self.assertTrue(client.playlist_edit_access("p" * 22))
+        self.assertEqual(http.calls[0][0], "https://api.spotify.com/v1/playlists/" + "p" * 22)
+
+    def test_collaborative_playlists_can_be_edited(self):
+        client, http = self.client(
+            [Response({"id": "p" * 22, "owner": {"id": "o" * 22}, "collaborative": True})],
+            spotify_user_id="u" * 22,
+        )
+        self.assertTrue(client.playlist_edit_access("p" * 22))
+
+    def test_playlist_edit_access_is_false_when_spotify_refuses(self):
+        client, http = self.client(
+            [FailingResponse({}, 403)], spotify_user_id="u" * 22,
+        )
+        self.assertFalse(client.playlist_edit_access("p" * 22))
+
     def test_unfollow_playlist_removes_it_from_the_library(self):
         client, http = self.client([Response({})])
         client.save_library_item("playlist", "p" * 22, save=False)
