@@ -197,10 +197,17 @@ class MenuTests(unittest.TestCase):
         rows = self.menu("?action=spotify_library_menu")
         self.assertEqual(
             self.labels(rows),
-            ["Liked Songs", "Saved Albums", "Followed Artists", "Saved and Followed Playlists"],
+            ["Liked Songs", "Saved Albums", "Followed Artists",
+             "Saved and Followed Playlists", "Create playlist..."],
         )
         icons = self.icons(rows)
         self.assertEqual(len(set(icons)), len(icons))
+
+    def test_library_menu_can_create_a_playlist(self):
+        rows = self.menu("?action=spotify_library_menu")
+        create = [url for label, url, _ in rows if label == "Create playlist..."]
+        self.assertTrue(create)
+        self.assertIn("action=create_playlist", create[0])
 
     def test_account_page_is_grouped_into_sections(self):
         rows = self.menu("?action=status")
@@ -246,11 +253,32 @@ class ContextMenuTests(unittest.TestCase):
         self.assertIn("Like on Spotify", labels)
         self.assertIn("Unlike on Spotify", labels)
 
-    def test_track_can_be_removed_from_a_playlist(self):
+    def test_track_without_a_playlist_has_no_removal_action(self):
         entry = {"id": "d" * 22, "name": "Song"}
         actions = dict(self.plugin.spotify_write_context_menu(entry, "track", liked=set()))
-        self.assertIn("Remove from Spotify playlist...", actions)
-        self.assertIn("action=remove_from_playlist", actions["Remove from Spotify playlist..."])
+        self.assertFalse([label for label in actions if label.startswith("Remove from")])
+
+    def test_track_in_a_playlist_can_be_removed_from_it(self):
+        entry = {"id": "d" * 22, "name": "Song"}
+        playlist = ("p" * 22, "Road trip", True)
+        actions = dict(self.plugin.playlist_remove_context_menu(entry, playlist))
+        self.assertIn("Remove from Road trip", actions)
+        action = actions["Remove from Road trip"]
+        self.assertIn("action=remove_from_playlist", action)
+        self.assertIn("playlist=" + "p" * 22, action)
+        self.assertIn("id=" + "d" * 22, action)
+
+    def test_track_in_a_read_only_playlist_has_no_removal_action(self):
+        entry = {"id": "d" * 22, "name": "Song"}
+        playlist = ("p" * 22, "Someone else", False)
+        self.assertEqual(self.plugin.playlist_remove_context_menu(entry, playlist), [])
+        self.assertEqual(self.plugin.playlist_remove_context_menu(entry, None), [])
+
+    def test_track_can_start_a_new_playlist(self):
+        entry = {"id": "d" * 22, "name": "Song"}
+        actions = dict(self.plugin.spotify_write_context_menu(entry, "track", liked=set()))
+        self.assertIn("Create playlist with this track...", actions)
+        self.assertIn("action=create_playlist", actions["Create playlist with this track..."])
 
     def test_saved_album_hides_the_save_action(self):
         entry = {"id": "e" * 22, "name": "Album"}
@@ -276,11 +304,17 @@ class _FakeClient:
     spotify_user_id = "u" * 22
     notice = ""
 
-    def __init__(self, liked=None, saved=None, followed=None):
+    def __init__(self, liked=None, saved=None, followed=None, editable=True):
         self.liked = liked
         self.saved = saved
         self.followed = followed
+        self.editable = editable
         self.lookups = []
+        self.edit_checks = []
+
+    def playlist_edit_access(self, playlist_id, owner_id=""):
+        self.edit_checks.append((playlist_id, owner_id))
+        return self.editable
 
     def metadata(self, entry):
         return entry
@@ -358,6 +392,31 @@ class RenderTests(unittest.TestCase):
         artists = [{"id": "a" * 22, "name": "Coldplay"}]
         items = self.render(_FakeClient(followed=set()), artists, "artist", dict(action="search"))
         self.assertFalse([label for label in self.context_labels(items[0]) if "Unfollow" in label])
+
+    def test_track_in_an_owned_playlist_can_be_removed_from_it(self):
+        tracks = [{"id": "t" * 22, "name": "Song"}]
+        client = _FakeClient(editable=True)
+        params = dict(action="collection", kind="playlist", id="p" * 22,
+                      name="Road trip", owner="u" * 22)
+        items = self.render(client, tracks, "track", params)
+        labels = self.context_labels(items[0])
+        self.assertIn("Remove from Road trip", labels)
+        self.assertEqual(client.edit_checks, [("p" * 22, "u" * 22)])
+
+    def test_track_in_a_read_only_playlist_cannot_be_removed(self):
+        tracks = [{"id": "t" * 22, "name": "Song"}]
+        client = _FakeClient(editable=False)
+        params = dict(action="collection", kind="playlist", id="p" * 22,
+                      name="Someone else", owner="o" * 22)
+        items = self.render(client, tracks, "track", params)
+        self.assertFalse([label for label in self.context_labels(items[0])
+                          if label.startswith("Remove from")])
+
+    def test_track_outside_a_playlist_cannot_be_removed(self):
+        tracks = [{"id": "t" * 22, "name": "Song"}]
+        items = self.render(_FakeClient(), tracks, "track", dict(action="liked_songs"))
+        self.assertFalse([label for label in self.context_labels(items[0])
+                          if label.startswith("Remove from")])
 
 
 if __name__ == "__main__":

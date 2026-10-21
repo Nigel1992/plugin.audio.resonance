@@ -98,7 +98,7 @@ def spotify_write_context_menu(entry, kind, liked=None, saved=None):
         if liked is None or identity in liked:
             actions.append(("Unlike on Spotify", "RunPlugin(" + url(action="spotify_library", kind="track", id=identity, save="0") + ")"))
         actions.append(("Add to Spotify playlist...", "RunPlugin(" + url(action="choose_playlist", id=identity) + ")"))
-        actions.append(("Remove from Spotify playlist...", "RunPlugin(" + url(action="remove_from_playlist", id=identity) + ")"))
+        actions.append(("Create playlist with this track...", "RunPlugin(" + url(action="create_playlist", id=identity) + ")"))
         return actions
     if kind == "album" and re.fullmatch(r"[A-Za-z0-9]{22}", identity):
         actions = []
@@ -108,6 +108,26 @@ def spotify_write_context_menu(entry, kind, liked=None, saved=None):
             actions.append(("Remove album from Spotify library", "RunPlugin(" + url(action="spotify_library", kind="album", id=identity, save="0") + ")"))
         return actions
     return []
+
+
+def playlist_remove_context_menu(entry, playlist=None):
+    """Return the removal action for a track shown inside a playlist.
+
+    The playlist comes from the page the track is listed on, so the track is
+    removed from that playlist. There is no playlist picker, because only a
+    playlist the track really is in can be removed from.
+    """
+    if not playlist:
+        return []
+    playlist_id, playlist_name, editable = playlist
+    identity = str(entry.get("id") or "")
+    if not editable or not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
+        return []
+    label = "Remove from " + (playlist_name or "this playlist")
+    return [(label, "RunPlugin(" + url(
+        action="remove_from_playlist", playlist=playlist_id, id=identity,
+        name=playlist_name or "",
+    ) + ")")]
 
 
 def playlist_context_menu(entry, client=None):
@@ -352,6 +372,14 @@ def render(client, items, kind, more, params):
     if kind == "track":
         client.save("queue:" + page_key, items, ttl=86400)
     library = _library_ids(client, [entry.get("id") for entry in items], kind, params)
+    playlist = None
+    if kind == "track" and params.get("action") == "collection" and params.get("kind") == "playlist":
+        # The page is a playlist, so a track on it is in that playlist.
+        playlist = (
+            params.get("id", ""),
+            params.get("name", ""),
+            client.playlist_edit_access(params.get("id", ""), params.get("owner", "")),
+        )
     for index, entry in enumerate(items):
         identity = entry.get("id") or ""
         if not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
@@ -369,7 +397,8 @@ def render(client, items, kind, more, params):
                     action="queue_playlist", id=params["id"], offset=start_index
                 ) + ")"))
             item.addContextMenuItems(context + spotify_write_context_menu(entry, kind, liked=library)
-                                     + artist_context_menu(entry, kind))
+                                     + artist_context_menu(entry, kind)
+                                     + playlist_remove_context_menu(entry, playlist))
             xbmcplugin.addDirectoryItem(HANDLE, path, item, False)
         else:
             client.save("collection:" + kind + ":" + identity, entry, ttl=86400)
@@ -378,6 +407,10 @@ def render(client, items, kind, more, params):
             if kind == "playlist":
                 owner = entry.get("owner") or {}
                 owner_id = str(owner.get("id") or "") if isinstance(owner, dict) else ""
+                # The owner travels with the link, so the playlist page knows
+                # whether the account may change the items of it.
+                path = url(action="collection", kind=kind, id=identity,
+                           name=entry.get("name", ""), owner=owner_id)
                 if owner_id and client.spotify_user_id and owner_id != client.spotify_user_id:
                     display_entry = dict(entry)
                     if entry.get("collaborative"):
@@ -840,6 +873,7 @@ def run():
         row("Saved Albums", "saved_albums")
         row("Followed Artists", "followed_artists")
         row("Saved and Followed Playlists", "saved_playlists")
+        row("Create playlist...", "create_playlist", icon="plus.png")
         xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
         return
     if action == "search_menu":
@@ -959,21 +993,19 @@ def run():
             xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
         elif action == "remove_from_playlist":
             track_id = PARAMS.get("id", "")
-            owned = owned_playlists(client)
-            if not owned:
-                raise catalogue.Unavailable("No playlists owned by this Spotify account were found")
-            choice = xbmcgui.Dialog().select(
-                "Remove track from Spotify playlist",
-                [item.get("name") or "Untitled" for item in owned],
-            )
-            if choice >= 0:
-                target = owned[choice]
-                name = target.get("name") or "Untitled"
-                if xbmcgui.Dialog().yesno("Spotify", "Remove this track from '{}' ?".format(name)):
-                    client.remove_track_from_playlist(target["id"], track_id)
-                    xbmcgui.Dialog().notification("Resonance", "Track removed from " + name)
-                    from utils import clear_resonance_cache
-                    clear_resonance_cache()
+            playlist_id = PARAMS.get("playlist", "")
+            name = PARAMS.get("name", "") or "this playlist"
+            if not re.fullmatch(r"[A-Za-z0-9]{22}", playlist_id or ""):
+                raise catalogue.Unavailable(
+                    "Open the playlist that holds the track and use its context menu "
+                    "to remove the track from there."
+                )
+            if xbmcgui.Dialog().yesno("Spotify", "Remove this track from '{}' ?".format(name)):
+                client.remove_track_from_playlist(playlist_id, track_id)
+                xbmcgui.Dialog().notification("Resonance", "Track removed from " + name)
+                from utils import clear_resonance_cache
+                clear_resonance_cache()
+                xbmc.executebuiltin("Container.Refresh")
             xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
         elif action == "unfollow_playlist":
             identity = PARAMS.get("id", "")
@@ -1003,6 +1035,21 @@ def run():
                 from utils import clear_resonance_cache
                 clear_resonance_cache()
                 xbmcgui.Dialog().notification("Resonance", "Artist unfollowed")
+                xbmc.executebuiltin("Container.Refresh")
+            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+        elif action == "create_playlist":
+            track_id = PARAMS.get("id", "")
+            heading = "New playlist name"
+            if track_id:
+                heading = "New playlist name for this track"
+            name = (xbmcgui.Dialog().input(heading, defaultt="") or "").strip()
+            if name:
+                playlist = client.create_playlist(name)
+                if track_id and playlist.get("id"):
+                    client.add_track_to_playlist(playlist.get("id"), track_id)
+                from utils import clear_resonance_cache
+                clear_resonance_cache()
+                xbmcgui.Dialog().notification("Resonance", "Playlist created: " + name)
                 xbmc.executebuiltin("Container.Refresh")
             xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
         elif action == "playback_quality":
