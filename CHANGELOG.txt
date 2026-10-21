@@ -4,8 +4,11 @@ v1.1.0 - 2026-10-22
 
 - Added Your Spotify Library with Liked Songs, Saved Albums, Followed Artists and Saved and Followed Playlists views.
 - Added Spotify write actions: like or unlike a track, save or remove an album from the Spotify library, add a track to a playlist owned by the account, remove a track from one of those playlists, and unfollow a playlist or an artist.
+- Removing a track from a playlist now happens inside that playlist. The context entry is named **Remove from <playlist>** and removes the track from the playlist the page belongs to, so there is no playlist picker and the action only shows where the track really is in a playlist of your own.
+- Added the option to create a Spotify playlist. Choose **Create playlist...** in **Your Spotify Library** for an empty playlist, or **Create playlist with this track...** in a track context menu to start a playlist with that track. New playlists are created with the private flag, which Spotify only allows with the playlist modification permission, and appear in **Saved and Followed Playlists** once the list refreshes.
 - The track and album context menus now show only the action that changes something: Like on Spotify is hidden for a track that is already liked, Unlike on Spotify is hidden for a track that is not, and Save album on Spotify is hidden for an album that is already saved. Both actions return when Spotify cannot answer the check.
 - The library state is read with GET /me/library/contains, so one request per page decides the whole context menu. Liked Songs and Saved Albums need no request at all.
+- Creating a playlist uses POST /me/playlists, so the account needs the playlist modification permission.
 - Added bundled menu icons for every row, so the menus look the same in every skin and no longer depend on skin-specific Default*.png artwork.
 - The Account and status page is regrouped into Account, Catalogue, Playback and Maintenance sections with one icon per row and short labels.
 - The Playback status page was reworked to match, with the account state in its own section.

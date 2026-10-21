@@ -53,7 +53,8 @@ https://resonance-spotify-callback.vercel.app/api/callback
 - Browse and play tracks from your Spotify Liked Songs library.
 - Browse saved albums, followed artists, and saved or followed playlists in **Your Spotify Library**.
 - Like or unlike tracks and save or remove albums in your Spotify library.
-- Add tracks to playlists owned by your Spotify account, or remove a track from one of them.
+- Add tracks to playlists owned by your Spotify account.
+- Create a playlist in your Spotify account, optionally with the track you started from.
 - Unfollow a playlist or artist that you follow, so it leaves **Your Spotify Library**.
 - Browse your Spotify playlists, including private playlists available to your account.
 - Browse album tracks, playlist tracks and artist albums.
@@ -187,7 +188,9 @@ code)** and paste the `code` value from the browser address bar.
 - Open **Search** and choose tracks, albums or artists.
 - Use a track context menu to like/unlike it on Spotify or add it to one of your own playlists. Album context menus can save or remove the album from your Spotify library. These actions update your Spotify account.
 - The context menu only offers the action that makes sense: **Like on Spotify** is hidden for tracks that are already in Liked Songs, and **Save album on Spotify** is hidden for albums that are already in your library. Both appear again when Spotify cannot answer the check.
-- Use a track context menu to remove the track from one of your own playlists, or to unfollow a playlist from **Saved and Followed Playlists** and an artist from **Followed Artists**. Unfollowing only removes the item from your library; Spotify keeps the playlist or artist itself.
+- Open a playlist of your own and use the track context menu to remove a track from it. The entry is named **Remove from &lt;playlist&gt;** and always removes the track from that playlist, so there is no playlist to choose. The entry only shows inside a playlist the account owns, where the track really is in that playlist.
+- Use a track context menu to unfollow a playlist from **Saved and Followed Playlists** and an artist from **Followed Artists**. Unfollowing only removes the item from your library; Spotify keeps the playlist or artist itself.
+- Choose **Create playlist...** in **Your Spotify Library** to make a new playlist, or **Create playlist with this track...** in a track context menu to start one with that track. New playlists are created with the private flag, which Spotify only allows with the playlist modification permission that **Reauthorize Spotify** grants, and they show up in **Saved and Followed Playlists**.
 - Select a track to play it.
 - Use a track context menu to start playback from that row through the rest of the current page.
 - From a playlist track, choose **Play playlist from here** to queue that song and the remaining playlist tracks.
@@ -229,8 +232,9 @@ refresh is available from **Account and status**.
 ### Limits
 
 - Spotify Premium is required for playback.
-- Spotify write actions use the current library and playlist endpoints. Like/unlike, save/remove album and unfollow playlist or artist use `PUT/DELETE /me/library`; adding a track uses `POST /playlists/{id}/items` and removing one uses `DELETE /playlists/{id}/items`. The state of the library is read with `GET /me/library/contains`, so the context menu can hide actions that would not change anything. The account must authorize the corresponding library and playlist modification scopes. See Spotify's [February 2026 migration guide](https://developer.spotify.com/documentation/web-api/tutorials/february-2026-migration-guide).
+- Spotify write actions use the current library and playlist endpoints. Like/unlike, save/remove album and unfollow playlist or artist use `PUT/DELETE /me/library`; adding a track uses `POST /playlists/{id}/items`, removing one uses `DELETE /playlists/{id}/items` and creating a playlist uses `POST /me/playlists`. The state of the library is read with `GET /me/library/contains`, so the context menu can hide actions that would not change anything. The account must authorize the corresponding library and playlist modification scopes. See Spotify's [February 2026 migration guide](https://developer.spotify.com/documentation/web-api/tutorials/february-2026-migration-guide).
 - Spotify only allows playlist-item reads for playlists you own or collaborate on. See Spotify's [Get Playlist Items reference](https://developer.spotify.com/documentation/web-api/reference/get-playlists-items).
+- Spotify has no endpoint that lists the playlists a track belongs to, so a track can only be removed from a playlist from that playlist's own page. Resonance therefore offers **Remove from &lt;playlist&gt;** inside your playlists and nowhere else.
 - There is no playlist search. Because Spotify never shares playlist contents with followers, a playlist search could only list playlists Resonance cannot open. Playlists stay available through **Your Spotify Library** and the `open_link` action.
 - Lyrics, podcasts, audiobooks, recently played and top lists are not included.
 - Spotify Web API availability, account permissions, app Development Mode restrictions and rate limits determine what catalogue pages can be loaded.
