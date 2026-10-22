@@ -8,6 +8,12 @@ user who skips several releases still sees the full picture.
 """
 
 NOTES = {
+    "1.2.0": """NEW
+  * Spotify Connect audio now works on LibreELEC (Linux ARM64) too,
+    streaming through Kodi's VideoPlayer.
+  * Rebuilt Linux spotty helper with the Connect audio bridge.
+
+""",
     "1.1.8": """FIXED - SETUP NAVIGATION
   * Fixed a busy spinner left over after Spotify
     setup or browser authorization.

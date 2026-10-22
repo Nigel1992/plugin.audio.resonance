@@ -1,5 +1,11 @@
 Resonance Version 1
 
+v1.2.0 - 2026-10-23
+
+- Added Spotify Connect audio support to LibreELEC/Linux ARM64 using Kodi's
+  VideoPlayer, matching the Android path.
+- Rebuilt the Linux spotty helper with the Connect audio bridge.
+
 v1.1.8 - 2026-10-22
 
 - Run setup and login dialogs outside Kodi's folder callback. Finish the
