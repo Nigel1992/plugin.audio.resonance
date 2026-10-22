@@ -1,5 +1,31 @@
 Resonance Version 1
 
+v1.1.1 - 2026-10-22
+
+- Fixed a crash on Kodi 21 that stopped the Spotify pairing screen from opening.
+- Fixed the Spotify Connect pairing on Android and Linux. The box now stays
+  visible in the Spotify app.
+- The pairing receiver no longer stops writing its log when its output
+  buffer fills up. Output goes to device-connect.log in the runtime folder.
+- A receiver that refuses to start now reports the tail of its log, so users
+  and admins can see why it failed.
+- A receiver that cannot start is no longer restarted every few seconds.
+  Automatic retries wait 15, 30, 45 and 60 seconds, and the pairing screen can
+  still ask for an immediate attempt.
+- A leftover receiver from an earlier Kodi session is now cleaned up on
+  Linux and Android as well. It kept the discovery port busy and made every
+  new receiver exit immediately.
+- The pairing now falls back to the plain Spotify discovery mode when the
+  dedicated authentication mode refuses to start. Both modes publish the same
+  service and store the same credentials.
+- The Android receiver no longer asks for the ALSA sound card, which does not
+  exist on Android.
+- The pairing screen starts the receiver itself, so it no longer depends on the
+  background service noticing the request.
+
+v1.1.0 - 2026-10-22
+Resonance Version 1
+
 v1.1.0 - 2026-10-22
 
 This release replaces the earlier 1.1.0 build and contains every change since
