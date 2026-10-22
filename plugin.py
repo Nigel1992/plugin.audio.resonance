@@ -809,6 +809,7 @@ def connect_device(navigate, wait_for_playback=False):
     device = get_spotify_device_name()
     while True:
         window.setProperty("resonance.connect", "1")
+        _ensure_device_connect_receiver()
         progress = xbmcgui.DialogProgress()
         instruction = (
             "Waiting for playback pairing...\n\nIn Spotify on your phone or PC, tap the speaker icon and pick '{}'."
@@ -883,6 +884,7 @@ def guide_playback_pairing(track_id=None):
         yeslabel="Retry",
     ):
         return
+    _ensure_device_connect_receiver()
     progress = xbmcgui.DialogProgress()
     progress.create(
         "Resonance",
