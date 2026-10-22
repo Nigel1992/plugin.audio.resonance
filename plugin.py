@@ -839,8 +839,8 @@ def connect_device(navigate, wait_for_playback=False):
         retry = xbmcgui.Dialog().yesno(
             "Spotify",
             "Not signed in yet.\n\nIn Spotify on your phone or PC, tap the speaker icon and pick '{}'. Then retry.".format(device),
-            noLabel="Cancel",
-            yesLabel="Retry",
+            nolabel="Cancel",
+            yeslabel="Retry",
         )
         if not retry:
             if navigate:
