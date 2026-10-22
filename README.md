@@ -66,7 +66,8 @@ https://resonance-spotify-callback.vercel.app/api/callback
 - Read the account and status page at a glance: it is grouped into Account, Catalogue, Playback and Maintenance, with one icon per row.
 - Give every menu row its own icon, bundled with the add-on, so the menus look the same in every skin.
 - Identify followed and shared playlists and get guidance when Spotify blocks playlist contents.
-- Open supported artist views from track, album and artist context menus.
+- Open supported artist views from track, album and artist context menus: everything, top songs, albums, singles and appears on.
+- See the release notes of the running version in a big window after every update, and any time under **Account and status** with the row **What's new**.
 - Cache successful catalogue responses.
 - Refresh playlist membership in the background while signed in.
 

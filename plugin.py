@@ -19,8 +19,29 @@ from resources.lib import catalogue
 ADDON = xbmcaddon.Addon()
 BASE = "plugin://plugin.audio.resonance/"
 DATA = xbmcvfs.translatePath(ADDON.getAddonInfo("profile"))
-HANDLE = int(sys.argv[1])
-PARAMS = dict(parse_qsl(sys.argv[2].lstrip("?")))
+
+
+def _handle():
+    """Return the directory handle Kodi handed to this plugin run.
+
+    A run without a handle cannot render a listing. That happens when Kodi
+    starts the add-on as a script, for example when a row that only carries
+    information is clicked.
+    """
+    if len(sys.argv) > 1 and sys.argv[1].lstrip("-").isdigit():
+        return int(sys.argv[1])
+    return -1
+
+
+def _params():
+    """Return the query parameters Kodi handed to this plugin run."""
+    if len(sys.argv) > 2:
+        return dict(parse_qsl(sys.argv[2].lstrip("?")))
+    return {}
+
+
+HANDLE = _handle()
+PARAMS = _params()
 
 
 def url(**values):
@@ -61,6 +82,28 @@ MENU_ICONS = {
     "open_link": "link.png",
 }
 
+# Actions that open a page for the user to browse. The release notes are
+# shown once after an update on the first of these pages.
+PAGE_ACTIONS = {
+    "home",
+    "spotify_library_menu",
+    "search_menu",
+    "playback_status",
+    "status",
+    "playlists",
+    "saved_playlists",
+    "liked_songs",
+    "saved_albums",
+    "followed_artists",
+    "search",
+    "collection",
+    "artist_top_tracks",
+    "artist_albums",
+    "artist_singles",
+    "artist_appears_on",
+    "artist_everything",
+}
+
 
 def icon_path(name):
     """Resolve a bundled menu icon name to an absolute path."""
@@ -78,8 +121,82 @@ def row(label, action=None, icon=None, **params):
     art = icon_path(icon or MENU_ICONS.get(action) or "info.png")
     item.setArt({"icon": art, "thumb": art})
     item.setProperty("IsPlayable", "false")
-    # Folder items so a click runs the action; the handler then reloads status.
-    xbmcplugin.addDirectoryItem(HANDLE, url(action=action, **params) if action else "", item, bool(action))
+    if action:
+        # Folder items so a click runs the action; the handler then reloads status.
+        add_item(url(action=action, **params), item, True)
+    else:
+        # A row without an action only carries information. Kodi tries to play
+        # a row that has no path and answers with a "playback failed" message,
+        # so the row points at an action that does nothing instead.
+        add_item(url(action="noop"), item, False)
+
+
+def release_notes():
+    """Return the version and the release notes of the running add-on."""
+    from resources.lib import whatsnew
+
+    version = str(ADDON.getAddonInfo("version") or "")
+    return version, whatsnew.notes_for(version)
+
+
+def show_release_notes():
+    """Show the release notes of the running version in a big window."""
+    version, notes = release_notes()
+    heading = "Resonance " + version if version else "Resonance"
+    if not notes:
+        xbmcgui.Dialog().ok(heading, "There are no release notes for this version.")
+        return
+    dialog = xbmcgui.Dialog()
+    # The text viewer is the big scrollable window. Older Kodi versions only
+    # know the small message box.
+    viewer = getattr(dialog, "textviewer", None)
+    if viewer is not None:
+        viewer(heading + " - what's new", notes)
+    else:
+        dialog.ok(heading + " - what's new", notes)
+
+
+def maybe_show_release_notes():
+    """Show the release notes once after the add-on was updated.
+
+    The version that was shown last is kept in the add-on settings, so the
+    window appears after every update and never twice for the same version.
+    """
+    version = str(ADDON.getAddonInfo("version") or "")
+    if not version:
+        return
+    try:
+        if ADDON.getSetting("last_notes_version") == version:
+            return
+        ADDON.setSetting("last_notes_version", version)
+    except Exception:
+        pass
+    try:
+        show_release_notes()
+    except Exception as exc:
+        xbmc.log("Resonance release notes failed: " + str(exc), xbmc.LOGERROR)
+
+
+def add_item(path, item, is_folder):
+    """Add a row to the current listing.
+
+    Kodi runs the add-on without a directory handle when a context menu
+    entry starts it as a script. There is no listing in that case, so the
+    row is dropped instead of asking Kodi for an invalid handle.
+    """
+    if HANDLE < 0:
+        return
+    xbmcplugin.addDirectoryItem(HANDLE, path, item, is_folder)
+
+
+def end_directory(succeeded=True, cache_to_disc=False):
+    """Finish the current listing.
+
+    Nothing has to be finished when Kodi ran the add-on as a script.
+    """
+    if HANDLE < 0:
+        return
+    xbmcplugin.endOfDirectory(HANDLE, succeeded=succeeded, cacheToDisc=cache_to_disc)
 
 
 def spotify_write_context_menu(entry, kind, liked=None, saved=None):
@@ -296,9 +413,11 @@ def status(client):
     row("Quality: " + get_playback_settings()[0] + " kbps", "playback_quality", icon="quality.png")
 
     section("MAINTENANCE")
+    version = str(ADDON.getAddonInfo("version") or "")
+    row("What's new in " + (version or "this version"), "whats_new", icon="info.png")
     row("Clear cache", "clear_cache", icon="cache.png")
     row("Sign out", "sign_out", icon="sign_out.png")
-    xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+    end_directory(cache_to_disc=False)
 
 
 def playback_status():
@@ -327,12 +446,14 @@ def playback_status():
     if spotty_has_credentials():
         row("Connect: " + get_spotify_device_name(), "connect_playback", icon="cast.png")
     else:
-        row("Not paired", "setup", icon="setup.png")
+        # The unpaired state of the Connect row. It starts the same pairing
+        # flow, so only Quality and Connect react to a click on this page.
+        row("Not paired", "connect_playback", icon="cast.png")
     account_state = xbmcgui.Window(10000).getProperty("resonance.status")
     if account_state:
         section("ACCOUNT")
         row(account_state, icon="account.png")
-    xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+    end_directory(cache_to_disc=False)
 
 
 def _library_ids(client, identities, kind, params):
@@ -399,7 +520,7 @@ def render(client, items, kind, more, params):
             item.addContextMenuItems(context + spotify_write_context_menu(entry, kind, liked=library)
                                      + artist_context_menu(entry, kind)
                                      + playlist_remove_context_menu(entry, playlist))
-            xbmcplugin.addDirectoryItem(HANDLE, path, item, False)
+            add_item(path, item, False)
         else:
             client.save("collection:" + kind + ":" + identity, entry, ttl=86400)
             path = url(action="collection", kind=kind, id=identity, name=entry.get("name", ""))
@@ -423,7 +544,7 @@ def render(client, items, kind, more, params):
                 saved=library if kind == "album" else None,
                 followed=library if kind == "artist" else None,
             )
-            xbmcplugin.addDirectoryItem(HANDLE, path, item, True)
+            add_item(path, item, True)
     if more is not None:
         if params.get("action") == "followed_artists":
             next_params = dict(params, after=more)
@@ -432,7 +553,7 @@ def render(client, items, kind, more, params):
         row("More...", **next_params)
     if not items:
         row("No results")
-    xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+    end_directory(cache_to_disc=False)
 
 
 def render_artist_everything(client, sections, artist_name, artist_id):
@@ -462,11 +583,11 @@ def render_artist_everything(client, sections, artist_name, artist_id):
                 item = track_item(entry, path)
                 item.addContextMenuItems(spotify_write_context_menu(entry, kind, liked=liked)
                                          + artist_context_menu(entry, kind))
-                xbmcplugin.addDirectoryItem(HANDLE, path, item, False)
+                add_item(path, item, False)
             else:
                 client.save("collection:" + kind + ":" + identity, entry, ttl=86400)
                 path = url(action="collection", kind=kind, id=identity, name=entry.get("name", ""))
-                xbmcplugin.addDirectoryItem(HANDLE, path, directory_item(entry, kind, path, client=client, saved=saved), True)
+                add_item(path, directory_item(entry, kind, path, client=client, saved=saved), True)
         if kind == "album":
             more_action = {
                 "Albums": "artist_albums",
@@ -477,7 +598,7 @@ def render_artist_everything(client, sections, artist_name, artist_id):
                 row("More " + label.lower() + "...", more_action, id=artist_id, name=artist_name)
     if not sections:
         row("No artist results")
-    xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+    end_directory(cache_to_disc=False)
 
 
 SIGN_IN_WAIT_SECONDS = 300
@@ -851,8 +972,15 @@ def show_playlist_copy_help(identity, name="", client=None):
 
 def run():
     from utils import migrate_legacy_addon_data, resonance_signed_in, spotty_has_credentials
+    # A context menu entry runs the add-on as a script. Kodi then hands over
+    # the handle -1 and the action still has to run, only the listing is
+    # skipped.
     migrate_legacy_addon_data()
     action = PARAMS.get("action", "home")
+    if action in PAGE_ACTIONS:
+        # The release notes are shown on the first page the user opens after
+        # an update.
+        maybe_show_release_notes()
     if action == "home":
         # Account-specific rows disappear after logout; the public catalogue
         # (search) keeps working without an account.
@@ -866,7 +994,7 @@ def run():
             row("Set up Spotify", "setup")
         row("Playback status", "playback_status")
         row("Account and status", "status")
-        xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+        end_directory(cache_to_disc=False)
         return
     if action == "spotify_library_menu":
         row("Liked Songs", "liked_songs")
@@ -874,7 +1002,7 @@ def run():
         row("Followed Artists", "followed_artists")
         row("Saved and Followed Playlists", "saved_playlists")
         row("Create playlist...", "create_playlist", icon="plus.png")
-        xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+        end_directory(cache_to_disc=False)
         return
     if action == "search_menu":
         # Playlists are not searchable. Spotify only returns playlist items to
@@ -885,10 +1013,15 @@ def run():
                                   ("album", "Albums", "albums.png"),
                                   ("artist", "Artists", "artists.png")):
             row(label, "search", icon=icon, kind=kind)
-        xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+        end_directory(cache_to_disc=False)
         return
     if action == "playback_status":
         playback_status()
+        return
+    if action == "noop":
+        # Rows that only carry information point here. Kodi runs the add-on in
+        # the background, so clicking such a row leaves the page untouched.
+        end_directory(cache_to_disc=False)
         return
     if action in ("sign_out", "clear_cache"):
         if action == "sign_out":
@@ -973,7 +1106,7 @@ def run():
                 from utils import clear_resonance_cache
                 clear_resonance_cache()
                 xbmc.executebuiltin("Container.Refresh")
-            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+            end_directory(cache_to_disc=False)
         elif action == "choose_playlist":
             track_id = PARAMS.get("id", "")
             owned = owned_playlists(client)
@@ -990,7 +1123,7 @@ def run():
                     xbmcgui.Dialog().notification("Resonance", "Track added to " + (target.get("name") or "playlist"))
                     from utils import clear_resonance_cache
                     clear_resonance_cache()
-            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+            end_directory(cache_to_disc=False)
         elif action == "remove_from_playlist":
             track_id = PARAMS.get("id", "")
             playlist_id = PARAMS.get("playlist", "")
@@ -1006,7 +1139,7 @@ def run():
                 from utils import clear_resonance_cache
                 clear_resonance_cache()
                 xbmc.executebuiltin("Container.Refresh")
-            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+            end_directory(cache_to_disc=False)
         elif action == "unfollow_playlist":
             identity = PARAMS.get("id", "")
             name = PARAMS.get("name", "") or "this playlist"
@@ -1021,7 +1154,7 @@ def run():
                 clear_resonance_cache()
                 xbmcgui.Dialog().notification("Resonance", "Playlist unfollowed")
                 xbmc.executebuiltin("Container.Refresh")
-            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+            end_directory(cache_to_disc=False)
         elif action == "unfollow_artist":
             identity = PARAMS.get("id", "")
             name = PARAMS.get("name", "") or "this artist"
@@ -1036,7 +1169,7 @@ def run():
                 clear_resonance_cache()
                 xbmcgui.Dialog().notification("Resonance", "Artist unfollowed")
                 xbmc.executebuiltin("Container.Refresh")
-            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+            end_directory(cache_to_disc=False)
         elif action == "create_playlist":
             track_id = PARAMS.get("id", "")
             heading = "New playlist name"
@@ -1051,7 +1184,7 @@ def run():
                 clear_resonance_cache()
                 xbmcgui.Dialog().notification("Resonance", "Playlist created: " + name)
                 xbmc.executebuiltin("Container.Refresh")
-            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+            end_directory(cache_to_disc=False)
         elif action == "playback_quality":
             from utils import get_playback_settings
             qualities = ("96", "160", "320")
@@ -1061,6 +1194,9 @@ def run():
             if choice >= 0:
                 ADDON.setSetting("audio_quality", qualities[choice])
                 xbmcgui.Dialog().notification("Resonance", "Playback quality: " + labels[choice])
+            status(client)
+        elif action == "whats_new":
+            show_release_notes()
             status(client)
         elif action == "playlists":
             items, more = client.playlists(offset)
@@ -1088,12 +1224,12 @@ def run():
             if not query:
                 query = xbmcgui.Dialog().input("Search Spotify").strip()
                 if not query:
-                    xbmcplugin.endOfDirectory(HANDLE, succeeded=False)
+                    end_directory(succeeded=False)
                     return
                 # Give the results directory its own URL containing the query.
                 # Kodi then reopens this exact result page when backing out of
                 # an album, artist, or playlist opened from the results.
-                xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+                end_directory(cache_to_disc=False)
                 destination = "Container.Update(" + url(
                     action="search", kind=kind, q=query, offset=offset
                 ) + ",replace)"
@@ -1201,7 +1337,7 @@ def run():
             if not match:
                 if value:
                     row("Invalid Spotify link")
-                xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+                end_directory(cache_to_disc=False)
                 return
             kind, identity = match.groups()
             if kind == "track":
@@ -1214,23 +1350,23 @@ def run():
             status(client)
         elif action == "debug_open_settings":
             xbmc.executebuiltin('Addon.OpenSettings("plugin.audio.resonance")')
-            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+            end_directory(cache_to_disc=False)
         elif action == "debug_strings":
             for sid in (11395, 11380, 11109, 11110, 11346, 11384, 11104, 11385, 11386, 11096, 11118):
                 value = ADDON.getLocalizedString(sid)
                 xbmc.log("RESONANCE_DEBUG str %d => " + str(value), xbmc.LOGINFO)
-            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+            end_directory(cache_to_disc=False)
         else:
             row("This old menu has been replaced. Open Resonance from Music add-ons.")
             row("Resonance", "home")
-            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+            end_directory(cache_to_disc=False)
     except (catalogue.Unavailable, ValueError, KeyError) as exc:
         if action in ("spotify_library", "choose_playlist", "remove_from_playlist", "unfollow_playlist", "unfollow_artist"):
             message = str(exc)
             if "refused" in message.lower() or "403" in message:
                 message += "\n\nSpotify may not have granted Resonance permission for this change yet. Choose Reauthorize Spotify under Account and status, then approve the requested permissions."
             xbmcgui.Dialog().ok("Spotify change failed", message)
-            xbmcplugin.endOfDirectory(HANDLE, succeeded=False, cacheToDisc=False)
+            end_directory(succeeded=False, cache_to_disc=False)
         elif action == "play":
             xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem())
             xbmcgui.Dialog().notification("Resonance", str(exc))
@@ -1243,20 +1379,20 @@ def run():
                 show_playlist_copy_help(PARAMS.get("id", ""), PARAMS.get("name", ""), client)
             else:
                 xbmcgui.Dialog().ok("Resonance", str(exc))
-            xbmcplugin.endOfDirectory(HANDLE, succeeded=False, cacheToDisc=False)
+            end_directory(succeeded=False, cache_to_disc=False)
         else:
             row(str(exc))
-            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+            end_directory(cache_to_disc=False)
     except Exception as exc:
         xbmc.log("Resonance plugin error: " + type(exc).__name__ + ": " + str(exc), xbmc.LOGERROR)
         if action in ("spotify_library", "choose_playlist", "remove_from_playlist", "unfollow_playlist", "unfollow_artist"):
             xbmcgui.Dialog().ok("Spotify change failed", "Resonance could not complete the Spotify request. Check the Kodi log for details.")
-            xbmcplugin.endOfDirectory(HANDLE, succeeded=False, cacheToDisc=False)
+            end_directory(succeeded=False, cache_to_disc=False)
         elif action == "play":
             xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem())
         elif action not in ("queue", "queue_playlist"):
             row("Unable to load this page")
-            xbmcplugin.endOfDirectory(HANDLE, cacheToDisc=False)
+            end_directory(cache_to_disc=False)
     finally:
         client.close()
 

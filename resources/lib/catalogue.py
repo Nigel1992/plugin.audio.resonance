@@ -535,11 +535,14 @@ class Catalogue:
             page = data.get("tracks") or {}
             return [normalize(i, "track") for i in page.get("items", []) if i], None
 
-    def artist_albums(self, identity, group="album", offset=0, limit=40):
+    def artist_albums(self, identity, group="album", offset=0, limit=10):
         if not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
             raise ValueError("Invalid Spotify ID")
         if group not in ("album", "single", "appears_on"):
             raise ValueError("Unknown artist album group")
+        # Spotify rejects artist album pages with a limit above 10 with
+        # "400 Invalid limit", so the page size is capped here.
+        limit = min(max(1, int(limit)), 10)
         data = self.request(
             "spotify",
             f"/artists/{identity}/albums",
