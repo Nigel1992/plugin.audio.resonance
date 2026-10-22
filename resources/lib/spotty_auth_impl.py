@@ -37,6 +37,16 @@ class SpottyAuth:
 
     def __init__(self, spotty: Spotty):
         self.__spotty = spotty
+        # Restart backoff for the Device Connect receiver.  A receiver that
+        # cannot start must not be restarted in a tight loop: every attempt
+        # would kill the previous receiver and fight it for Zeroconf port
+        # 10002.
+        self.__connect_failures = 0
+        self.__last_connect_failure = 0.0
+
+    # Backoff limits for the Device Connect receiver, in seconds.
+    CONNECT_RETRY_COOLDOWN = 15.0
+    CONNECT_RETRY_COOLDOWN_MAX = 60.0
 
     def _connect_start_lock_file(self) -> str:
         return os.path.join(
@@ -137,6 +147,84 @@ class SpottyAuth:
                 os.remove(self._connect_pid_file())
         except OSError:
             pass
+
+    def _read_receiver_log(self, log_file: str, limit: int = 1200) -> str:
+        """Return the tail of a receiver log file as a single line."""
+        if not log_file:
+            return ""
+        try:
+            if not os.path.isfile(log_file):
+                return ""
+            size = os.path.getsize(log_file)
+            with open(log_file, "rb") as stream:
+                if size > limit * 4:
+                    stream.seek(size - limit * 4)
+                payload = stream.read()
+        except OSError as exc:
+            return f"<could not read receiver log: {exc}>"
+        text = payload.decode("utf-8", errors="replace")
+        text = " ".join(str(text).replace("\r", " ").replace("\n", " ").split())
+        return text[-limit:]
+
+    def _read_process_output(self, process: subprocess.Popen) -> str:
+        """Return whatever a finished receiver left on its output pipe."""
+        try:
+            if process.stdout is None:
+                return ""
+            output = process.stdout.read() or ""
+        except Exception as exc:
+            return f"<could not read Spotty output: {exc}>"
+        if isinstance(output, bytes):
+            output = output.decode("utf-8", errors="replace")
+        return " ".join(str(output).replace("\r", " ").replace("\n", " ").split())
+
+    def _start_discovery_fallback_receiver(
+        self, args, log_file: str
+    ) -> Union[None, subprocess.Popen]:
+        """Retry the receiver in plain librespot discovery mode."""
+        if not self.__spotty.uses_native_device_connect_binary():
+            return None
+
+        log_msg(
+            "AUTH_DIAG operation=device-connect result=retry_in_discovery_mode",
+            LOGWARNING,
+        )
+        try:
+            process = self.__spotty.run_device_connect_spotty(
+                extra_args=args,
+                log_file=log_file,
+                authenticate=False,
+            )
+        except Exception as exc:
+            log_msg(
+                "AUTH_DIAG operation=device-connect "
+                f"result=discovery_mode_failed error={type(exc).__name__}: {exc}",
+                LOGWARNING,
+            )
+            return None
+
+        self.keep_connect_process(process)
+
+        startup_deadline = time.perf_counter() + 0.80
+        while process.poll() is None and time.perf_counter() < startup_deadline:
+            time.sleep(0.05)
+
+        if process.poll() is not None:
+            output = self._read_receiver_log(log_file)
+            self._remove_connect_pid_if_matches(process.pid)
+            log_msg(
+                "AUTH_DIAG operation=device-connect "
+                f"result=discovery_mode_immediate_exit rc={process.returncode} "
+                f"output='{output[:1200]}'",
+                LOGERROR,
+            )
+            return None
+
+        log_msg(
+            "AUTH_DIAG operation=device-connect result=started_in_discovery_mode",
+            LOGINFO,
+        )
+        return process
 
     def _connect_pid_file(self) -> str:
         return os.path.join(
@@ -260,6 +348,73 @@ class SpottyAuth:
             )
         return cleaned
 
+    def _posix_connect_process_pids(self):
+        """Return PIDs of running Device Connect receivers for this profile."""
+        if os.name == "nt":
+            return []
+        cache_dir = os.path.dirname(self.__spotty.get_spotty_credentials_file())
+        pids = []
+        try:
+            entries = os.listdir("/proc")
+        except OSError:
+            return []
+        own_pid = os.getpid()
+        for entry in entries:
+            if not entry.isdigit():
+                continue
+            pid = int(entry)
+            if pid == own_pid:
+                continue
+            try:
+                with open(f"/proc/{pid}/cmdline", "rb") as file:
+                    cmdline = (
+                        file.read()
+                        .replace(b"\x00", b" ")
+                        .decode("utf-8", errors="replace")
+                    )
+            except OSError:
+                continue
+            if "spotty" in cmdline and cache_dir in cmdline and "Kodi-Resonance" in cmdline:
+                pids.append(pid)
+        return pids
+
+    def _cleanup_orphaned_posix_connect_processes(self) -> int:
+        """Terminate untracked Device Connect receivers left over on POSIX."""
+        if os.name == "nt":
+            return 0
+
+        tracked_pid = self._read_connect_pid()
+        orphans = [
+            pid
+            for pid in self._posix_connect_process_pids()
+            if not tracked_pid or pid != tracked_pid
+        ]
+        if not orphans:
+            return 0
+
+        cleaned = 0
+        for pid in orphans:
+            if terminate_process(pid):
+                cleaned += 1
+                log_msg(
+                    "AUTH_DIAG operation=device-connect "
+                    f"orphan_process_terminated=true pid={pid}",
+                    LOGWARNING,
+                )
+        if cleaned:
+            deadline = time.perf_counter() + 1.5
+            while (
+                time.perf_counter() < deadline
+                and self._posix_connect_process_pids()
+            ):
+                time.sleep(0.05)
+            log_msg(
+                "AUTH_DIAG operation=device-connect "
+                f"orphan_cleanup_complete=true count={cleaned}",
+                LOGINFO,
+            )
+        return cleaned
+
     def _stop_previous_connect_process(self) -> None:
         """Stop only the previous Resonance Device Connect process, if any."""
         pid_file = self._connect_pid_file()
@@ -353,6 +508,10 @@ class SpottyAuth:
             # orphan receivers before binding Zeroconf port 10002 again.
             self._cleanup_orphaned_windows_connect_processes()
             self._stop_previous_connect_process()
+            # Android and Linux can keep an orphaned receiver as well.  It
+            # holds Zeroconf port 10002 and makes every new receiver exit
+            # immediately, so it has to go before the next start.
+            self._cleanup_orphaned_posix_connect_processes()
 
             credentials_file = self.__spotty.get_spotty_credentials_file()
             credentials_backup = self.__spotty.get_spotty_credentials_backup_file()
@@ -395,7 +554,11 @@ class SpottyAuth:
             log_msg(f"Device Connect token target: {token_file}")
             log_msg("Device Connect Spotty args: " + " ".join(args))
 
-            process = self.__spotty.run_device_connect_spotty(extra_args=args)
+            log_file = self.__spotty.get_spotty_device_connect_log_file()
+            process = self.__spotty.run_device_connect_spotty(
+                extra_args=args,
+                log_file=log_file,
+            )
 
             # Publish the PID immediately. The previous implementation wrote
             # it only after the 400 ms startup probe, leaving a race window in
@@ -403,26 +566,25 @@ class SpottyAuth:
             # 10002.
             self.keep_connect_process(process)
 
-            startup_deadline = time.perf_counter() + 0.40
+            startup_deadline = time.perf_counter() + 0.80
             while process.poll() is None and time.perf_counter() < startup_deadline:
                 time.sleep(0.05)
 
             if process.poll() is not None:
-                output = ""
-                try:
-                    if process.stdout is not None:
-                        output = process.stdout.read() or ""
-                except Exception as exc:
-                    output = f"<could not read Spotty output: {exc}>"
-                if isinstance(output, bytes):
-                    output = output.decode("utf-8", errors="replace")
-                output = " ".join(str(output).replace("\r", " ").replace("\n", " ").split())
+                output = self._read_receiver_log(log_file)
+                if not output:
+                    output = self._read_process_output(process)
                 self._remove_connect_pid_if_matches(process.pid)
                 log_msg(
                     "AUTH_DIAG operation=device-connect result=immediate_exit "
                     f"rc={process.returncode} output='{output[:1200]}'",
                     LOGERROR,
                 )
+                fallback = self._start_discovery_fallback_receiver(
+                    args, log_file
+                )
+                if fallback is not None:
+                    return fallback
                 return None
 
             log_msg(
@@ -440,19 +602,34 @@ class SpottyAuth:
                 self._release_connect_start_lock()
 
 
-    def ensure_device_connect_running(self, fresh: bool = False) -> bool:
-        """Ensure Kodi-Resonance is advertised for automatic Device Connect.
-
-        Used when Resonance has no usable authentication state. Repeated Kodi
-        directory invocations reuse the same process instead of restarting it.
-        """
+    def ensure_device_connect_running(
+        self, fresh: bool = False, force: bool = False
+    ) -> bool:
+        """Ensure Kodi-Resonance is advertised for automatic Device Connect."""
         if self.is_connect_process_running():
+            self.__connect_failures = 0
             return True
+        if not force and self.__connect_failures:
+            cooldown = min(
+                self.CONNECT_RETRY_COOLDOWN_MAX,
+                self.CONNECT_RETRY_COOLDOWN * self.__connect_failures,
+            )
+            if time.monotonic() - self.__last_connect_failure < cooldown:
+                log_msg(
+                    "AUTH_DIAG operation=device-connect result=retry_suppressed "
+                    f"failures={self.__connect_failures} cooldown={cooldown:.0f}s",
+                    LOGDEBUG,
+                )
+                return False
         process = self.start_zeroconf_authenticate(fresh=fresh)
         if process is None:
-            # A parallel Kodi Python context may have won the atomic start
-            # race. Treat the already-running shared receiver as success.
-            return self.is_connect_process_running()
+            if self.is_connect_process_running():
+                self.__connect_failures = 0
+                return True
+            self.__connect_failures += 1
+            self.__last_connect_failure = time.monotonic()
+            return False
+        self.__connect_failures = 0
         return True
 
     def ensure_spotify_connect_receiver_running(self) -> bool:
@@ -466,6 +643,7 @@ class SpottyAuth:
             if self.is_connect_process_running():
                 return True
             self._stop_previous_connect_process()
+            self._cleanup_orphaned_posix_connect_processes()
             args = [
                 "--system-cache", os.path.dirname(self.__spotty.get_spotty_credentials_file()),
                 "--verbose",
@@ -473,26 +651,20 @@ class SpottyAuth:
                 "--zeroconf-port", str(ZEROCONF_AUTH_PORT),
             ]
             args.extend(self.__spotty.get_device_connect_zeroconf_args())
+            log_file = self.__spotty.get_spotty_connect_receiver_log_file()
             process = self.__spotty.run_spotty(
                 extra_args=args,
                 disable_discovery=False,
                 use_audio_backend=True,
                 capture_output=False,
+                log_file=log_file,
             )
             self.keep_connect_process(process)
             startup_deadline = time.perf_counter() + 0.60
             while process.poll() is None and time.perf_counter() < startup_deadline:
                 time.sleep(0.05)
             if process.poll() is not None:
-                output = ""
-                try:
-                    if process.stdout is not None:
-                        output = process.stdout.read() or ""
-                except Exception as exc:
-                    output = f"<could not read Spotty output: {exc}>"
-                if isinstance(output, bytes):
-                    output = output.decode("utf-8", errors="replace")
-                output = " ".join(str(output).replace("\r", " ").replace("\n", " ").split())
+                output = self._read_receiver_log(log_file)
                 self._remove_connect_pid_if_matches(process.pid)
                 utils.log_msg(
                     "AUTH_DIAG operation=spotify-connect-receiver result=immediate_exit "
