@@ -65,6 +65,13 @@ SPOTTY_WEB_API_SCOPE = [
 ]
 SPOTTY_CACHE_DIR_NAME = "spotty-cache"
 
+# Device Connect receivers are long running processes with verbose trace
+# logging.  Their output must not go into a pipe that nobody reads: the pipe
+# buffer fills up and the receiver blocks on the write instead of answering
+# the Spotify app.  The output is written to this file instead.
+SPOTTY_DEVICE_CONNECT_LOG_FILENAME = "device-connect.log"
+SPOTTY_CONNECT_RECEIVER_LOG_FILENAME = "connect-receiver.log"
+
 
 SPOTTY_CACHE_DIR = os.path.join(
     ADDON_DATA_PATH,
@@ -342,6 +349,53 @@ def _ensure_executable(binary_path: str) -> None:
         )
 
 
+
+def _open_receiver_log(log_file: str):
+    """Return a writable stream for a long running Spotty receiver.
+
+    The Device Connect receiver stays alive for minutes and logs at trace
+    level.  Sending that output into a pipe that nobody reads fills the pipe
+    buffer, and the receiver then blocks on the write instead of publishing
+    itself to the Spotify app.  A file keeps the receiver responsive and
+    keeps the diagnostics around for the next log review.
+    """
+    try:
+        os.makedirs(os.path.dirname(log_file), exist_ok=True)
+        return open(log_file, "wb", buffering=0)
+    except OSError as exc:
+        log_msg(
+            f"Could not open Spotty receiver log '{log_file}': {exc}",
+            LOGWARNING,
+        )
+        return None
+
+
+def _popen_with_receiver_log(
+    args,
+    log_file: str,
+    env=None,
+    **kwargs,
+):
+    """Start a receiver whose output goes to '''log_file'''.
+
+    Falls back to a pipe when the log file cannot be created, so the caller
+    always gets a process object.
+    """
+    stream = _open_receiver_log(log_file) if log_file else None
+    try:
+        if stream is not None:
+            kwargs["stdout"] = stream
+            kwargs["stderr"] = subprocess.STDOUT
+        return subprocess.Popen(args, env=env, **kwargs)
+    finally:
+        # The child owns its own copy of the descriptor now.
+        if stream is not None:
+            try:
+                stream.close()
+            except OSError:
+                pass
+
+
 def ensure_linux_spotty_permissions() -> None:
     """Enforce exact 0755 mode on every bundled Linux Spotty executable."""
     if os.name == "nt":
@@ -501,6 +555,26 @@ class Spotty:
             self.__spotty_cache,
             SPOTTY_CREDENTIALS_BACKUP_FILENAME,
         )
+
+
+    def get_spotty_device_connect_log_file(
+        self
+    ) -> str:
+
+        return os.path.join(
+            self.__spotty_cache,
+            SPOTTY_DEVICE_CONNECT_LOG_FILENAME,
+        )
+
+    def get_spotty_connect_receiver_log_file(
+        self
+    ) -> str:
+
+        return os.path.join(
+            self.__spotty_cache,
+            SPOTTY_CONNECT_RECEIVER_LOG_FILENAME,
+        )
+
 
 
 
