@@ -252,6 +252,13 @@ refresh is available from **Account and status**.
 - Make sure Spotify Premium is active on the account in the Spotify app.
 - Retry pairing from Resonance.
 - Check `/storage/.kodi/temp/kodi.log` for `DEVICE_CONNECT_DIAG` messages.
+- The pairing receiver writes its own log to:
+
+```text
+/storage/.kodi/userdata/addon_data/plugin.audio.resonance/runtime/device-connect.log
+```
+
+- When the receiver refuses to start, the tail of that file is copied into the Kodi log as `result=immediate_exit`.
 
 ### Browser Sign-In Fails
 
