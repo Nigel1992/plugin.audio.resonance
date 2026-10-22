@@ -289,7 +289,12 @@ class MenuTests(unittest.TestCase):
     def test_release_notes_are_shown_after_an_update(self):
         ADDON_SETTINGS.pop("last_notes_version", None)
         DIALOGS.clear()
-        self.menu("?action=home")
+        handle = self.plugin.HANDLE
+        self.plugin.HANDLE = -1
+        try:
+            self.menu("?action=home")
+        finally:
+            self.plugin.HANDLE = handle
         self.assertTrue(DIALOGS)
         heading, notes = DIALOGS[-1]
         self.assertIn(VERSION, heading)

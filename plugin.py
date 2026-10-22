@@ -172,7 +172,13 @@ def maybe_show_release_notes():
     except Exception:
         pass
     try:
-        show_release_notes()
+        # Opening a modal window here keeps the directory handle alive while
+        # settings notifications can replace the same listing underneath it.
+        if HANDLE >= 0:
+            command = "RunPlugin(" + url(action="whats_new") + ")"
+            xbmc.executebuiltin("AlarmClock(ResonanceNotes," + command + ",00:00:01,silent)")
+        else:
+            show_release_notes()
     except Exception as exc:
         xbmc.log("Resonance release notes failed: " + str(exc), xbmc.LOGERROR)
 
@@ -796,6 +802,11 @@ def resume_web_login_paste():
     _finish_web_login(client_id, request["redirect_uri"], token_data)
 
 
+def _ensure_device_connect_receiver():
+    """Ask the service to start pairing; it owns the receiver and start lock."""
+    xbmcgui.Window(10000).setProperty("resonance.connect", "1")
+
+
 def connect_device(navigate, wait_for_playback=False):
     """Guide the user through Spotify Device Connect.
 
@@ -805,10 +816,8 @@ def connect_device(navigate, wait_for_playback=False):
     sign-in transition (search token + spotty credentials).
     """
     from utils import get_spotify_device_name, resonance_signed_in, spotty_has_credentials
-    window = xbmcgui.Window(10000)
     device = get_spotify_device_name()
     while True:
-        window.setProperty("resonance.connect", "1")
         _ensure_device_connect_receiver()
         progress = xbmcgui.DialogProgress()
         instruction = (
@@ -972,6 +981,21 @@ def show_playlist_copy_help(identity, name="", client=None):
         )
 
 
+def home_menu():
+    from utils import resonance_signed_in, spotty_has_credentials
+    if resonance_signed_in():
+        row("Your Spotify Library", "spotify_library_menu")
+        row("Search", "search_menu")
+        if not spotty_has_credentials():
+            row("Set up Spotify", "setup")
+    else:
+        row("Search", "search_menu")
+        row("Set up Spotify", "setup")
+    row("Playback status", "playback_status")
+    row("Account and status", "status")
+    end_directory(cache_to_disc=False)
+
+
 def run():
     from utils import migrate_legacy_addon_data, resonance_signed_in, spotty_has_credentials
     # A context menu entry runs the add-on as a script. Kodi then hands over
@@ -979,6 +1003,19 @@ def run():
     # skipped.
     migrate_legacy_addon_data()
     action = PARAMS.get("action", "home")
+    if HANDLE >= 0 and action in (
+        "setup", "web_login", "web_login_paste", "connect", "connect_settings", "connect_playback", "whats_new",
+    ):
+        # Finish the folder request before opening long-running auth dialogs.
+        # Kodi rejects Container.Update while that request is still active,
+        # which can leave a busy overlay on an already-rendered home page.
+        home_menu()
+        command = "RunPlugin(" + url(**PARAMS) + ")"
+        xbmc.executebuiltin("AlarmClock(ResonanceAuth," + command + ",00:00:01,silent)")
+        return
+    if action == "whats_new" and HANDLE < 0:
+        show_release_notes()
+        return
     if action in PAGE_ACTIONS:
         # The release notes are shown on the first page the user opens after
         # an update.
@@ -986,17 +1023,7 @@ def run():
     if action == "home":
         # Account-specific rows disappear after logout; the public catalogue
         # (search) keeps working without an account.
-        if resonance_signed_in():
-            row("Your Spotify Library", "spotify_library_menu")
-            row("Search", "search_menu")
-            if not spotty_has_credentials():
-                row("Set up Spotify", "setup")
-        else:
-            row("Search", "search_menu")
-            row("Set up Spotify", "setup")
-        row("Playback status", "playback_status")
-        row("Account and status", "status")
-        end_directory(cache_to_disc=False)
+        home_menu()
         return
     if action == "spotify_library_menu":
         row("Liked Songs", "liked_songs")
