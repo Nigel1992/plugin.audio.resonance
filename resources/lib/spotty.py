@@ -575,6 +575,20 @@ class Spotty:
             SPOTTY_CONNECT_RECEIVER_LOG_FILENAME,
         )
 
+    def uses_native_device_connect_binary(self) -> bool:
+        """Return True when Device Connect runs on the native Spotty 2 payload."""
+        return bool(
+            os.name != "nt"
+            and self.__spotty_binary
+            and self.__spotty_binary != self.__auth_binary
+        )
+
+    def _receiver_env(self) -> Dict[str, str]:
+        """Return the environment for a long running receiver process."""
+        env = dict(self.__spotty_rust_env) if self.__spotty_rust_env else os.environ.copy()
+        env.setdefault("RUST_LOG", "librespot=trace,libmdns=info,info")
+        return env
+
 
 
 
@@ -852,7 +866,7 @@ class Spotty:
         return ["--zeroconf-interface", source_ip]
 
 
-    def run_auth_spotty(self, extra_args: List[str] = None) -> subprocess.Popen:
+    def run_auth_spotty(self, extra_args: List[str] = None, log_file: str = None) -> subprocess.Popen:
         """Run the legacy Spotty binary against Resonance's own cache directory.
 
         This is intentionally restricted to authentication/token work. Audio
@@ -875,15 +889,27 @@ class Spotty:
             LOGINFO,
         )
         log_msg("Legacy auth Spotty args: " + " ".join(args), LOGDEBUG)
+        if log_file:
+            return _popen_with_receiver_log(
+                args,
+                log_file,
+                env=self._receiver_env(),
+                **_windows_process_kwargs(),
+            )
         return subprocess.Popen(
             args,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            env=self.__spotty_rust_env,
+            env=self._receiver_env(),
             **_windows_process_kwargs(),
         )
 
-    def run_device_connect_spotty(self, extra_args: List[str] = None) -> subprocess.Popen:
+    def run_device_connect_spotty(
+        self,
+        extra_args: List[str] = None,
+        log_file: str = None,
+        authenticate: bool = True,
+    ) -> subprocess.Popen:
         """Start the best available receiver for persistent Device Connect auth.
 
         Current native playback payloads use librespot 0.8 and provide a
@@ -892,33 +918,45 @@ class Spotty:
         legacy helper exclusively for ``--save-token``, for which Resonance
         still requires its compatible Web API implementation.
         """
-        if os.name != "nt" and self.__spotty_binary and self.__spotty_binary != self.__auth_binary:
+        if self.uses_native_device_connect_binary():
             device_name = get_spotify_device_name()
             args = self.__spotty_command + [
                 "--cache", self.__spotty_cache,
                 "--system-cache", self.__spotty_cache,
                 "--verbose",
                 "--name", device_name,
-                "--authenticate",
             ]
+            if authenticate:
+                args.append("--authenticate")
             if extra_args:
                 args.extend(extra_args)
             _ensure_executable(self.__spotty_binary)
             log_msg(
                 "AUTH_DIAG operation=device-connect "
                 f"binary={os.path.basename(self.__spotty_binary)} "
-                f"device_name={device_name} credential_persistence=enabled result=starting",
+                f"device_name={device_name} "
+                f"credential_persistence=enabled "
+                f"mode={'authenticate' if authenticate else 'discovery'} "
+                f"log={os.path.basename(log_file) if log_file else 'pipe'} "
+                "result=starting",
                 LOGINFO,
             )
+            if log_file:
+                return _popen_with_receiver_log(
+                    args,
+                    log_file,
+                    env=self._receiver_env(),
+                    **_windows_process_kwargs(),
+                )
             return subprocess.Popen(
                 args,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                env=self.__spotty_rust_env,
+                env=self._receiver_env(),
                 **_windows_process_kwargs(),
             )
 
-        return self.run_auth_spotty(extra_args=extra_args)
+        return self.run_auth_spotty(extra_args=extra_args, log_file=log_file)
 
 
     def run_spotty(
@@ -927,6 +965,7 @@ class Spotty:
         disable_discovery: bool = True,
         use_audio_backend: bool = True,
         capture_output: bool = True,
+        log_file: str = None,
     ) -> subprocess.Popen:
 
 
@@ -948,7 +987,7 @@ class Spotty:
                 f"to={os.path.basename(self.__auth_binary or '')}",
                 LOGWARNING,
             )
-            return self.run_auth_spotty(extra_args=extra_args)
+            return self.run_auth_spotty(extra_args=extra_args, log_file=log_file)
 
         log_msg(
             "Running spotty...",
@@ -1018,8 +1057,11 @@ class Spotty:
             )
 
 
-            if use_audio_backend and not oauth_mode:
+            if use_audio_backend and not oauth_mode and not _is_android_runtime():
 
+                # Android has no ALSA.  Forcing the ALSA backend there makes
+                # the receiver exit at once, because that backend is not
+                # compiled into the Android payload.
                 args += [
                     "--backend",
                     "alsa",
@@ -1035,15 +1077,24 @@ class Spotty:
 
 
             _ensure_executable(self.__spotty_binary)
-            process = subprocess.Popen(
-                args,
-                stdout=subprocess.PIPE if capture_output else subprocess.DEVNULL,
-                stderr=subprocess.PIPE if capture_output else subprocess.DEVNULL,
-                text=False,
-                bufsize=0,
-                env=self.__spotty_rust_env,
-                **_windows_process_kwargs(),
-            )
+            if log_file:
+                process = _popen_with_receiver_log(
+                    args,
+                    log_file,
+                    env=self._receiver_env(),
+                    bufsize=0,
+                    **_windows_process_kwargs(),
+                )
+            else:
+                process = subprocess.Popen(
+                    args,
+                    stdout=subprocess.PIPE if capture_output else subprocess.DEVNULL,
+                    stderr=subprocess.PIPE if capture_output else subprocess.DEVNULL,
+                    text=False,
+                    bufsize=0,
+                    env=self.__spotty_rust_env,
+                    **_windows_process_kwargs(),
+                )
 
 
             log_msg(
