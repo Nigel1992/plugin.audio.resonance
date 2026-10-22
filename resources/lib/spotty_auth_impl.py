@@ -10,6 +10,7 @@ import xbmcaddon
 from xbmc import LOGDEBUG, LOGINFO, LOGERROR, LOGWARNING
 
 import utils
+from spotty_helper import _is_android_runtime
 from spotty import (
     Spotty,
     SPOTTY_CACHE_DIR_NAME,
@@ -652,13 +653,23 @@ class SpottyAuth:
             ]
             args.extend(self.__spotty.get_device_connect_zeroconf_args())
             log_file = self.__spotty.get_spotty_connect_receiver_log_file()
-            process = self.__spotty.run_spotty(
-                extra_args=args,
-                disable_discovery=False,
-                use_audio_backend=True,
-                capture_output=False,
-                log_file=log_file,
-            )
+            if _is_android_runtime():
+                # Keep the same dedicated receiver used for initial Android
+                # pairing, with its
+                # persistent cache and without the exit-after-auth flag.
+                process = self.__spotty.run_device_connect_spotty(
+                    extra_args=["--zeroconf-port", str(ZEROCONF_AUTH_PORT)],
+                    authenticate=False,
+                    log_file=log_file,
+                )
+            else:
+                process = self.__spotty.run_spotty(
+                    extra_args=args,
+                    disable_discovery=False,
+                    use_audio_backend=True,
+                    capture_output=False,
+                    log_file=log_file,
+                )
             self.keep_connect_process(process)
             startup_deadline = time.perf_counter() + 0.60
             while process.poll() is None and time.perf_counter() < startup_deadline:
