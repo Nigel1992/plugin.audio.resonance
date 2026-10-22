@@ -315,7 +315,8 @@ def run():
                 except Exception as exc:
                     xbmc.log("Resonance logout failed: " + str(exc), xbmc.LOGERROR)
                     window.setProperty("resonance.logout.result", "error")
-            if now >= next_auth or window.getProperty("resonance.connect"):
+            connect_requested = bool(window.getProperty("resonance.connect"))
+            if now >= next_auth or connect_requested:
                 window.clearProperty("resonance.connect")
                 signed_in = auth.has_credentials() or _web_session_available()
                 if signed_in:
@@ -325,7 +326,9 @@ def run():
                         # Browser login covers the catalogue; playback still
                         # needs a librespot session. Advertise the box so the
                         # user can pair it from Spotify (speaker picker).
-                        auth.ensure_device_connect_running(fresh=False)
+                        auth.ensure_device_connect_running(
+                            fresh=False, force=connect_requested
+                        )
                     access = restore_access_token()
                     window.setProperty("resonance.status", "Signed in" if access else "Signed in; catalogue token unavailable")
                     window.setProperty("resonance.signed-in", "1")
@@ -340,7 +343,12 @@ def run():
                     was_signed_in = True
                     next_auth = now + (3000 if access else 60)
                 else:
-                    auth.ensure_device_connect_running(fresh=False)
+                    # An explicit pairing request from the GUI always gets a
+                    # fresh attempt, even when the automatic retries are
+                    # waiting out their backoff.
+                    auth.ensure_device_connect_running(
+                        fresh=False, force=connect_requested
+                    )
                     window.setProperty("resonance.status", "Waiting for Spotify connection")
                     window.clearProperty("resonance.signed-in")
                     was_signed_in = False
