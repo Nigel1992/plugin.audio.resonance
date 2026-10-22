@@ -13,7 +13,24 @@ NOTES = {
     streaming through Kodi's VideoPlayer.
   * Rebuilt Linux spotty helper with the Connect audio bridge.
 
+FIXED - SETUP NAVIGATION
+  * Fixed a busy spinner left over after Spotify
+    setup or browser authorization.
+  * Login dialogs run after the menu has finished
+    loading.
+  * Release notes and internal settings updates
+    no longer interrupt menu creation.
+  * Fixed Spotify setup and Android playback
+    authentication.
+
+ANDROID
+  * Added Spotify Connect audio for ARM64 and ARMv7
+    Android devices.
+  * Use Kodi's streaming player to avoid live audio
+    stuttering.
+
 """,
+
     "1.1.8": """FIXED - SETUP NAVIGATION
   * Fixed a busy spinner left over after Spotify
     setup or browser authorization.

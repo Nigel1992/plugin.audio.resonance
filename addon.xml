@@ -27,6 +27,7 @@
 - Finish setup/login navigation before opening authorization dialogs, avoiding a stuck busy spinner.
 - Fixed Spotify setup and Android playback authentication.
 - Added Spotify Connect audio for ARM64 and ARMv7 Android devices.
+- Added Spotify Connect audio for Linux ARM64 (LibreELEC).
 - Use Kodi's streaming player to avoid live audio stuttering.
 
 [B]1.1.0[/B]
