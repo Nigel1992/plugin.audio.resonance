@@ -359,6 +359,7 @@ Thanks and credit to:
 - The [`spotipy`](https://github.com/spotipy-dev/spotipy) project.
 - The [`bottle`](https://github.com/bottlepy/bottle) project.
 - Project Nayuki's [`QR Code generator library`](https://www.nayuki.io/page/qr-code-generator-library), bundled under the MIT License.
+- [@umbrellaplug](https://github.com/umbrellaplug) for the QR sign-in, Android playback, and Spotify Connect contributions.
 
 This project is distributed under the terms in [`LICENSE.txt`](LICENSE.txt).
 Bundled dependencies and native helper binaries may carry their own upstream
