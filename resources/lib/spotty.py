@@ -465,6 +465,7 @@ class Spotty:
 
         self.__playback_supported = True
         self.__last_token_error_kind = ""
+        self.__connect_bridge_supported = None
 
 
     def set_spotty_path(
@@ -475,6 +476,7 @@ class Spotty:
 
         ensure_linux_spotty_permissions()
         self.__spotty_binary = spotty_binary
+        self.__connect_bridge_supported = None
         self.__spotty_command = list(spotty_command or ([spotty_binary] if spotty_binary else []))
 
         if self.__spotty_binary:
@@ -576,9 +578,15 @@ class Spotty:
         )
 
     def uses_native_device_connect_binary(self) -> bool:
-        """Return True when Device Connect runs on the native Spotty 2 payload."""
+        """Return whether the playback payload can also host Device Connect.
+
+        Android keeps the dedicated legacy receiver used by the tested
+        pairing flow. Updating its audio payload must not also change how
+        existing installations pair or renew their catalogue tokens.
+        """
         return bool(
             os.name != "nt"
+            and not _is_android_runtime()
             and self.__spotty_binary
             and self.__spotty_binary != self.__auth_binary
         )
@@ -666,11 +674,7 @@ class Spotty:
         except OSError:
             pass
 
-        use_native_token_helper = bool(
-            os.name != "nt"
-            and self.__spotty_binary
-            and self.__spotty_binary != self.__auth_binary
-        )
+        use_native_token_helper = self.uses_native_device_connect_binary()
         token_binary = self.__spotty_binary if use_native_token_helper else self.__auth_binary
         token_command = self.__spotty_command if use_native_token_helper else self.__auth_command
 
@@ -912,11 +916,9 @@ class Spotty:
     ) -> subprocess.Popen:
         """Start the best available receiver for persistent Device Connect auth.
 
-        Current native playback payloads use librespot 0.8 and provide a
-        dedicated ``--authenticate`` mode.  Use that mode for pairing instead
-        of forcing ARM/Linux through the legacy 0.4.2 token helper.  Keep the
-        legacy helper exclusively for ``--save-token``, for which Resonance
-        still requires its compatible Web API implementation.
+        Native Linux playback payloads also provide Device Connect. Android
+        keeps its dedicated authentication helper independently of playback
+        updates. Token creation follows the same helper selection as pairing.
         """
         if self.uses_native_device_connect_binary():
             device_name = get_spotify_device_name()
@@ -958,6 +960,43 @@ class Spotty:
 
         return self.run_auth_spotty(extra_args=extra_args, log_file=log_file)
 
+
+    def supports_connect_bridge(self) -> bool:
+        """Probe the framed audio protocol rather than guessing by platform."""
+        if self.__connect_bridge_supported is None:
+            import json
+            self.__connect_bridge_supported = False
+            try:
+                result = subprocess.run(
+                    self.__spotty_command + ["--check"],
+                    capture_output=True, text=True, timeout=5,
+                    env=self.__spotty_rust_env, **_windows_process_kwargs(),
+                )
+                if result.returncode != 0:
+                    return False
+                for line in result.stdout.splitlines():
+                    if line.startswith("{"):
+                        self.__connect_bridge_supported = bool(json.loads(line).get("connect-bridge"))
+            except (OSError, ValueError, subprocess.TimeoutExpired):
+                pass
+        return self.__connect_bridge_supported
+
+    def run_connect_bridge(self, log_file):
+        """Run the Connect receiver with framed PCM/events on stdout."""
+        env = dict(self.__spotty_rust_env or os.environ)
+        env["RESONANCE_CONNECT_BRIDGE"] = "1"
+        env["RUST_LOG"] = "warn"
+        args = self.__spotty_command + [
+            "--cache", self.__spotty_cache, "--system-cache", self.__spotty_cache,
+            "--name", get_spotify_device_name(), "--zeroconf-port", "10002",
+            "--disable-audio-cache",
+        ]
+        _ensure_executable(self.__spotty_binary)
+        with open(log_file, "wb", buffering=0) as stream:
+            return subprocess.Popen(
+                args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=stream,
+                bufsize=256 * 1024, env=env, **_windows_process_kwargs(),
+            )
 
     def run_spotty(
         self,

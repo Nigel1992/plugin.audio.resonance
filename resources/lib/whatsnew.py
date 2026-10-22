@@ -8,6 +8,55 @@ user who skips several releases still sees the full picture.
 """
 
 NOTES = {
+    "1.2.0": """NEW
+  * Spotify Connect audio now works on LibreELEC (Linux ARM64) too,
+    streaming through Kodi's VideoPlayer.
+  * Rebuilt Linux spotty helper with the Connect audio bridge.
+
+""",
+    "1.1.8": """FIXED - SETUP NAVIGATION
+  * Fixed a busy spinner left over after Spotify
+    setup or browser authorization.
+  * Login dialogs run after the menu has finished
+    loading.
+  * Release notes and internal settings updates
+    no longer interrupt menu creation.""",
+    "1.1.7": """NEW - 32-BIT ANDROID
+  * Added the rebuilt playback and Spotify Connect
+    helper for Android ARMv7 devices.
+  * Uses the same streaming player fixes as Shield.""",
+    "1.1.6": """FIXED - SPOTIFY CONNECT
+  * Connect uses Kodi's streaming player to avoid
+    the stuttering heard with its music player.
+  * Improved audio pipe reading.
+  * Song title and artwork update after playback
+    starts.""",
+    "1.1.5": """FIXED - SPOTIFY CONNECT
+  * Fixed audio stopping shortly after selecting
+    Kodi in Spotify Desktop.
+  * Kodi's extra stream requests no longer cut
+    off the main audio reader.""",
+    "1.1.4": """NEW - SPOTIFY CONNECT ON ANDROID ARM64
+  * Select Kodi-Resonance in Spotify Desktop or
+    mobile to play through Kodi's speakers.
+  * Control play, pause, songs, seek and volume
+    from Spotify.
+  * Song title and cover art appear in Kodi.
+  * Kodi pause, resume and stop control the
+    Connect session. Starting another Kodi item
+    releases Spotify Connect.
+
+  Your existing pairing and Liked Songs remain.""",
+    "1.1.3": """FIXED
+  * Spotify setup opens the pairing dialog again.
+  * Android pairing uses the authentication helper.
+  * Shield / Android ARM64 track playback uses a
+    rebuilt helper with compatible Spotify login.
+  * Playback helper errors are now logged.
+
+PLAYBACK
+  * Select songs inside Resonance after setup.
+    The device in Spotify's picker is for pairing.""",
     "1.1.0": """NEW
   * Your Spotify Library page with Liked Songs,
     Saved Albums, Followed Artists and your playlists
