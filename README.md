@@ -21,7 +21,7 @@ through bundled Spotty/librespot playback helpers.
 | Not supported | Windows, macOS, Linux x86/x64 |
 | Catalogue | Regular Spotify Web API with browser PKCE token |
 | Playback | Spotify Device Connect with Spotty/librespot |
-| Version | 1.1.1 |
+| Version | 1.2.0 |
 
 | | |
 | --- | --- |
@@ -30,7 +30,7 @@ through bundled Spotty/librespot playback helpers.
 
 ## Quick Start
 
-1. Download `plugin.audio.resonance-1.1.1.zip` from the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
+1. Run `python scripts/package_addon.py` and install `dist/plugin.audio.resonance-1.2.0.zip`. Upstream releases are available on the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
 2. In Kodi, install it with **Add-ons -> Install from zip file**.
 3. Restart Kodi once.
 4. Open **Add-ons -> Music add-ons -> Resonance**.
@@ -185,6 +185,12 @@ code)** and paste the `code` value from the browser address bar.
 
 ### Usage
 
+- On Android ARMv7 or AArch64 (including Shield), keep Kodi running and select
+  **Kodi-Resonance** in Spotify Desktop or mobile's device picker after setup.
+  Songs play through Kodi; control playback, pause, track selection, seeking
+  and volume from Spotify. Kodi pause/resume/stop are forwarded to Connect.
+  Starting another item in Kodi releases the Connect session. Kodi's elapsed
+  time restarts after a desktop seek; Spotify shows the actual song position.
 - Open **Your Spotify Library** to browse Liked Songs, Saved Albums, Followed Artists, and Saved and Followed Playlists.
 - Open **Search** and choose tracks, albums or artists.
 - Use a track context menu to like/unlike it on Spotify or add it to one of your own playlists. Album context menus can save or remove the album from your Spotify library. These actions update your Spotify account.
@@ -297,11 +303,24 @@ copy in Spotify and refresh playlists.
 <details>
 <summary><b>Development</b></summary>
 
-Run the tests from the repository root:
+Build an installable ZIP, including both Android helpers and the licenses:
 
 ```bash
-python3 -m unittest discover -s tests
+python scripts/package_addon.py
 ```
+
+This writes the versioned ZIP and SHA-256 checksum to `dist/`. Local caches,
+credentials, logs, tests and development tools are excluded. Native helper
+rebuild instructions are in `resources/lib/deps/spotty/arm-android/BUILD.md`.
+
+To stage the package in an existing test repository checkout:
+
+```powershell
+python scripts/stage_test_repo.py /path/to/repository --release omega
+```
+
+The staging command copies the distributable source, package and metadata assets,
+then updates that channel's add-on index and MD5. It does not commit or push.
 
 Run a syntax pass:
 
@@ -322,7 +341,6 @@ Important paths:
 | `resources/lib/qr_dialog.py` | Local QR-code popup helper for login links |
 | `resources/lib/deps/qrcodegen.py` | Bundled pure-Python QR-code generator |
 | `resources/lib/spotty*.py` | Spotty/librespot helper selection and audio transport |
-| `tests/` | Unit tests |
 
 </details>
 

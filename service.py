@@ -15,6 +15,7 @@ from spotty import get_spotty
 from spotty_auth import SpottyAuth
 from spotty_helper import SpottyHelper
 from spotty_audio_streamer import SpottyAudioStreamer
+from connect_bridge import ConnectBridge, LIVE_WAV_HEADER
 
 
 def byte_range(value, size):
@@ -68,6 +69,8 @@ def return_to_home() -> None:
 def refresh_current_resonance_menu() -> None:
     """Reload the visible Resonance folder after settings change."""
     try:
+        if xbmc.getCondVisibility("Container.IsUpdating"):
+            return
         path = xbmc.getInfoLabel("Container.FolderPath") or ""
         if "plugin://plugin.audio.resonance/" not in path:
             return
@@ -81,6 +84,13 @@ class ResonanceMonitor(xbmc.Monitor):
     def __init__(self):
         super().__init__()
         self.hide_unreadable_playlists = self._hide_unreadable_playlists()
+        self.menu_settings = self._menu_settings()
+
+    @staticmethod
+    def _menu_settings():
+        # Internal settings such as last_notes_version must not navigate the
+        # browser while its plugin invocation is creating a directory.
+        return (tuple(utils.get_playback_settings()), utils.get_spotify_webapi_client_id())
 
     @staticmethod
     def _hide_unreadable_playlists() -> bool:
@@ -95,6 +105,10 @@ class ResonanceMonitor(xbmc.Monitor):
         except Exception:
             pass
         hide_unreadable_playlists = self._hide_unreadable_playlists()
+        menu_settings = self._menu_settings()
+        changed = (hide_unreadable_playlists != self.hide_unreadable_playlists
+                   or menu_settings != self.menu_settings)
+        self.menu_settings = menu_settings
         if hide_unreadable_playlists != self.hide_unreadable_playlists:
             self.hide_unreadable_playlists = hide_unreadable_playlists
             try:
@@ -107,7 +121,8 @@ class ResonanceMonitor(xbmc.Monitor):
                 )
             except Exception as exc:
                 xbmc.log("Resonance settings cache clear failed: " + type(exc).__name__ + ": " + str(exc), xbmc.LOGWARNING)
-        refresh_current_resonance_menu()
+        if changed:
+            refresh_current_resonance_menu()
 
 
 def refresh_playlists() -> None:
@@ -143,6 +158,7 @@ class AudioServer(ThreadingHTTPServer):
         self.spotty = spotty
         self.active = set()
         self.lock = threading.Lock()
+        self.connect = None
 
     def stop_audio(self):
         with self.lock:
@@ -168,6 +184,9 @@ class AudioRequest(BaseHTTPRequestHandler):
             self.end_headers()
             if not head:
                 self.wfile.write(b"ok")
+            return
+        if self.path.startswith("/connect/"):
+            self.live_connect(head)
             return
         match = re.fullmatch(r"/track/([A-Za-z0-9]{22})/(\d+(?:\.\d+)?)", self.path)
         if not match or not 0 < float(match[2]) <= 21600:
@@ -223,14 +242,75 @@ class AudioRequest(BaseHTTPRequestHandler):
             with self.server.lock:
                 self.server.active.discard(stream)
 
+    def live_connect(self, head):
+        bridge = self.server.connect
+        if bridge is None or not bridge.active or self.path != bridge.stream_path():
+            self.send_error(404)
+            return
+        generation = bridge.audio.generation
+        self.send_response(200)
+        self.send_header("Content-Type", "audio/wav")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Connection", "close")
+        self.end_headers()
+        self.close_connection = True
+        if head:
+            return
+        reader = bridge.audio.claim_reader()
+        xbmc.log("Resonance Connect HTTP reader=" + str(reader) + " generation=" + str(generation), xbmc.LOGINFO)
+        written = 0
+        try:
+            self.connection.settimeout(15)
+            # Give the live decoder a short reserve before Kodi begins reading.
+            # Native decoding is paced in real time, so a zero-reserve reader
+            # would expose every scheduling/network delay to the audio sink.
+            deadline = time.monotonic() + 3
+            with bridge.audio.condition:
+                while (bridge.audio.generation == generation and not bridge.audio.closed
+                       and sum(map(len, bridge.audio.readers.get(reader, ()))) < 176400
+                       and time.monotonic() < deadline):
+                    bridge.audio.condition.wait(0.1)
+            self.wfile.write(LIVE_WAV_HEADER)
+            next_report = time.monotonic() + 30
+            while True:
+                chunk = bridge.audio.read(generation, reader)
+                if chunk == b"":
+                    break
+                if chunk is not None:
+                    self.wfile.write(chunk)
+                    written += len(chunk)
+                if time.monotonic() >= next_report:
+                    xbmc.log("Resonance Connect buffer: received={} dropped={} waits={} sent={}".format(
+                        bridge.audio.received, bridge.audio.dropped, bridge.audio.waits, written), xbmc.LOGINFO)
+                    next_report = time.monotonic() + 30
+        except (OSError, ConnectionError) as exc:
+            xbmc.log("Resonance Connect HTTP: " + str(exc), xbmc.LOGINFO)
+        finally:
+            bridge.audio.release_reader(reader)
+            xbmc.log("Resonance Connect HTTP closed reader={} bytes={} generation={}/{}".format(reader, written, generation, bridge.audio.generation), xbmc.LOGINFO)
+
 
 class Player(xbmc.Player):
     def __init__(self, server):
         super().__init__()
         self.server = server
 
+    def onAVStarted(self):
+        if self.server.connect is not None:
+            self.server.connect.kodi_started()
+
+    def onPlayBackPaused(self):
+        if self.server.connect is not None:
+            self.server.connect.kodi_paused()
+
+    def onPlayBackResumed(self):
+        if self.server.connect is not None:
+            self.server.connect.kodi_resumed()
+
     def onPlayBackStopped(self):
         self.server.stop_audio()
+        if self.server.connect is not None:
+            self.server.connect.kodi_stopped()
 
     def onPlayBackError(self):
         self.server.stop_audio()
@@ -244,6 +324,8 @@ def run():
     auth = SpottyAuth(spotty)
     server = AudioServer(spotty)
     player = Player(server)
+    connect = ConnectBridge(spotty, auth, player, utils.RUNTIME_PATH)
+    server.connect = connect
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     next_auth = 0
@@ -304,6 +386,7 @@ def run():
                 window.clearProperty("resonance.logout")
                 try:
                     server.stop_audio()
+                    connect.stop()
                     auth.stop_device_connect_process()
                     utils.delete_resonance_credentials()
                     utils.clear_resonance_cache()
@@ -321,7 +404,10 @@ def run():
                 signed_in = auth.has_credentials() or _web_session_available()
                 if signed_in:
                     if auth.has_credentials():
-                        auth.ensure_spotify_connect_receiver_running()
+                        if connect.available:
+                            connect.enabled = True
+                        else:
+                            auth.ensure_spotify_connect_receiver_running()
                     else:
                         # Browser login covers the catalogue; playback still
                         # needs a librespot session. Advertise the box so the
@@ -360,9 +446,11 @@ def run():
             ):
                 next_playlist_refresh = now + PLAYLIST_REFRESH_SECONDS
                 threading.Thread(target=refresh_playlists, daemon=True).start()
+            connect.tick()
             if monitor.waitForAbort(1):
                 break
     finally:
+        connect.stop()
         server.stop_audio()
         server.shutdown()
         server.server_close()
