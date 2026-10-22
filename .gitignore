@@ -9,6 +9,8 @@ Thumbs.db
 *.tmp
 *.bak
 *.zip
+dist/
+.build/
 
 # Local Kodi/add-on runtime data and OAuth/debug caches should never be committed.
 userdata/
@@ -23,3 +25,10 @@ spotify-api-gate.lock
 # Local editor/project files.
 .idea/
 .vscode/
+
+# Local Python tooling caches.
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/

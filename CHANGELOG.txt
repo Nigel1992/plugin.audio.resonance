@@ -1,5 +1,63 @@
 Resonance Version 1
 
+v1.1.8 - 2026-10-22
+
+- Run setup and login dialogs outside Kodi's folder callback. Finish the
+  directory first so returning to the main menu cannot leave a busy spinner.
+- Defer release notes until the menu is loaded. Internal settings changes
+  no longer refresh that menu while it is being built, avoiding invalid
+  directory handles and a native Kodi crash on the Fire Cube.
+
+v1.1.7 - 2026-10-22
+
+- Built the Android ARMv7 playback helper with the same protocol compatibility
+  and Connect audio bridge as the AArch64 helper, supporting 32-bit devices.
+- The Android build script accepts RESONANCE_ANDROID_ARCH=armv7.
+
+v1.1.6 - 2026-10-22
+
+- Connect live audio now uses Kodi's VideoPlayer streaming engine. PAPlayer
+  stuttered on the real-time WAV stream even with correct PCM delivery.
+- Buffered the receiver pipe and removed per-frame process polling.
+- Restore song title and artwork when the streaming player starts.
+
+v1.1.5 - 2026-10-22
+
+- Fixed Connect audio stopping immediately when Kodi opens an additional
+  HTTP reader while preparing playback. Each reader now has an independent,
+  bounded audio buffer; closing a probe no longer ends the playing stream.
+- Added a startup audio reserve and increased the bounded Connect buffer
+  to tolerate short scheduling delays during playback.
+- Native Connect decoding now runs with a three-second reserve ahead of
+  real time so Kodi's prebuffering does not exhaust the available audio.
+
+v1.1.4 - 2026-10-22
+
+- Added Spotify Connect audio routing to Kodi on Android AArch64. After
+  pairing, select Kodi-Resonance in Spotify Desktop or mobile to play through
+  Kodi. Desktop play/pause, track changes, seek and volume use the receiver.
+- Connect audio uses a paced PCM pipe and a bounded loopback stream. Playback
+  commands and track details are framed separately from audio bytes.
+- Kodi pause/resume/stop are forwarded to the receiver. Starting another Kodi
+  item releases the Connect session. Existing in-addon track playback remains.
+
+v1.1.3 - 2026-10-22
+
+- Rebuilt the Android AArch64 playback helper with a consistent desktop
+  protocol identity. Spotify rejected the previous Android identity after
+  successful pairing, leaving track playback waiting indefinitely for audio.
+- Enabled helper error logging and included mDNS support in the new build.
+- Included pinned source revision, source patch, license and rebuild script.
+
+v1.1.2 - 2026-10-22
+
+- Restore the setup screen's missing receiver-start function. Pairing requests
+  go through the service instead of starting a second receiver in the UI.
+- Use the bundled legacy Android authentication helper for Spotify Connect
+  pairing, token creation, and receiver restarts. The Android playback helper
+  passes its self-test but exits immediately when used for initial pairing.
+- Keep the separate Spotty 2 helper for Android track playback.
+
 v1.1.1 - 2026-10-22
 
 - Fixed a crash on Kodi 21 that stopped the Spotify pairing screen from opening.
