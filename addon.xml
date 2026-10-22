@@ -24,12 +24,16 @@
         <source>https://github.com/Nigel1992/plugin.audio.resonance</source>
         <website>https://github.com/Nigel1992/plugin.audio.resonance</website>
         <news>[B]1.1.0[/B]
-- Added Your Spotify Library: Liked Songs, Saved Albums, Followed Artists and Saved and Followed Playlists.
-- Added Spotify write actions: like or unlike a track, save or remove an album, add or remove a track in your own playlists, create a new playlist, and unfollow a playlist or artist.
-- The context menu only offers the action that changes something, so Like on Spotify is hidden for a track that is already liked.
-- Every menu row has its own bundled icon, so the menus look the same in every skin.
+- Added Your Spotify Library with Liked Songs, Saved Albums, Followed Artists and your playlists.
+- Added Spotify write actions: like or unlike a track, save or remove an album, add or remove a track in your own playlists, create a playlist and unfollow a playlist or artist.
+- The context menu only offers the action that changes something.
+- Every menu row has its own bundled icon.
 - The Account and status page is grouped into Account, Catalogue, Playback and Maintenance.
-- Removed the local Kodi Favorites, the playlist search category and the Open Spotify link row. Spotify links still open through the open_link action.
+- Added a release notes window with the version and everything that changed after an update.
+- Fixed the artist context menu: everything, top songs, albums, singles and appears on work again.
+- Fixed the context menu of a track: Add to Spotify playlist and Create playlist with this track work again.
+- The playback status rows only carry information, only Quality and Connect react to a click.
+- Removed the local Kodi Favorites, the playlist search category and the Open Spotify link row.
 - Upgrading from 1.0.x needs one Reauthorize Spotify to approve the new library and playlist permissions.
 
 [B]1.0.3[/B]

@@ -2,6 +2,9 @@ Resonance Version 1
 
 v1.1.0 - 2026-10-22
 
+This release replaces the earlier 1.1.0 build and contains every change since
+1.0.3.
+
 - Added Your Spotify Library with Liked Songs, Saved Albums, Followed Artists and Saved and Followed Playlists views.
 - Added Spotify write actions: like or unlike a track, save or remove an album from the Spotify library, add a track to a playlist owned by the account, remove a track from one of those playlists, and unfollow a playlist or an artist.
 - Removing a track from a playlist now happens inside that playlist. The context entry is named **Remove from <playlist>** and removes the track from the playlist the page belongs to, so there is no playlist picker and the action only shows where the track really is in a playlist of your own.
@@ -12,12 +15,18 @@ v1.1.0 - 2026-10-22
 - Added bundled menu icons for every row, so the menus look the same in every skin and no longer depend on skin-specific Default*.png artwork.
 - The Account and status page is regrouped into Account, Catalogue, Playback and Maintenance sections with one icon per row and short labels.
 - The Playback status page was reworked to match, with the account state in its own section.
+- Added a release notes window. After every update Resonance shows the version and everything that changed in a big window. The same window is always available under Account and status with the row **What's new**.
+- Fixed the artist context menu. The entries **Artist: everything**, **Artist: top songs**, **Artist: albums**, **Artist: singles** and **Artist: appears on** work again. Spotify rejects an artist album page with more than ten entries per page, so the page size is capped at ten now.
+- Fixed the context menu of a track. **Add to Spotify playlist** and **Create playlist with this track** did nothing, because Kodi starts a context menu entry as a script and hands over the handle -1. The add-on stopped there instead of running the action. The other context menu entries of a track, album and playlist were affected in the same way and work again.
+- The rows of the playback status page only carry information. They cannot be clicked any more, so nothing happens by accident. Only the Quality row and the Connect row react to a click.
+- The unpaired state of the playback status page now starts the same pairing flow as the Connect row.
 - Removed the local Kodi Favorites. Spotify library writes now cover the same need directly.
 - Removed the playlist search category. Spotify never shares playlist contents with followers, so a playlist search could only list playlists Resonance cannot open.
 - Removed the Open Spotify link row from the main menu. Spotify links still open through the open_link action, for example from a Kodi favourites entry.
 - Playlists you own are now listed across every page of your playlists, not only the first 40.
 - Upgrading from 1.0.x needs one Reauthorize Spotify from Account and status, so Spotify can approve the new library and playlist permissions.
 - Documented the write actions, the library endpoints and the new account page in the README.
+- Fixed the catalogue tests that still expected the older request behaviour. The whole test suite passes again.
 
 v1.0.3 - 2026-10-20
 

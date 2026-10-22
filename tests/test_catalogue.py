@@ -18,7 +18,9 @@ class Response:
 
     def raise_for_status(self):
         if self.status_code >= 400:
-            raise module.requests.HTTPError()
+            import requests
+
+            raise requests.HTTPError()
 
     def json(self):
         return self.data
@@ -288,7 +290,7 @@ class CatalogueTests(unittest.TestCase):
 
     def test_playlists_come_from_imported_cache_without_network(self):
         # A cached listing renders without touching the Spotify Web API.
-        client, http = self.client([])
+        client, http = self.client([], spotify_user_id="user123")
         client.save("imported-playlists", [{"id": "a" * 22, "name": "Mix"}], ttl=86400)
         items, more = client.playlists()
         self.assertEqual([item["name"] for item in items], ["Mix"])
@@ -298,7 +300,7 @@ class CatalogueTests(unittest.TestCase):
     def test_playlists_without_cache_attempts_web_api_fetch(self):
         # With no imported list the Web API is consulted; failure surfaces as
         # the existing Unavailable message instead of a network error.
-        client, http = self.client([Response({}, 503)])
+        client, http = self.client([Response({}, 503)], spotify_user_id="user123")
         with self.assertRaises(module.Unavailable):
             client.playlists()
         self.assertEqual([call[0] for call in http.calls], ["https://api.spotify.com/v1/me/playlists"])
@@ -380,7 +382,7 @@ class CatalogueTests(unittest.TestCase):
         self.assertEqual(len(http.calls), 1)
 
     def test_cached_playlist_listing_keeps_followed_playlists_visible(self):
-        client, http = self.client([])
+        client, http = self.client([], spotify_user_id="user123")
         client.save("imported-playlists", [
             {"id": "a" * 22, "name": "Mine", "owner": {"id": "user123"}},
             {"id": "c" * 22, "name": "Followed only", "owner": {"id": "other"}},
@@ -447,7 +449,7 @@ class CatalogueTests(unittest.TestCase):
                 self.assertEqual(client.cached("imported-playlists"), [{"id": "a" * 22}])
 
     def test_empty_playlist_cache_is_refilled_when_opened(self):
-        client, _ = self.client([])
+        client, _ = self.client([], spotify_user_id="user123")
         def refresh():
             client.save("imported-playlists", [{"id": "a" * 22}])
             return True
@@ -493,20 +495,18 @@ class CatalogueTests(unittest.TestCase):
         for track in ({}, {"is_playable": False}, {"restrictions": {"reason": "market"}}, {"is_playable": True, "restrictions": {"reason": "market"}}):
             self.assertEqual(module.unplayable_reason(track), "")
 
-    def test_cached_track_without_playability_is_reverified(self):
+    def test_cached_track_is_used_without_another_request(self):
+        # The catalogue cache is trusted, so a track that is already known
+        # costs no request. A track that cannot be streamed is remembered
+        # after the first failed attempt instead.
         cached_track = {"id": "a" * 22, "name": "Ghost", "duration_ms": 298344}
         spotify_track = {"id": "a" * 22, "name": "Ghost", "duration_ms": 298344, "is_playable": False, "restrictions": {"reason": "market"}}
         client, http = self.client([Response(spotify_track)])
         client.save("track:" + "a" * 22, cached_track, ttl=86400)
         result = client.track("a" * 22)
-        self.assertEqual(http.calls[0][0], "https://api.spotify.com/v1/tracks/" + "a" * 22)
-        self.assertEqual(result["is_playable"], False)
-        self.assertEqual(client.cached("track:" + "a" * 22)["is_playable"], False)
-        self.assertNotEqual(module.unplayable_reason(result), "")
-        # A second play now short-circuits with the rejected entry.
-        second = client.track("a" * 22)
-        self.assertEqual(second["is_playable"], False)
-        self.assertEqual(len(http.calls), 1)
+        self.assertEqual(http.calls, [])
+        self.assertEqual(result["name"], "Ghost")
+        self.assertEqual(result["duration_ms"], 298344)
 
     def test_remembered_play_failure_blocks_until_spotify_verdict(self):
         client, http = self.client([])
@@ -590,9 +590,16 @@ class CatalogueTests(unittest.TestCase):
         client, http = self.client([Response({"items": [{"id": "b" * 22, "name": "Single"}], "next": "next"})])
         items, more = client.artist_albums(artist_id, "single", offset=40)
         self.assertEqual([item["name"] for item in items], ["Single"])
-        self.assertEqual(more, 80)
+        self.assertEqual(more, 50)
         self.assertEqual(http.calls[0][0], "https://api.spotify.com/v1/artists/" + artist_id + "/albums")
-        self.assertEqual(http.calls[0][1]["params"], {"include_groups": "single", "limit": 40, "offset": 40})
+        self.assertEqual(http.calls[0][1]["params"], {"include_groups": "single", "limit": 10, "offset": 40})
+
+    def test_artist_album_limit_is_capped_at_ten(self):
+        # Spotify answers a bigger limit with "400 Invalid limit".
+        artist_id = "a" * 22
+        client, http = self.client([Response({"items": []})])
+        client.artist_albums(artist_id, "album", limit=40)
+        self.assertEqual(http.calls[0][1]["params"]["limit"], 10)
 
     def test_artist_everything_combines_sections(self):
         artist_id = "a" * 22

@@ -8,6 +8,7 @@ import contextlib
 import importlib.util
 import os
 import pathlib
+import re
 import sys
 import tempfile
 import types
@@ -17,6 +18,19 @@ ROOT = pathlib.Path(__file__).parents[1]
 PROFILE = tempfile.mkdtemp(prefix="resonance-menu-test-")
 ADDED = []
 ITEMS = []
+FOLDERS = []
+DIALOGS = []
+ADDON_SETTINGS = {}
+
+
+def _addon_version():
+    """Read the version from addon.xml, like Kodi does."""
+    text = (ROOT / "addon.xml").read_text(encoding="utf-8")
+    match = re.search(r'version="([^"]+)"', text)
+    return match.group(1) if match else "0.0.0"
+
+
+VERSION = _addon_version()
 
 
 def _stub(**attrs):
@@ -65,12 +79,33 @@ class _ListItem:
 def _add_directory_item(handle, url, item, is_folder):
     ADDED.append((item.label, url, item.art))
     ITEMS.append(item)
+    FOLDERS.append(is_folder)
 
 
 def _translate(path):
     if path.startswith("special://"):
         return os.path.join(PROFILE, path.replace("special://", "").replace("/", "_"))
     return path
+
+
+class _Dialog:
+    """Stand-in for xbmcgui.Dialog that records the shown windows."""
+
+    def select(self, *args, **kwargs):
+        return -1
+
+    def yesno(self, *args, **kwargs):
+        return False
+
+    def ok(self, *args, **kwargs):
+        return None
+
+    def textviewer(self, heading, text="", *args, **kwargs):
+        DIALOGS.append((heading, text))
+        return None
+
+    def notification(self, *args, **kwargs):
+        return None
 
 
 def _load_plugin():
@@ -82,13 +117,13 @@ def _load_plugin():
             sleep=lambda *a, **k: None,
         ),
         "xbmcaddon": _stub(Addon=lambda *a, **k: types.SimpleNamespace(
-            getAddonInfo=lambda key: PROFILE if key == "profile" else str(ROOT),
-            getSetting=lambda key: "",
-            setSetting=lambda key, value: None,
+            getAddonInfo=lambda key: PROFILE if key == "profile" else (VERSION if key == "version" else str(ROOT)),
+            getSetting=lambda key: ADDON_SETTINGS.get(key, ""),
+            setSetting=lambda key, value: ADDON_SETTINGS.__setitem__(key, value),
         )),
         "xbmcgui": _stub(
             ListItem=_ListItem,
-            Dialog=types.SimpleNamespace(select=lambda *a, **k: -1, yesno=lambda *a, **k: False),
+            Dialog=_Dialog,
             Window=lambda *a, **k: types.SimpleNamespace(
                 getProperty=lambda *a, **k: "",
                 setProperty=lambda *a, **k: None,
@@ -155,6 +190,7 @@ class MenuTests(unittest.TestCase):
     def menu(self, query, signed_in=True):
         ADDED.clear()
         ITEMS.clear()
+        FOLDERS.clear()
         with _stub_utils(signed_in):
             self.plugin.PARAMS = dict(self.plugin.parse_qsl(query.lstrip("?")))
             self.plugin.run()
@@ -223,6 +259,68 @@ class MenuTests(unittest.TestCase):
         for icon in icons:
             self.assertTrue(os.path.isfile(icon), icon)
         self.assertGreater(len(set(icons)), 4)
+
+    def test_account_page_can_show_the_release_notes(self):
+        rows = self.menu("?action=status")
+        labels = self.labels(rows)
+        self.assertTrue(any("What's new" in label for label in labels))
+        notes = [url for label, url, _ in rows if "What's new" in label]
+        self.assertIn("action=whats_new", notes[0])
+
+    def test_playback_status_only_reacts_on_quality_and_connect(self):
+        rows = self.menu("?action=playback_status")
+        clickable = [(label, url) for (label, url, _), folder in zip(rows, FOLDERS) if folder]
+        self.assertEqual(
+            [url for _, url in clickable],
+            [self.plugin.url(action="playback_quality"),
+             self.plugin.url(action="connect_playback")],
+        )
+
+    def test_information_rows_cannot_be_clicked(self):
+        rows = self.menu("?action=playback_status")
+        for (label, url, _), folder in zip(rows, FOLDERS):
+            if folder:
+                continue
+            # A row without a path makes Kodi try to play it and answer with
+            # a "playback failed" message, so it points at the action that
+            # does nothing instead.
+            self.assertIn("action=noop", url, label)
+
+    def test_release_notes_are_shown_after_an_update(self):
+        ADDON_SETTINGS.pop("last_notes_version", None)
+        DIALOGS.clear()
+        self.menu("?action=home")
+        self.assertTrue(DIALOGS)
+        heading, notes = DIALOGS[-1]
+        self.assertIn(VERSION, heading)
+        self.assertIn("what's new", heading)
+        self.assertTrue(notes.strip())
+        self.assertEqual(ADDON_SETTINGS.get("last_notes_version"), VERSION)
+
+    def test_release_notes_are_shown_only_once_per_version(self):
+        ADDON_SETTINGS["last_notes_version"] = VERSION
+        DIALOGS.clear()
+        self.menu("?action=home")
+        self.assertEqual(DIALOGS, [])
+
+    def test_context_menu_entry_without_a_handle_still_runs_the_action(self):
+        # Kodi runs a context menu entry as a script and hands over the
+        # handle -1. The action still has to run, only the listing is
+        # skipped, otherwise "Add to Spotify playlist" and "Create playlist
+        # with this track" would do nothing at all.
+        ADDED.clear()
+        FOLDERS.clear()
+        DIALOGS.clear()
+        handle = self.plugin.HANDLE
+        self.plugin.HANDLE = -1
+        try:
+            with _stub_utils():
+                self.plugin.PARAMS = dict(self.plugin.parse_qsl("action=whats_new"))
+                self.plugin.run()
+        finally:
+            self.plugin.HANDLE = handle
+        self.assertTrue(DIALOGS)
+        self.assertEqual(ADDED, [])
 
 
 class ContextMenuTests(unittest.TestCase):
