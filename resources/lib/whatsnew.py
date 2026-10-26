@@ -8,6 +8,23 @@ user who skips several releases still sees the full picture.
 """
 
 NOTES = {
+    "1.2.1": """NEW
+  * Guided setup asks to finish setup when Resonance is not
+    fully signed in. Run it again from Settings > Account.
+  * Each setup step reports its result in a dialog.
+  * Reset Resonance in Settings > Account. A backup is kept.
+  * Home and Account and status show the next setup step.
+
+FIXED
+  * Pairing during setup no longer starts playback.
+  * A stalled Spotify Connect stream restarts its receiver.
+  * Repeated pairing rejections restart the pairing receiver.
+  * The Spotify Client ID survives a lost settings value.
+  * A second setup does not start while one is open.
+  * No busy spinner left after the setup sign-in step.
+
+""",
+
     "1.2.0": """NEW
   * Spotify Connect audio now works on LibreELEC (Linux ARM64) too,
     streaming through Kodi's VideoPlayer.

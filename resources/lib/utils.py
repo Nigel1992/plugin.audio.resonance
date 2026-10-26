@@ -77,6 +77,7 @@ ADDON_PATH = xbmcvfs.translatePath(
 ADDON_DATA_PATH = xbmcvfs.translatePath(
     f"special://profile/addon_data/{ADDON_ID}"
 )
+CLIENT_ID_FILE_NAME = "spotify-client-id"
 
 # Compatibility data source for one-time profile migration.
 LEGACY_ADDON_ID = "plugin.audio.spotify2"
@@ -402,7 +403,12 @@ def get_spotify_webapi_client_id() -> str:
     never rewrite it. Kodi may publish intermediate edit values while its
     settings dialog is open; replacing such a value here made manual Client-ID
     changes appear not to persist.
+
+    The setup also keeps a copy in the add-on data folder, because Kodi's
+    settings file can lose a value written by a running add-on. When the
+    setting is empty, the copy is used and written back into the setting.
     """
+    addon = None
     try:
         addon = xbmcaddon.Addon(id=ADDON_ID)
         value = addon.getSetting("spotify_webapi_client_id").strip()
@@ -410,7 +416,29 @@ def get_spotify_webapi_client_id() -> str:
         value = ""
     if re.fullmatch(r"[0-9A-Fa-f]{32}", value or ""):
         return value.lower()
+    try:
+        with open(os.path.join(ADDON_DATA_PATH, CLIENT_ID_FILE_NAME), encoding="utf-8") as stream:
+            saved = stream.read().strip()
+    except Exception:
+        saved = ""
+    if re.fullmatch(r"[0-9A-Fa-f]{32}", saved or ""):
+        saved = saved.lower()
+        if addon is not None:
+            try:
+                addon.setSetting("spotify_webapi_client_id", saved)
+            except Exception:
+                pass
+        return saved
     return ""
+
+
+def save_spotify_webapi_client_id(value: str) -> None:
+    """Store the Client ID in the setting and in the add-on data folder."""
+    value = (value or "").strip().lower()
+    os.makedirs(ADDON_DATA_PATH, exist_ok=True)
+    with open(os.path.join(ADDON_DATA_PATH, CLIENT_ID_FILE_NAME), "w", encoding="utf-8") as stream:
+        stream.write(value)
+    xbmcaddon.Addon(id=ADDON_ID).setSetting("spotify_webapi_client_id", value)
 
 
 def set_music_info(list_item, info_labels: Dict[str, Any]) -> None:

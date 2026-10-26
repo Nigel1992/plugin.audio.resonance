@@ -1,5 +1,29 @@
 Resonance Version 1
 
+v1.2.1 - 2026-10-27
+
+- Guided setup: asks to finish setup when Resonance is not fully signed in,
+  once per Kodi session, and can be rerun from Settings > Account > Run
+  guided setup. An interrupted setup resumes where it stopped.
+- The guided setup covers the Spotify Client ID, playback pairing over
+  Spotify Connect, and browser sign-in. Each step reports its result in a
+  dialog, followed by a summary. Notifications are not used for setup.
+- The Spotify Client ID is kept in the setting and in a backup file in the
+  add-on data folder, so a value lost from Kodi's settings file is restored.
+- Home and Account and status show the next missing setup step.
+- Removed the "Set up Spotify" entries; the guided setup replaces them.
+- Reset Resonance (Settings > Account): moves sign-in, cache and runtime
+  files into a backup folder. Restart Kodi afterwards.
+- Pairing during setup does not start playback. A paused track selected by
+  Spotify connects without opening the stream.
+- Spotify Connect audio that stalls for 10 seconds restarts the receiver.
+- Repeated Spotify pairing rejections restart the pairing receiver once.
+- Connect buffer, reader and event logging moved to debug level.
+- A second guided setup no longer starts while one is already open.
+- Fixed a busy spinner left on screen after the setup sign-in step.
+- Packaging: the zip no longer contains the add-on's dist folder, .gitignore
+  or TODO.md.
+
 v1.2.0 - 2026-10-23
 
 - Added Spotify Connect audio support to LibreELEC/Linux ARM64 using Kodi's

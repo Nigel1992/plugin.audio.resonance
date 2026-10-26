@@ -40,6 +40,30 @@ def byte_range(value, size):
 PLAYLIST_REFRESH_SECONDS = 30 * 60
 
 
+PAIRING_CHECK_SECONDS = 5
+PAIRING_FAILURE_LIMIT = 3
+
+
+def _file_size(path: str) -> int:
+    try:
+        return os.path.getsize(path)
+    except OSError:
+        return 0
+
+
+def _new_pairing_failures(path: str, offset: int):
+    """Count Spotify pairing rejections written since ``offset``."""
+    try:
+        if os.path.getsize(path) < offset:
+            offset = 0
+        with open(path, "rb") as stream:
+            stream.seek(offset)
+            data = stream.read()
+    except OSError:
+        return 0, offset
+    return data.count(b"MAC mismatch"), offset + len(data)
+
+
 def notify(message: str, heading: str = "Resonance") -> None:
     """Show a short Kodi notification without breaking the service loop."""
     xbmc.log(f"Resonance notification: {heading}: {message}", xbmc.LOGINFO)
@@ -58,6 +82,10 @@ def return_to_home() -> None:
     whatever non-Resonance window they are using.
     """
     try:
+        if xbmcgui.Window(10000).getProperty("resonance.setup-active"):
+            # The guided setup owns the screen; a container update here would
+            # be refused behind its dialogs and leave a busy spinner behind.
+            return
         if "plugin://plugin.audio.resonance/" not in (xbmc.getInfoLabel("Container.FolderPath") or ""):
             return
         xbmc.executebuiltin("Container.Update(plugin://plugin.audio.resonance/?action=home,replace)")
@@ -257,7 +285,7 @@ class AudioRequest(BaseHTTPRequestHandler):
         if head:
             return
         reader = bridge.audio.claim_reader()
-        xbmc.log("Resonance Connect HTTP reader=" + str(reader) + " generation=" + str(generation), xbmc.LOGINFO)
+        xbmc.log("Resonance Connect HTTP reader=" + str(reader) + " generation=" + str(generation), xbmc.LOGDEBUG)
         written = 0
         try:
             self.connection.settimeout(15)
@@ -281,13 +309,13 @@ class AudioRequest(BaseHTTPRequestHandler):
                     written += len(chunk)
                 if time.monotonic() >= next_report:
                     xbmc.log("Resonance Connect buffer: received={} dropped={} waits={} sent={}".format(
-                        bridge.audio.received, bridge.audio.dropped, bridge.audio.waits, written), xbmc.LOGINFO)
+                        bridge.audio.received, bridge.audio.dropped, bridge.audio.waits, written), xbmc.LOGDEBUG)
                     next_report = time.monotonic() + 30
         except (OSError, ConnectionError) as exc:
             xbmc.log("Resonance Connect HTTP: " + str(exc), xbmc.LOGINFO)
         finally:
             bridge.audio.release_reader(reader)
-            xbmc.log("Resonance Connect HTTP closed reader={} bytes={} generation={}/{}".format(reader, written, generation, bridge.audio.generation), xbmc.LOGINFO)
+            xbmc.log("Resonance Connect HTTP closed reader={} bytes={} generation={}/{}".format(reader, written, generation, bridge.audio.generation), xbmc.LOGDEBUG)
 
 
 class Player(xbmc.Player):
@@ -334,6 +362,10 @@ def run():
     # None on startup so a device that was already paired does not pop a
     # notification on every Kodi launch; only a live pairing transition does.
     was_signed_in = None
+    pairing_log = os.path.join(utils.RUNTIME_PATH, "device-connect.log")
+    pairing_offset = _file_size(pairing_log)
+    pairing_failures = 0
+    next_pairing_check = 0.0
 
     def _web_session_available():
         try:
@@ -418,8 +450,11 @@ def run():
                     access = restore_access_token()
                     window.setProperty("resonance.status", "Signed in" if access else "Signed in; catalogue token unavailable")
                     window.setProperty("resonance.signed-in", "1")
-                    if was_signed_in is False:
-                        if access and auth.has_credentials():
+                    if was_signed_in is False and not window.getProperty("resonance.setup-active"):
+                        # Only claim what this step really did: the browser
+                        # token is the catalogue sign-in, playback pairing is
+                        # the Device-Connect credentials.
+                        if _web_session_available() and auth.has_credentials():
                             notify("Fully signed in to Spotify")
                         elif auth.has_credentials():
                             notify("Playback pairing complete. Next, sign in with the URL for search and playlists.")
@@ -446,6 +481,18 @@ def run():
             ):
                 next_playlist_refresh = now + PLAYLIST_REFRESH_SECONDS
                 threading.Thread(target=refresh_playlists, daemon=True).start()
+            if not auth.has_credentials() and now >= next_pairing_check:
+                next_pairing_check = now + PAIRING_CHECK_SECONDS
+                failures, pairing_offset = _new_pairing_failures(pairing_log, pairing_offset)
+                pairing_failures += failures
+                if pairing_failures >= PAIRING_FAILURE_LIMIT:
+                    pairing_failures = 0
+                    xbmc.log("Resonance pairing rejected repeatedly; restarting the pairing receiver", xbmc.LOGWARNING)
+                    notify(
+                        "Spotify rejected this pairing. Restarting the pairing receiver; pick this box in Spotify again.",
+                    )
+                    auth.ensure_device_connect_running(fresh=True, force=True)
+                    pairing_offset = _file_size(pairing_log)
             connect.tick()
             if monitor.waitForAbort(1):
                 break
