@@ -114,11 +114,13 @@ def _load_plugin():
             LOGDEBUG=0, LOGINFO=0, LOGERROR=0, LOGWARNING=0,
             log=lambda *a, **k: None,
             executebuiltin=lambda *a, **k: None,
+            getInfoLabel=lambda *a, **k: "",
             sleep=lambda *a, **k: None,
         ),
         "xbmcaddon": _stub(Addon=lambda *a, **k: types.SimpleNamespace(
             getAddonInfo=lambda key: PROFILE if key == "profile" else (VERSION if key == "version" else str(ROOT)),
             getSetting=lambda key: ADDON_SETTINGS.get(key, ""),
+            getLocalizedString=lambda sid: "L%s" % sid,
             setSetting=lambda key, value: ADDON_SETTINGS.__setitem__(key, value),
         )),
         "xbmcgui": _stub(

@@ -1549,3 +1549,191 @@ msgstr "Hides followed playlists that Spotify will not let this app open because
 msgctxt "#11398"
 msgid "Catalogue"
 msgstr "Catalogue"
+
+msgctxt "#11399"
+msgid "Run guided setup"
+msgstr "Run guided setup"
+
+msgctxt "#11400"
+msgid "Walks through the Spotify Client ID, playback pairing and sign-in again."
+msgstr "Walks through the Spotify Client ID, playback pairing and sign-in again."
+
+msgctxt "#11401"
+msgid "Resonance setup"
+msgstr "Resonance setup"
+
+msgctxt "#11402"
+msgid "Welcome to Resonance.\n\nSetup takes a few minutes: a Spotify app Client ID, pairing this box for playback, and signing in to Spotify."
+msgstr "Welcome to Resonance.\n\nSetup takes a few minutes: a Spotify app Client ID, pairing this box for playback, and signing in to Spotify."
+
+msgctxt "#11403"
+msgid "Continue Resonance setup?\n\nSteps you already finished are skipped."
+msgstr "Continue Resonance setup?\n\nSteps you already finished are skipped."
+
+msgctxt "#11404"
+msgid "Start"
+msgstr "Start"
+
+msgctxt "#11405"
+msgid "Skip"
+msgstr "Skip"
+
+msgctxt "#11406"
+msgid "Step 1 of 3: Spotify app"
+msgstr "Step 1 of 3: Spotify app"
+
+msgctxt "#11407"
+msgid "Create a free app at developer.spotify.com/dashboard and add this Redirect URI:\n\n{}\n\nNext, enter the app's 32-character Client ID."
+msgstr "Create a free app at developer.spotify.com/dashboard and add this Redirect URI:\n\n{}\n\nNext, enter the app's 32-character Client ID."
+
+msgctxt "#11408"
+msgid "Spotify Client ID"
+msgstr "Spotify Client ID"
+
+msgctxt "#11409"
+msgid "That is not a valid Client ID. Run guided setup again from Settings."
+msgstr "That is not a valid Client ID. Run guided setup again from Settings."
+
+msgctxt "#11410"
+msgid "Step 2 of 3: Playback"
+msgstr "Step 2 of 3: Playback"
+
+msgctxt "#11411"
+msgid "Playback needs this box paired with Spotify once. The next screen waits for it."
+msgstr "Playback needs this box paired with Spotify once. The next screen waits for it."
+
+msgctxt "#11412"
+msgid "Step 3 of 3: Sign in"
+msgstr "Step 3 of 3: Sign in"
+
+msgctxt "#11413"
+msgid "Sign in with Spotify in your browser for search and playlists."
+msgstr "Sign in with Spotify in your browser for search and playlists."
+
+msgctxt "#11414"
+msgid "Setup complete. Search, playlists and playback are ready."
+msgstr "Setup complete. Search, playlists and playback are ready."
+
+msgctxt "#11415"
+msgid "Waiting for Spotify to pair...\n\nOn your phone or PC, open Spotify, tap the speaker icon, and pick '{}'."
+msgstr "Waiting for Spotify to pair...\n\nOn your phone or PC, open Spotify, tap the speaker icon, and pick '{}'."
+
+msgctxt "#11416"
+msgid "Not paired yet.\n\nOn your phone or PC, open Spotify, tap the speaker icon, and pick '{}'. Then retry."
+msgstr "Not paired yet.\n\nOn your phone or PC, open Spotify, tap the speaker icon, and pick '{}'. Then retry."
+
+msgctxt "#11417"
+msgid "Not paired yet. Open Spotify, tap the speaker icon, pick '{}', then try again."
+msgstr "Not paired yet. Open Spotify, tap the speaker icon, pick '{}', then try again."
+
+msgctxt "#11418"
+msgid "Retry"
+msgstr "Retry"
+
+msgctxt "#11419"
+msgid "Cancel"
+msgstr "Cancel"
+
+msgctxt "#11420"
+msgid "Next: enter your Spotify Client ID"
+msgstr "Next: enter your Spotify Client ID"
+
+msgctxt "#11421"
+msgid "Next: pair playback with Spotify"
+msgstr "Next: pair playback with Spotify"
+
+msgctxt "#11422"
+msgid "Next: sign in for search and playlists"
+msgstr "Next: sign in for search and playlists"
+
+msgctxt "#11423"
+msgid "Reset Resonance"
+msgstr "Reset Resonance"
+
+msgctxt "#11424"
+msgid "Clears Spotify sign-in, playback pairing, cache and setup choices. A backup is kept. Restart Kodi afterwards."
+msgstr "Clears Spotify sign-in, playback pairing, cache and setup choices. A backup is kept. Restart Kodi afterwards."
+
+msgctxt "#11425"
+msgid "Reset Resonance? Spotify sign-in, playback pairing, the cache and setup choices are cleared. A backup is kept in the add-on data folder. Restart Kodi afterwards to finish."
+msgstr "Reset Resonance? Spotify sign-in, playback pairing, the cache and setup choices are cleared. A backup is kept in the add-on data folder. Restart Kodi afterwards to finish."
+
+msgctxt "#11426"
+msgid "Resonance was reset. Restart Kodi, then run guided setup."
+msgstr "Resonance was reset. Restart Kodi, then run guided setup."
+
+msgctxt "#11427"
+msgid "Reset"
+msgstr "Reset"
+
+msgctxt "#11428"
+msgid "Guided setup is already running."
+msgstr "Guided setup is already running."
+
+msgctxt "#11429"
+msgid "Spotify Client ID saved."
+msgstr "Spotify Client ID saved."
+
+msgctxt "#11430"
+msgid "The Client ID was not saved. It must be the 32 letters and numbers from your Spotify app. Run guided setup again to retry."
+msgstr "The Client ID was not saved. It must be the 32 letters and numbers from your Spotify app. Run guided setup again to retry."
+
+msgctxt "#11431"
+msgid "Playback is paired with Spotify as '{}'."
+msgstr "Playback is paired with Spotify as '{}'."
+
+msgctxt "#11432"
+msgid "Playback is not paired yet. Run guided setup again to finish pairing."
+msgstr "Playback is not paired yet. Run guided setup again to finish pairing."
+
+msgctxt "#11433"
+msgid "Signed in to Spotify. Search and playlists are ready."
+msgstr "Signed in to Spotify. Search and playlists are ready."
+
+msgctxt "#11434"
+msgid "Browser sign-in did not finish. Run guided setup again to finish it."
+msgstr "Browser sign-in did not finish. Run guided setup again to finish it."
+
+msgctxt "#11435"
+msgid "Setup summary"
+msgstr "Setup summary"
+
+msgctxt "#11436"
+msgid "Done"
+msgstr "Done"
+
+msgctxt "#11437"
+msgid "Not done"
+msgstr "Not done"
+
+msgctxt "#11438"
+msgid "Already done"
+msgstr "Already done"
+
+msgctxt "#11439"
+msgid "Setup is not finished. Run guided setup again to complete the steps marked Not done."
+msgstr "Setup is not finished. Run guided setup again to complete the steps marked Not done."
+
+msgctxt "#11440"
+msgid "Spotify Client ID"
+msgstr "Spotify Client ID"
+
+msgctxt "#11441"
+msgid "Playback pairing"
+msgstr "Playback pairing"
+
+msgctxt "#11442"
+msgid "Browser sign-in"
+msgstr "Browser sign-in"
+
+msgctxt "#11443"
+msgid "Resonance is not fully set up yet. Finish setup now?"
+msgstr "Resonance is not fully set up yet. Finish setup now?"
+
+msgctxt "#11444"
+msgid "Finish setup"
+msgstr "Finish setup"
+
+msgctxt "#11445"
+msgid "Later"
+msgstr "Later"

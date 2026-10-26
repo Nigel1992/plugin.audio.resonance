@@ -3,10 +3,16 @@
   <section id="plugin.audio.resonance">
     <category id="account" label="11109">
       <group id="1">
-        <setting id="setup_spotify" type="action" label="11118">
+        <setting id="run_guided_setup" type="action" label="11399">
           <level>0</level>
-          <help>11387</help>
-          <data>RunPlugin(plugin://plugin.audio.resonance/?action=setup)</data>
+          <help>11400</help>
+          <data>RunPlugin(plugin://plugin.audio.resonance/?action=guided_setup)</data>
+          <control type="button" format="action"><close>false</close></control>
+        </setting>
+        <setting id="reset_resonance" type="action" label="11423">
+          <level>0</level>
+          <help>11424</help>
+          <data>RunPlugin(plugin://plugin.audio.resonance/?action=reset_addon)</data>
           <control type="button" format="action"><close>false</close></control>
         </setting>
       </group>

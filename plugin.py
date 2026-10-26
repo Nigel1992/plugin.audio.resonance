@@ -1,5 +1,6 @@
 """Small Kodi music browser. No background catalogue requests."""
 
+import contextlib
 import hashlib
 import json
 import os
@@ -17,6 +18,11 @@ import xbmcvfs
 from resources.lib import catalogue
 
 ADDON = xbmcaddon.Addon()
+
+
+def _t(string_id, *args):
+    text = ADDON.getLocalizedString(string_id)
+    return text.format(*args) if args else text
 BASE = "plugin://plugin.audio.resonance/"
 DATA = xbmcvfs.translatePath(ADDON.getAddonInfo("profile"))
 
@@ -383,13 +389,15 @@ def status(client):
     account_state = xbmcgui.Window(10000).getProperty("resonance.status")
 
     section("ACCOUNT")
+    step = next_setup_step()
+    if step:
+        row(step[0], step[1], icon="setup.png")
     if signed_in:
         row(account_state or "Signed in", icon="account.png")
         row("Reauthorize Spotify", "web_login", icon="key.png")
     else:
         row(account_state or "Signed out", icon="account.png")
         row("Sign in with Spotify", "web_login", icon="key.png")
-        row("Set up Spotify", "setup", icon="setup.png")
         try:
             import web_auth
             from utils import get_spotify_webapi_client_id
@@ -408,14 +416,14 @@ def status(client):
     else:
         row("Playlists not loaded", "refresh_playlists", icon="refresh.png")
     if not token():
-        row("Catalogue token missing", "setup", icon="setup.png")
+        row("Catalogue token missing", "web_login", icon="key.png")
 
     section("PLAYBACK")
     row("Playback status", "playback_status", icon="playback.png")
     if spotty_has_credentials():
         row("Connect: " + get_spotify_device_name(), "connect_playback", icon="cast.png")
     else:
-        row("Not paired", "setup", icon="setup.png")
+        row("Not paired", "guided_setup", icon="setup.png")
     row("Quality: " + get_playback_settings()[0] + " kbps", "playback_quality", icon="quality.png")
 
     section("MAINTENANCE")
@@ -875,7 +883,143 @@ def setup_spotify():
     xbmc.executebuiltin("Container.Update(" + url(action="home") + ",replace)")
 
 
-def guide_playback_pairing(track_id=None):
+WIZARD_DONE_SETTING = "setup_wizard_completed"
+SETUP_FLOW_PROPERTY = "resonance.setup-active"
+SETUP_PROMPTED_PROPERTY = "resonance.setup-prompted"
+
+
+@contextlib.contextmanager
+def _setup_flow():
+    """Mark the window as owned by the guided setup while it runs.
+
+    The service reads this and does not reload the Resonance listing during
+    the flow, because a reload behind open dialogs leaves a busy spinner.
+    """
+    window = xbmcgui.Window(10000)
+    previous = window.getProperty(SETUP_FLOW_PROPERTY)
+    window.setProperty(SETUP_FLOW_PROPERTY, "1")
+    try:
+        yield
+    finally:
+        window.setProperty(SETUP_FLOW_PROPERTY, previous)
+
+
+def setup_prompt_needed():
+    """Return True when Resonance is not fully signed in and has not asked yet.
+
+    The question is asked once per Kodi session, so choosing Later does not
+    keep coming back on every menu open.
+    """
+    window = xbmcgui.Window(10000)
+    if window.getProperty(SETUP_FLOW_PROPERTY) or window.getProperty(SETUP_PROMPTED_PROPERTY):
+        return False
+    return next_setup_step() is not None
+
+
+def guided_setup(prompt=False):
+    """Run the guided setup, then refresh the Resonance listing if it is shown.
+
+    Only one setup runs at a time. Opening Resonance or Settings while a setup
+    is already on screen does not start a second one. When started from the
+    prompt on opening Resonance, the question is asked there and the welcome
+    screen is skipped.
+    """
+    if xbmcgui.Window(10000).getProperty(SETUP_FLOW_PROPERTY):
+        xbmcgui.Dialog().notification("Resonance", _t(11428))
+        return
+    if prompt and not xbmcgui.Dialog().yesno(
+        "Resonance",
+        _t(11443),
+        nolabel=_t(11445),
+        yeslabel=_t(11444),
+    ):
+        return
+    with _setup_flow():
+        _run_guided_setup(welcome=not prompt)
+    if "plugin://plugin.audio.resonance/" in (xbmc.getInfoLabel("Container.FolderPath") or ""):
+        xbmc.executebuiltin("Container.Update(" + url(action="home") + ",replace)")
+
+
+def _setup_started():
+    from utils import get_spotify_webapi_client_id, spotty_has_credentials
+    return bool(get_spotify_webapi_client_id()) or spotty_has_credentials()
+
+
+def _run_guided_setup(welcome=True):
+    """Walk a new user through the three one-time setup steps.
+
+    Each step ends with a dialog that says what happened, and the last dialog
+    lists every step. Skipping marks the wizard as done; it can always be run
+    again from Settings > Account. A step that is not finished stops the wizard
+    without marking it done, so the next launch offers it again. Steps that
+    are already complete are skipped and reported as already done.
+    """
+    import web_auth
+    from utils import get_spotify_device_name, get_spotify_webapi_client_id, spotty_has_credentials
+    dialog = xbmcgui.Dialog()
+    if welcome:
+        text = _t(11403) if _setup_started() else _t(11402)
+        if not dialog.yesno(_t(11401), text, nolabel=_t(11405), yeslabel=_t(11404)):
+            ADDON.setSetting(WIZARD_DONE_SETTING, "true")
+            return
+
+    results = []
+
+    def finish(complete):
+        if complete:
+            ADDON.setSetting(WIZARD_DONE_SETTING, "true")
+        lines = []
+        for name, status in results:
+            lines.append("{}: {}".format(_t(name), _t(status)))
+        dialog.ok(_t(11435), "\n".join(lines) + "\n\n" + _t(11414 if complete else 11439))
+
+    if re.fullmatch(r"[0-9A-Fa-f]{32}", get_spotify_webapi_client_id() or ""):
+        results.append((11440, 11438))
+    else:
+        dialog.ok(
+            _t(11406),
+            _t(11407, web_auth.DEFAULT_WEB_AUTH_REDIRECT_URI),
+        )
+        client_id = (dialog.input(_t(11408), type=xbmcgui.INPUT_ALPHANUM) or "").strip()
+        if not re.fullmatch(r"[0-9A-Fa-f]{32}", client_id):
+            results.append((11440, 11437))
+            dialog.ok(_t(11406), _t(11430))
+            finish(False)
+            return
+        from utils import save_spotify_webapi_client_id
+        save_spotify_webapi_client_id(client_id)
+        results.append((11440, 11436))
+        dialog.ok(_t(11406), _t(11429))
+
+    if spotty_has_credentials():
+        results.append((11441, 11438))
+    else:
+        dialog.ok(_t(11410), _t(11411))
+        if not guide_playback_pairing(announce=False):
+            results.append((11441, 11437))
+            dialog.ok(_t(11410), _t(11432))
+            finish(False)
+            return
+        results.append((11441, 11436))
+        dialog.ok(_t(11410), _t(11431, get_spotify_device_name()))
+
+    if token():
+        results.append((11442, 11438))
+    else:
+        dialog.ok(_t(11412), _t(11413))
+        web_login()
+        if not token():
+            results.append((11442, 11437))
+            dialog.ok(_t(11412), _t(11434))
+            finish(False)
+            return
+        results.append((11442, 11436))
+        dialog.ok(_t(11412), _t(11433))
+
+    finish(True)
+
+
+def guide_playback_pairing(track_id=None, announce=True):
     """Walk the user through the one-time Spotify Device Connect pairing.
 
     Browser sign-in already covers search and playlists; this box still
@@ -884,39 +1028,79 @@ def guide_playback_pairing(track_id=None):
     """
     from utils import get_spotify_device_name, spotty_has_credentials
     device = get_spotify_device_name()
-    if not xbmcgui.Dialog().yesno(
-        "Resonance",
-        "Search and playlists are ready, but playing songs needs the Spotify app to pair this box once:\n\n"
-        "On your phone or PC, open Spotify, tap the speaker icon, and pick '{}'.\n\n"
-        "It is waiting to be found now.".format(device),
-        nolabel="Cancel",
-        yeslabel="Retry",
-    ):
-        return
-    _ensure_device_connect_receiver()
-    progress = xbmcgui.DialogProgress()
-    progress.create(
-        "Resonance",
-        "Waiting for Spotify to pair...\n\nOn your phone or PC, open Spotify, tap the speaker icon, and pick '{}'.".format(device),
-    )
-    try:
-        start = time.monotonic()
-        while not spotty_has_credentials():
-            elapsed = time.monotonic() - start
-            if progress.iscanceled() or elapsed >= SIGN_IN_WAIT_SECONDS:
-                break
-            progress.update(int(elapsed * 100 / SIGN_IN_WAIT_SECONDS))
-            xbmc.sleep(500)
-    finally:
-        progress.close()
-    if spotty_has_credentials():
-        if track_id:
-            xbmc.executebuiltin('PlayMedia("' + url(action="play", id=track_id) + '")')
-    else:
-        xbmcgui.Dialog().notification(
+    while not spotty_has_credentials():
+        # Wait first and only ask to retry after a wait ends without pairing.
+        # Asking first left a Retry/Cancel prompt on screen after the box had
+        # already been paired from the phone.
+        _ensure_device_connect_receiver()
+        progress = xbmcgui.DialogProgress()
+        progress.create("Resonance", _t(11415, device))
+        try:
+            start = time.monotonic()
+            while not spotty_has_credentials():
+                elapsed = time.monotonic() - start
+                if progress.iscanceled() or elapsed >= SIGN_IN_WAIT_SECONDS:
+                    break
+                progress.update(int(elapsed * 100 / SIGN_IN_WAIT_SECONDS))
+                xbmc.sleep(500)
+        finally:
+            progress.close()
+        if spotty_has_credentials():
+            break
+        if not xbmcgui.Dialog().yesno(
             "Resonance",
-            "Not paired yet. Open Spotify, tap the speaker icon, pick '{}', then try again.".format(device),
-        )
+            _t(11416, device),
+            nolabel=_t(11419),
+            yeslabel=_t(11418),
+        ):
+            if announce:
+                xbmcgui.Dialog().notification("Resonance", _t(11417, device))
+            return False
+    if track_id:
+        xbmc.executebuiltin('PlayMedia("' + url(action="play", id=track_id) + '")')
+    return True
+
+
+def reset_resonance():
+    """Move Resonance state into a backup folder so the add-on starts fresh.
+
+    Nothing is deleted. The backup keeps the old sign-in, cache and runtime
+    files. The legacy-migration marker stays, so old data is never copied back.
+    Kodi keeps running the old receiver until it restarts, so the user is asked
+    to restart Kodi afterwards.
+    """
+    if not xbmcgui.Dialog().yesno("Resonance", _t(11425), nolabel=_t(11419), yeslabel=_t(11427)):
+        return
+    backup = os.path.join(DATA, "reset-backup-" + time.strftime("%Y%m%d-%H%M%S"))
+    os.makedirs(backup, exist_ok=True)
+    for name in os.listdir(DATA):
+        if name in ("settings.xml", ".legacy-data-migrated") or name.startswith("reset-backup-"):
+            continue
+        os.replace(os.path.join(DATA, name), os.path.join(backup, name))
+    ADDON.setSetting("spotify_webapi_client_id", "")
+    ADDON.setSetting("spotify_account_email", "")
+    ADDON.setSetting(WIZARD_DONE_SETTING, "false")
+    xbmcgui.Dialog().notification("Resonance", _t(11426))
+
+
+def next_setup_step():
+    """Return (label, action) for the first unfinished setup step, or None."""
+    from utils import get_spotify_webapi_client_id, spotty_has_credentials
+    if not re.fullmatch(r"[0-9A-Fa-f]{32}", get_spotify_webapi_client_id() or ""):
+        return _t(11420), "guided_setup"
+    if not spotty_has_credentials():
+        return _t(11421), "guided_setup"
+    if not token() and not _browser_session_saved():
+        return _t(11422), "web_login"
+    return None
+
+
+def _browser_session_saved():
+    from utils import web_auth as browser_store
+    try:
+        return browser_store().has_session()
+    except Exception:
+        return False
 
 
 def stream_url(track, client):
@@ -982,15 +1166,12 @@ def show_playlist_copy_help(identity, name="", client=None):
 
 
 def home_menu():
-    from utils import resonance_signed_in, spotty_has_credentials
+    from utils import resonance_signed_in
     if resonance_signed_in():
         row("Your Spotify Library", "spotify_library_menu")
         row("Search", "search_menu")
-        if not spotty_has_credentials():
-            row("Set up Spotify", "setup")
     else:
         row("Search", "search_menu")
-        row("Set up Spotify", "setup")
     row("Playback status", "playback_status")
     row("Account and status", "status")
     end_directory(cache_to_disc=False)
@@ -1004,7 +1185,8 @@ def run():
     migrate_legacy_addon_data()
     action = PARAMS.get("action", "home")
     if HANDLE >= 0 and action in (
-        "setup", "web_login", "web_login_paste", "connect", "connect_settings", "connect_playback", "whats_new",
+        "web_login", "web_login_paste", "connect", "connect_settings", "connect_playback", "whats_new",
+        "guided_setup",
     ):
         # Finish the folder request before opening long-running auth dialogs.
         # Kodi rejects Container.Update while that request is still active,
@@ -1012,6 +1194,18 @@ def run():
         home_menu()
         command = "RunPlugin(" + url(**PARAMS) + ")"
         xbmc.executebuiltin("AlarmClock(ResonanceAuth," + command + ",00:00:01,silent)")
+        return
+    if action == "home" and HANDLE >= 0 and setup_prompt_needed():
+        xbmcgui.Window(10000).setProperty(SETUP_PROMPTED_PROPERTY, "1")
+        home_menu()
+        command = "RunPlugin(" + url(action="guided_setup", prompt="1") + ")"
+        xbmc.executebuiltin("AlarmClock(ResonanceAuth," + command + ",00:00:01,silent)")
+        return
+    if action == "guided_setup":
+        guided_setup(prompt=PARAMS.get("prompt") == "1")
+        return
+    if action == "reset_addon":
+        reset_resonance()
         return
     if action == "whats_new" and HANDLE < 0:
         show_release_notes()
@@ -1089,9 +1283,6 @@ def run():
                 else:
                     xbmcgui.Dialog().notification("Resonance", "Cache cleared")
                     xbmc.executebuiltin("Container.Refresh")
-        return
-    if action == "setup":
-        setup_spotify()
         return
     if action == "web_login":
         web_login()

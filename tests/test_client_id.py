@@ -25,6 +25,25 @@ class ClientIdTests(unittest.TestCase):
             self.assertEqual(ns["get_spotify_webapi_client_id"](), expected)
         addon.setSetting.assert_not_called()
 
+    def test_saved_copy_restores_an_empty_setting(self):
+        import tempfile
+        source = ROOT / "resources/lib/utils.py"
+        tree = ast.parse(source.read_text())
+        function = next(n for n in tree.body if isinstance(n, ast.FunctionDef)
+                        and n.name == "get_spotify_webapi_client_id")
+        with tempfile.TemporaryDirectory() as folder:
+            with open(f"{folder}/spotify-client-id", "w", encoding="utf-8") as stream:
+                stream.write("AB" * 16)
+            addon = Mock()
+            addon.getSetting.return_value = ""
+            api = Mock()
+            api.Addon.return_value = addon
+            ns = {"re": re, "os": __import__("os"), "xbmcaddon": api, "ADDON_ID": "test",
+                  "ADDON_DATA_PATH": folder, "CLIENT_ID_FILE_NAME": "spotify-client-id"}
+            exec(compile(ast.Module(body=[function], type_ignores=[]), str(source), "exec"), ns)
+            self.assertEqual(ns["get_spotify_webapi_client_id"](), "ab" * 16)
+            addon.setSetting.assert_called_once_with("spotify_webapi_client_id", "ab" * 16)
+
     def test_no_bundled_client_id_constant_in_code(self):
         source = (ROOT / "resources/lib/utils.py").read_text()
         self.assertNotIn("RESONANCE_DEFAULT_WEBAPI_CLIENT_ID", source)
@@ -54,8 +73,9 @@ class ClientIdTests(unittest.TestCase):
         root = ET.parse(ROOT / "resources/settings.xml")
         account = root.find('.//category[@id="account"]')
         actions = account.findall('.//setting[@type="action"]')
-        self.assertEqual([setting.get("id") for setting in actions], ["setup_spotify"])
-        self.assertEqual(actions[0].findtext("data"), "RunPlugin(plugin://plugin.audio.resonance/?action=setup)")
+        self.assertEqual([setting.get("id") for setting in actions], ["run_guided_setup", "reset_resonance"])
+        self.assertEqual(actions[0].findtext("data"), "RunPlugin(plugin://plugin.audio.resonance/?action=guided_setup)")
+        self.assertEqual(actions[1].findtext("data"), "RunPlugin(plugin://plugin.audio.resonance/?action=reset_addon)")
         self.assertIsNone(account.find('.//setting[@id="connect_spotify"]'))
         self.assertIsNone(account.find('.//setting[@id="web_login_spotify"]'))
 

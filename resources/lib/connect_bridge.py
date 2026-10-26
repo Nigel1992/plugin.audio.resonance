@@ -11,6 +11,9 @@ import uuid
 import xbmc
 import xbmcgui
 
+CONNECT_STALL_SECONDS = 10
+SETUP_FLOW_PROPERTY = "resonance.setup-active"
+
 FRAME_LIMIT = 1024 * 1024
 PCM_PER_SECOND = 44100 * 2 * 2
 LIVE_WAV_HEADER = struct.pack(
@@ -130,6 +133,8 @@ class ConnectBridge:
         self.reader = None
         self.command_lock = threading.Lock()
         self.pending_item = None
+        self.last_audio = time.monotonic()
+        self.stall_restarts = 0
 
     def stream_path(self):
         return "/connect/{}/{}.wav".format(self.session, self.audio.generation)
@@ -143,7 +148,7 @@ class ConnectBridge:
             return False
 
     def command(self, name, **values):
-        xbmc.log("Resonance Connect command: " + name, xbmc.LOGINFO)
+        xbmc.log("Resonance Connect command: " + name, xbmc.LOGDEBUG)
         with self.command_lock:
             if self.process is None or self.process.poll() is not None:
                 return
@@ -165,6 +170,7 @@ class ConnectBridge:
                 if kind == b"A":
                     before = time.monotonic()
                     self.audio.put(payload)
+                    self.last_audio = before
                     elapsed = time.monotonic() - before
                     put_seconds += elapsed
                     max_put = max(max_put, elapsed)
@@ -173,7 +179,7 @@ class ConnectBridge:
                     event = json.loads(payload)
                     if not isinstance(event, dict):
                         raise ValueError("Invalid Connect event")
-                    xbmc.log("Resonance Connect event: " + str(event.get("event")), xbmc.LOGINFO)
+                    xbmc.log("Resonance Connect event: " + str(event.get("event")), xbmc.LOGDEBUG)
                     if event.get("event") in ("loading", "seeked", "stopped", "unavailable"):
                         self.switching = True
                         self.audio.reset()
@@ -220,6 +226,7 @@ class ConnectBridge:
             while not self.events.empty():
                 self.events.get_nowait()
             self.process = self.spotty.run_connect_bridge(os.path.join(self.directory, "connect-bridge.log"))
+            self.last_audio = time.monotonic()
             self.auth.keep_connect_process(self.process)
             self.reader = threading.Thread(target=self._read, args=(self.process,), daemon=True)
             self.reader.start()
@@ -249,7 +256,7 @@ class ConnectBridge:
                 break
             kind = event.get("event")
             if kind == "pipe_stats":
-                xbmc.log("Resonance Connect pipe: " + str(event), xbmc.LOGINFO)
+                xbmc.log("Resonance Connect pipe: " + str(event), xbmc.LOGDEBUG)
             elif kind == "track":
                 self.metadata = event
             elif kind in ("playing", "paused", "loading", "stopped", "unavailable"):
@@ -260,6 +267,19 @@ class ConnectBridge:
                     self.restart = True
             elif kind == "seeked":
                 self.restart = True
+        if self._stalled():
+            self._restart_stalled_receiver()
+            return
+        if self.remote_state == "playing" and self._setup_active():
+            # Pairing in the guided setup must not start music on this box.
+            # Spotify keeps the box selected and waits for a press in the app.
+            self.remote_state = "paused"
+            self.command("pause")
+            return
+        if self.remote_state == "paused" and not self.active:
+            # Spotify selects a paused track when the box is chosen. Nothing
+            # plays until Spotify starts it, so the box only connects here.
+            return
         if self.remote_state in ("playing", "paused"):
             if (self.restart or not self.active) and self.metadata.get("uri") == self.uri:
                 self._play()
@@ -272,6 +292,39 @@ class ConnectBridge:
             self.switching = False
             if self.owns_player():
                 self.player.stop()
+
+    def _setup_active(self):
+        try:
+            return bool(xbmcgui.Window(10000).getProperty(SETUP_FLOW_PROPERTY))
+        except RuntimeError:
+            return False
+
+    def _stalled(self):
+        return (self.active and self.remote_state == "playing" and not self.switching
+                and self.process is not None and self.process.poll() is None
+                and time.monotonic() - self.last_audio > CONNECT_STALL_SECONDS)
+
+    def _restart_stalled_receiver(self):
+        """Replace a receiver that stopped sending audio while Kodi waits for it."""
+        xbmc.log("Resonance Connect audio stalled for more than {}s; restarting receiver".format(
+            CONNECT_STALL_SECONDS), xbmc.LOGWARNING)
+        self.stall_restarts += 1
+        try:
+            xbmcgui.Dialog().notification(
+                "Resonance",
+                "Spotify Connect audio stalled. Restarting the receiver; pick this box again in Spotify if playback does not resume.",
+                xbmcgui.NOTIFICATION_WARNING,
+                8000,
+            )
+        except RuntimeError:
+            pass
+        self.active = False
+        self.switching = False
+        self.remote_state = "stopped"
+        self.next_start = 0
+        if self.owns_player():
+            self.player.stop()
+        self.process.terminate()
 
     def _play(self):
         self.restart = False

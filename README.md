@@ -17,7 +17,7 @@ through bundled Spotty/librespot playback helpers.
 | Not supported | Windows, macOS, Linux x86/x64 |
 | Catalogue | Regular Spotify Web API with browser PKCE token |
 | Playback | Spotify Device Connect with Spotty/librespot |
-| Version | 1.2.0 |
+| Version | 1.2.1 |
 
 | | |
 | --- | --- |
@@ -26,12 +26,14 @@ through bundled Spotty/librespot playback helpers.
 
 ## Quick Start
 
-1. Run `python scripts/package_addon.py` and install `dist/plugin.audio.resonance-1.2.0.zip`. Upstream releases are available on the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
+1. Run `python scripts/package_addon.py` and install `dist/plugin.audio.resonance-1.2.1.zip`. Upstream releases are available on the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
 2. In Kodi, install it with **Add-ons -> Install from zip file**.
 3. Restart Kodi once.
 4. Open **Add-ons -> Music add-ons -> Resonance**.
-5. Create a Spotify Developer app, add the redirect URI below, and paste its Client ID into **Settings -> Advanced**.
-6. Use **Set up Spotify**. Resonance pairs playback first, then shows a QR code and URL for browser sign-in.
+5. Open Resonance. If setup is not finished, the guided setup asks to finish it now. It asks for your Spotify Client ID: create a Spotify Developer app, add the redirect URI below, and enter its Client ID.
+6. The guided setup pairs playback with Spotify Connect first, then shows a QR code and URL for browser sign-in. Each step reports its result, and a summary follows at the end.
+
+You can run the guided setup again at any time from **Settings -> Account -> Run guided setup**.
 
 ### Upgrading from 1.0.x
 
@@ -85,11 +87,12 @@ tokens. The add-on presents them as one setup flow.
 
 ### Pair Playback
 
-1. Open **Resonance**.
-2. Choose **Set up Spotify**.
-3. On your phone or computer, open the Spotify app with your Premium account.
-4. Open the device picker and select the `Kodi-Resonance-XXXX` device.
-5. Wait for the playback-pairing notification. This is step 1; browser sign-in is still required for search and playlists.
+1. Open **Resonance**. The guided setup starts when setup is not finished, or run it from **Settings -> Account -> Run guided setup**.
+2. On your phone or computer, open the Spotify app with your Premium account.
+3. Open the device picker and select the `Kodi-Resonance-XXXX` device.
+4. The playback step reports the result in a dialog. This is step 2; browser sign-in is still required for search and playlists.
+
+Pairing does not start playback. The box connects with a paused track, and music starts when you press play in Spotify.
 
 Your phone or computer and the Kodi box must be on the same network.
 
@@ -165,7 +168,7 @@ database tokens into the fork.
 
 ### Sign In For Catalogue Browsing
 
-1. Open **Resonance -> Set up Spotify** or **Settings -> Account & Connection -> Set up Spotify**.
+1. Run the guided setup (Resonance asks for it, or use **Settings -> Account -> Run guided setup**).
 2. After playback pairing, scan the QR code shown by Kodi or use the URL below it on another device.
 3. Approve the Spotify request.
 4. The hosted callback relay stores the authorization code briefly, and Kodi polls it automatically.
@@ -209,7 +212,8 @@ refresh is available from **Account and status**.
 
 | Category | Setting | Purpose |
 | --- | --- | --- |
-| Account & Connection | Set up Spotify | Runs the setup flow: Device Connect pairing for playback, then QR/browser PKCE sign-in for catalogue browsing. |
+| Account | Run guided setup | Walks through the Spotify Client ID, playback pairing and browser sign-in. Each step reports its result. |
+| Account | Reset Resonance | Moves sign-in, cache and runtime files into a backup folder in the add-on data folder. Restart Kodi afterwards. |
 | Playback | Playback quality | Spotify bitrate: 96, 160 or 320 kbps. |
 | Playback | Volume normalization | Spotty normalization mode: Track, Album or Automatic. |
 | Maintenance | Sign out of Spotify | Clears the local sign-in state and catalogue cache. |
