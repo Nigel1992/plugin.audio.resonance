@@ -1,5 +1,22 @@
 Resonance Version 1
 
+v1.2.2 - 2026-10-27
+
+- Account and status is simpler: each topic has one row that shows its state.
+  Tapping the row starts the next step (pair playback or sign in).
+- After pairing from Account and status, browser sign-in starts directly when
+  it is still missing.
+- The home menu shows the next setup step at the top while setup is open.
+- Playing a track without sign-in shows a clear message instead of nothing.
+- The old Set up Spotify route now starts the guided setup, so the Client ID
+  is always asked first.
+- Pairing and sign-in messages are clearer. The pairing screen says that music
+  starts when you press play in Spotify.
+- Menus, dialogs and notifications are translated into English, Dutch, German,
+  Spanish, French and Hebrew. Log messages, Spotify's own error texts and the
+  release notes stay in English.
+- Setup texts that were only in English are now translated.
+
 v1.2.1 - 2026-10-27
 
 - Guided setup: asks to finish setup when Resonance is not fully signed in,

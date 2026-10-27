@@ -11,6 +11,14 @@ import xbmcvfs
 from deps.qrcodegen import QrCode
 
 
+def _localized(string_id, default):
+    try:
+        import xbmcaddon
+        return xbmcaddon.Addon(id="plugin.audio.resonance").getLocalizedString(string_id) or default
+    except Exception:
+        return default
+
+
 ACTION_PREVIOUS_MENU = 10
 ACTION_NAV_BACK = 92
 
@@ -21,8 +29,8 @@ class QrDialogError(Exception):
 
 def show_qr_dialog(
     url,
-    title="Scan QR Code",
-    message="Scan this QR code to sign in, or use the URL below manually on another device.",
+    title=_localized(11589, "Scan QR Code"),
+    message=_localized(11528, "Scan this QR code to sign in, or use the URL below manually on another device."),
     timeout_seconds=300,
     modal=True,
 ):
@@ -33,12 +41,12 @@ def show_qr_dialog(
     """
     text = "" if url is None else str(url)
     if not text:
-        xbmcgui.Dialog().ok(title or "Scan QR Code", "No QR code could be shown because the link was empty.")
+        xbmcgui.Dialog().ok(title or _localized(11589, "Scan QR Code"), _localized(11590, "No QR code could be shown because the link was empty."))
         return False
 
     try:
         path = _write_qr_png(text)
-        dialog = _create_dialog(path, title or "Scan QR Code", message or "", text)
+        dialog = _create_dialog(path, title or _localized(11589, "Scan QR Code"), message or "", text)
         handle = _QrDialogHandle(dialog, path, timeout_seconds)
         handle.start(modal=modal)
         if not modal:
@@ -47,7 +55,7 @@ def show_qr_dialog(
         handle.close(cleanup=True)
         return True
     except Exception:
-        xbmcgui.Dialog().ok(title or "Scan QR Code", "The QR code could not be shown. Please use the link displayed on screen.")
+        xbmcgui.Dialog().ok(title or _localized(11589, "Scan QR Code"), _localized(11591, "The QR code could not be shown. Please use the link displayed on screen."))
         return False
 
 
@@ -212,7 +220,7 @@ class _QrCodeDialog(xbmcgui.WindowDialog):
         self.addControl(xbmcgui.ControlImage(qr_left, qr_top, qr_size, qr_size, self.image_path))
         self.addControl(xbmcgui.ControlLabel(left + 40, qr_top + qr_size + 24, dialog_w - 80, 84, self.message, alignment=2, font="font13"))
         self.addControl(xbmcgui.ControlLabel(left + 56, qr_top + qr_size + 88, dialog_w - 112, 64, self.link, alignment=2, font="font12"))
-        self.close_button = xbmcgui.ControlButton(left + int((dialog_w - 260) / 2), top + dialog_h - 86, 260, 56, "Close")
+        self.close_button = xbmcgui.ControlButton(left + int((dialog_w - 260) / 2), top + dialog_h - 86, 260, 56, _localized(11541, "Close"))
         self.addControl(self.close_button)
         self.setFocus(self.close_button)
 

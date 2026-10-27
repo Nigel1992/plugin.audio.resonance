@@ -423,7 +423,7 @@ def run():
                     utils.delete_resonance_credentials()
                     utils.clear_resonance_cache()
                     window.clearProperty("resonance.signed-in")
-                    window.setProperty("resonance.status", "Signed out")
+                    window.setProperty("resonance.status", utils.localize(11586, "Signed out"))
                     was_signed_in = False
                     next_auth = 0
                     window.setProperty("resonance.logout.result", "ok")
@@ -448,18 +448,18 @@ def run():
                             fresh=False, force=connect_requested
                         )
                     access = restore_access_token()
-                    window.setProperty("resonance.status", "Signed in" if access else "Signed in; catalogue token unavailable")
+                    window.setProperty("resonance.status", utils.localize(11535, "Signed in") if access else utils.localize(11587, "Signed in; catalogue token unavailable"))
                     window.setProperty("resonance.signed-in", "1")
                     if was_signed_in is False and not window.getProperty("resonance.setup-active"):
                         # Only claim what this step really did: the browser
                         # token is the catalogue sign-in, playback pairing is
                         # the Device-Connect credentials.
                         if _web_session_available() and auth.has_credentials():
-                            notify("Fully signed in to Spotify")
+                            notify(utils.localize(11583, "Fully signed in to Spotify"))
                         elif auth.has_credentials():
-                            notify("Playback pairing complete. Next, sign in with the URL for search and playlists.")
+                            notify(utils.localize(11584, "Playback pairing complete. Next, sign in with the URL for search and playlists."))
                         else:
-                            notify("Browser sign-in complete. Search and playlists are ready.")
+                            notify(utils.localize(11585, "Browser sign-in complete. Search and playlists are ready."))
                         return_to_home()
                     was_signed_in = True
                     next_auth = now + (3000 if access else 60)
@@ -470,7 +470,7 @@ def run():
                     auth.ensure_device_connect_running(
                         fresh=False, force=connect_requested
                     )
-                    window.setProperty("resonance.status", "Waiting for Spotify connection")
+                    window.setProperty("resonance.status", utils.localize(11588, "Waiting for Spotify connection"))
                     window.clearProperty("resonance.signed-in")
                     was_signed_in = False
                     next_auth = now + 5
