@@ -9,6 +9,14 @@ import time
 from urllib.parse import urlencode
 
 
+def _localized(string_id, default):
+    try:
+        import xbmcaddon
+        return xbmcaddon.Addon(id="plugin.audio.resonance").getLocalizedString(string_id) or default
+    except Exception:
+        return default
+
+
 
 class Unavailable(Exception):
     pass
@@ -62,7 +70,7 @@ def normalize(item, kind="track", album=None):
     source_album = {key: raw_album[key] for key in ("id", "name", "release_date", "images", "artists") if key in raw_album}
     result = dict(item)
     result.update(
-        name=item.get("name") or item.get("title") or "Untitled",
+        name=item.get("name") or item.get("title") or _localized(11576, "Untitled"),
         type=kind, artists=artists, album=source_album,
         images=[{"url": image}] if image else [],
     )
@@ -195,7 +203,7 @@ class Catalogue:
         # Account requests (and their cached responses) belong to the signed-in
         # user. After a logout/account switch they must never be replayed.
         if not self.signed_in:
-            raise Unavailable("Connect your Spotify account first")
+            raise Unavailable(_localized(11592, "Connect your Spotify account first"))
         key = provider + ":" + path + "?" + urlencode(sorted((params or {}).items()))
         cached = None if self.bypass_response_cache else self.cached(key)
         if cached is not None and not refresh:
@@ -207,11 +215,11 @@ class Catalogue:
             error_gate = provider + ":" + path.strip("/").split("/")[0]
             remaining = max(self.remaining(provider), self.remaining(error_gate))
             if remaining:
-                raise Unavailable(f"{provider}: retry in {max(1, (remaining + 59) // 60)} min")
+                raise Unavailable(_localized(11602, "{}: retry in {} min").format(provider, max(1, (remaining + 59) // 60)))
             headers = {}
             token = self.token()
             if not token:
-                raise Unavailable("Connect your Spotify account first")
+                raise Unavailable(_localized(11592, "Connect your Spotify account first"))
             headers["Authorization"] = "Bearer " + token
             base = "https://api.spotify.com/v1"
             try:
@@ -223,7 +231,7 @@ class Catalogue:
                         delay = 300
                     self.db.execute("INSERT OR REPLACE INTO gates VALUES (?,?)", (provider, self.clock() + delay))
                     self.db.commit()
-                    raise Unavailable(f"{provider}: temporarily rate limited")
+                    raise Unavailable(_localized(11603, "{}: temporarily rate limited").format(provider))
                 if response.status_code == 403:
                     raise Forbidden("Spotify refused this request (HTTP 403)")
                 response.raise_for_status()
@@ -237,7 +245,7 @@ class Catalogue:
             except (requests.RequestException, ValueError) as exc:
                 self.db.execute("INSERT OR REPLACE INTO gates VALUES (?,?)", (error_gate, self.clock() + 30))
                 self.db.commit()
-                raise Unavailable(f"{provider}: service unavailable") from exc
+                raise Unavailable(_localized(11604, "{}: service unavailable").format(provider)) from exc
             self.db.execute("INSERT OR REPLACE INTO pages VALUES (?,?,?)", (key, json.dumps(data), self.clock() + 600))
             self.db.commit()
             return data
@@ -257,12 +265,12 @@ class Catalogue:
         import requests
 
         if not self.signed_in:
-            raise Unavailable("Connect your Spotify account first")
+            raise Unavailable(_localized(11592, "Connect your Spotify account first"))
         if self.http is None:
             self.http = requests.Session()
         token = self.token()
         if not token:
-            raise Unavailable("Connect your Spotify account first")
+            raise Unavailable(_localized(11592, "Connect your Spotify account first"))
         headers = {"Authorization": "Bearer " + token}
         try:
             response = self.http.request(
@@ -276,7 +284,7 @@ class Catalogue:
                     delay = 300
                 with self.db:
                     self.db.execute("INSERT OR REPLACE INTO gates VALUES (?,?)", ("spotify", self.clock() + delay))
-                raise Unavailable("Spotify is temporarily rate limited")
+                raise Unavailable(_localized(11593, "Spotify is temporarily rate limited"))
             if response.status_code == 403:
                 raise Forbidden("Spotify refused this change")
             response.raise_for_status()
@@ -285,7 +293,7 @@ class Catalogue:
             except ValueError:
                 return {}
         except (requests.RequestException, ValueError) as exc:
-            raise Unavailable("Spotify could not complete this change") from exc
+            raise Unavailable(_localized(11594, "Spotify could not complete this change")) from exc
 
     def save_library_item(self, kind, identity, save=True):
         if kind not in ("track", "album", "playlist", "artist") or not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
@@ -341,7 +349,7 @@ class Catalogue:
         """
         title = str(name or "").strip()
         if not title:
-            raise ValueError("A playlist name is required")
+            raise ValueError(_localized(11596, "A playlist name is required"))
         body = {"name": title, "public": bool(public)}
         if description:
             body["description"] = str(description)
@@ -418,7 +426,7 @@ class Catalogue:
         # Playlist rows are served from the imported cache. Load the account
         # ID once when needed so followed playlists can be clearly marked.
         if not self.signed_in:
-            raise Unavailable("Connect your Spotify account first")
+            raise Unavailable(_localized(11592, "Connect your Spotify account first"))
         if not self.spotify_user_id:
             self._ensure_spotify_user_id()
         items = self.cached("imported-playlists", stale=True) or []
@@ -426,21 +434,18 @@ class Catalogue:
             items = self.cached("imported-playlists", stale=True) or []
         items = self._visible_playlists(items)
         if not items:
-            raise Unavailable("No imported Spotify playlists are available yet")
+            raise Unavailable(_localized(11595, "No imported Spotify playlists are available yet"))
         return items[offset:offset + 40], offset + 40 if offset + 40 < len(items) else None
 
     def liked_songs(self, offset=0):
         """Return a page of the current user's saved tracks (Liked Songs)."""
         if not self.signed_in:
-            raise Unavailable("Connect your Spotify account first")
+            raise Unavailable(_localized(11592, "Connect your Spotify account first"))
         params = dict(limit=50, offset=offset)
         try:
             data = self.request("spotify", "/me/tracks", params)
         except Forbidden as exc:
-            raise Unavailable(
-                "Spotify has not granted Resonance permission to read Liked Songs.\n\n"
-                "Sign in again from Account and status to approve the library permission."
-            ) from exc
+            raise Unavailable(_localized(11599, "Spotify has not granted Resonance permission to read Liked Songs.\n\nSign in again from Account and status to approve the library permission.")) from exc
         items = data.get("items") or []
         tracks = [normalize(item.get("track") or {}, "track") for item in items if item]
         more = offset + len(items) if data.get("next") else None
@@ -449,7 +454,7 @@ class Catalogue:
     def saved_albums(self, offset=0):
         """Return a page of albums saved in the current user's library."""
         if not self.signed_in:
-            raise Unavailable("Connect your Spotify account first")
+            raise Unavailable(_localized(11592, "Connect your Spotify account first"))
         data = self.request("spotify", "/me/albums", {"limit": 50, "offset": offset})
         items = data.get("items") or []
         albums = [normalize(item.get("album") or {}, "album") for item in items if item]
@@ -458,7 +463,7 @@ class Catalogue:
     def followed_artists(self, after=""):
         """Return a page of followed artists using Spotify's cursor pagination."""
         if not self.signed_in:
-            raise Unavailable("Connect your Spotify account first")
+            raise Unavailable(_localized(11592, "Connect your Spotify account first"))
         params = {"type": "artist", "limit": 50}
         if after:
             params["after"] = after
@@ -497,12 +502,7 @@ class Catalogue:
                 self.save(page_key, data, ttl=3600 if kind == "playlist" else 600)
         except Forbidden:
             if kind == "playlist":
-                raise Unavailable(
-                    "Spotify will not let Resonance read this playlist.\n\n"
-                    "Reason: you do not own or collaborate on it.\n\n"
-                    "Make a copy in Spotify, then refresh playlists.\n\n"
-                    "You can hide these in Settings > Catalogue."
-                )
+                raise Unavailable(_localized(11601, "Spotify will not let Resonance read this playlist.\n\nReason: you do not own or collaborate on it.\n\nMake a copy in Spotify, then refresh playlists.\n\nYou can hide these in Settings > Catalogue."))
             raise
         items = data.get("items") or []
         if kind == "playlist":

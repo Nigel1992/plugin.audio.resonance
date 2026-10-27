@@ -1528,3 +1528,819 @@ msgstr "Hides followed playlists that Spotify will not let this app open because
 msgctxt "#11398"
 msgid "Catalogue"
 msgstr "Catalogue"
+
+msgctxt "#11446"
+msgid "Waiting for playback pairing...\n\nIn Spotify on your phone or PC, tap the speaker icon and pick '{}'.\n\nMusic starts when you press play in Spotify."
+msgstr "Wachten op koppeling voor afspelen...\n\nOpen Spotify op je telefoon of pc, tik op het speakerpictogram en kies '{}'.\n\nDe muziek start wanneer je in Spotify op play drukt."
+
+msgctxt "#11447"
+msgid "Pairing is not finished yet.\n\nIn Spotify on your phone or PC, tap the speaker icon and pick '{}'. Then press Retry."
+msgstr "Koppelen is nog niet klaar.\n\nOpen Spotify op je telefoon of pc, tik op het speakerpictogram en kies '{}'. Druk daarna op Opnieuw proberen."
+
+msgctxt "#11448"
+msgid "Playback is paired. Search and playlists still need sign-in."
+msgstr "Afspelen is gekoppeld. Zoeken en playlists vragen nog om inloggen."
+
+msgctxt "#11449"
+msgid "Signed in. Search and playlists work."
+msgstr "Ingelogd. Zoeken en playlists werken."
+
+msgctxt "#11450"
+msgid "Sign in with Spotify first. Open Account and status and choose Sign in with Spotify."
+msgstr "Log eerst in bij Spotify. Open Account en status en kies Inloggen bij Spotify."
+
+msgctxt "#11451"
+msgid "A Spotify Client ID is needed before you can sign in.\n\nOpen Settings > Account > Run guided setup. It asks for your Client ID."
+msgstr "Je hebt een Spotify Client ID nodig voordat je kunt inloggen.\n\nOpen Instellingen > Account > Begeleide setup uitvoeren. Daar wordt je Client ID gevraagd."
+
+msgctxt "#11452"
+msgid "ACCOUNT"
+msgstr "ACCOUNT"
+
+msgctxt "#11453"
+msgid "PLAYBACK"
+msgstr "AFSPELEN"
+
+msgctxt "#11454"
+msgid "CATALOGUE"
+msgstr "CATALOGUS"
+
+msgctxt "#11455"
+msgid "MAINTENANCE"
+msgstr "ONDERHOUD"
+
+msgctxt "#11456"
+msgid "NOW PLAYING"
+msgstr "NU AAN HET SPELEN"
+
+msgctxt "#11457"
+msgid "SETTINGS"
+msgstr "INSTELLINGEN"
+
+msgctxt "#11458"
+msgid "Playback: paired as {}"
+msgstr "Afspelen: gekoppeld als {}"
+
+msgctxt "#11459"
+msgid "Playback: not paired yet. Tap to pair."
+msgstr "Afspelen: nog niet gekoppeld. Tik om te koppelen."
+
+msgctxt "#11460"
+msgid "Search and playlists: signed in"
+msgstr "Zoeken en playlists: ingelogd"
+
+msgctxt "#11461"
+msgid "Search and playlists: sign in needed. Tap to sign in."
+msgstr "Zoeken en playlists: inloggen nodig. Tik om in te loggen."
+
+msgctxt "#11462"
+msgid "Resume browser sign-in"
+msgstr "Browserinlog hervatten"
+
+msgctxt "#11463"
+msgid "{} playlists · {}"
+msgstr "{} playlists · {}"
+
+msgctxt "#11464"
+msgid "Playlists not loaded. Tap to load."
+msgstr "Playlists niet geladen. Tik om te laden."
+
+msgctxt "#11465"
+msgid "unknown"
+msgstr "onbekend"
+
+msgctxt "#11466"
+msgid "Playback status"
+msgstr "Afspeelstatus"
+
+msgctxt "#11467"
+msgid "Quality: {} kbps"
+msgstr "Kwaliteit: {} kbps"
+
+msgctxt "#11468"
+msgid "Nothing playing"
+msgstr "Er speelt niets"
+
+msgctxt "#11469"
+msgid "Playback unavailable"
+msgstr "Afspelen niet beschikbaar"
+
+msgctxt "#11470"
+msgid "Unknown track"
+msgstr "Onbekend nummer"
+
+msgctxt "#11471"
+msgid "What's new in {}"
+msgstr "Wat is er nieuw in {}"
+
+msgctxt "#11472"
+msgid "What's new in this version"
+msgstr "Wat is er nieuw in deze versie"
+
+msgctxt "#11473"
+msgid "Clear cache"
+msgstr "Cache wissen"
+
+msgctxt "#11474"
+msgid "Sign out"
+msgstr "Uitloggen"
+
+msgctxt "#11475"
+msgid "Your Spotify Library"
+msgstr "Jouw Spotify-bibliotheek"
+
+msgctxt "#11476"
+msgid "Search"
+msgstr "Zoeken"
+
+msgctxt "#11477"
+msgid "Account and status"
+msgstr "Account en status"
+
+msgctxt "#11478"
+msgid "Songs"
+msgstr "Nummers"
+
+msgctxt "#11479"
+msgid "Albums"
+msgstr "Albums"
+
+msgctxt "#11480"
+msgid "Artists"
+msgstr "Artiesten"
+
+msgctxt "#11481"
+msgid "Liked Songs"
+msgstr "Gelikete nummers"
+
+msgctxt "#11482"
+msgid "Saved Albums"
+msgstr "Opgeslagen albums"
+
+msgctxt "#11483"
+msgid "Followed Artists"
+msgstr "Gevolgde artiesten"
+
+msgctxt "#11484"
+msgid "Saved and Followed Playlists"
+msgstr "Opgeslagen en gevolgde playlists"
+
+msgctxt "#11485"
+msgid "Create playlist..."
+msgstr "Playlist maken..."
+
+msgctxt "#11486"
+msgid "There are no release notes for this version."
+msgstr "Er zijn geen releaseopmerkingen voor deze versie."
+
+msgctxt "#11487"
+msgid "More..."
+msgstr "Meer..."
+
+msgctxt "#11488"
+msgid "No results"
+msgstr "Geen resultaten"
+
+msgctxt "#11489"
+msgid "No artist results"
+msgstr "Geen artiestresultaten"
+
+msgctxt "#11490"
+msgid "Invalid Spotify link"
+msgstr "Ongeldige Spotify-link"
+
+msgctxt "#11491"
+msgid "This old menu has been replaced. Open Resonance from Music add-ons."
+msgstr "Dit oude menu is vervangen. Open Resonance via de muziek-add-ons."
+
+msgctxt "#11492"
+msgid "Unable to load this page"
+msgstr "Deze pagina kan niet worden geladen"
+
+msgctxt "#11493"
+msgid "The login response did not match this request. Please retry."
+msgstr "Het inlogantwoord hoort niet bij dit verzoek. Probeer het opnieuw."
+
+msgctxt "#11494"
+msgid "The pending sign-in expired. Start again from Account and status."
+msgstr "De openstaande inlog is verlopen. Begin opnieuw via Account en status."
+
+msgctxt "#11495"
+msgid "No pending sign-in. Start it from Account and status first."
+msgstr "Geen openstaande inlog. Start die eerst via Account en status."
+
+msgctxt "#11496"
+msgid "Signed out of Spotify"
+msgstr "Uitgelogd bij Spotify"
+
+msgctxt "#11497"
+msgid "Could not complete sign out. Please try again."
+msgstr "Uitloggen is niet gelukt. Probeer het opnieuw."
+
+msgctxt "#11498"
+msgid "Could not clear the cache. Please try again."
+msgstr "Cache wissen is niet gelukt. Probeer het opnieuw."
+
+msgctxt "#11499"
+msgid "Cache cleared"
+msgstr "Cache gewist"
+
+msgctxt "#11500"
+msgid "Playlists updated"
+msgstr "Playlists bijgewerkt"
+
+msgctxt "#11501"
+msgid "Could not refresh playlists"
+msgstr "Playlists konden niet worden bijgewerkt"
+
+msgctxt "#11502"
+msgid "Like this song in your Spotify library?"
+msgstr "Dit nummer liken in je Spotify-bibliotheek?"
+
+msgctxt "#11503"
+msgid "Unlike this song in your Spotify library?"
+msgstr "Dit nummer uit je Spotify-bibliotheek als like verwijderen?"
+
+msgctxt "#11504"
+msgid "Save this album in your Spotify library?"
+msgstr "Dit album opslaan in je Spotify-bibliotheek?"
+
+msgctxt "#11505"
+msgid "Remove this album from your Spotify library?"
+msgstr "Dit album uit je Spotify-bibliotheek verwijderen?"
+
+msgctxt "#11506"
+msgid "Saved to Spotify Your Library → Albums"
+msgstr "Opgeslagen in je Spotify-bibliotheek → Albums"
+
+msgctxt "#11507"
+msgid "Removed from Spotify Your Library → Albums"
+msgstr "Verwijderd uit je Spotify-bibliotheek → Albums"
+
+msgctxt "#11508"
+msgid "Liked on Spotify"
+msgstr "Geliked op Spotify"
+
+msgctxt "#11509"
+msgid "Removed from Spotify Liked Songs"
+msgstr "Verwijderd uit gelikete nummers op Spotify"
+
+msgctxt "#11510"
+msgid "No playlists owned by this Spotify account were found"
+msgstr "Er zijn geen playlists gevonden die van dit Spotify-account zijn"
+
+msgctxt "#11511"
+msgid "Add track to Spotify playlist"
+msgstr "Nummer toevoegen aan Spotify-playlist"
+
+msgctxt "#11512"
+msgid "Open the playlist that holds the track and use its context menu "
+msgstr "Open de playlist met dit nummer en gebruik het contextmenu "
+
+msgctxt "#11513"
+msgid "to remove the track from there."
+msgstr "om het nummer daar te verwijderen."
+
+msgctxt "#11514"
+msgid "Playlist unfollowed"
+msgstr "Playlist niet meer gevolgd"
+
+msgctxt "#11515"
+msgid "Artist unfollowed"
+msgstr "Artiest niet meer gevolgd"
+
+msgctxt "#11516"
+msgid "New playlist name"
+msgstr "Nieuwe playlistnaam"
+
+msgctxt "#11517"
+msgid "New playlist name for this track"
+msgstr "Nieuwe playlistnaam voor dit nummer"
+
+msgctxt "#11518"
+msgid "Playback quality"
+msgstr "Afspeelkwaliteit"
+
+msgctxt "#11519"
+msgid "96 kbps (low)"
+msgstr "96 kbps (laag)"
+
+msgctxt "#11520"
+msgid "160 kbps (normal)"
+msgstr "160 kbps (normaal)"
+
+msgctxt "#11521"
+msgid "320 kbps (high)"
+msgstr "320 kbps (hoog)"
+
+msgctxt "#11522"
+msgid "Track metadata unavailable; cannot start playback"
+msgstr "Trackgegevens niet beschikbaar; afspelen kan niet starten"
+
+msgctxt "#11523"
+msgid "This page has no playable tracks"
+msgstr "Deze pagina heeft geen afspeelbare nummers"
+
+msgctxt "#11524"
+msgid "Playlist loading cancelled"
+msgstr "Laden van playlist geannuleerd"
+
+msgctxt "#11525"
+msgid "This playlist has no playable tracks"
+msgstr "Deze playlist heeft geen afspeelbare nummers"
+
+msgctxt "#11526"
+msgid "Loaded {} tracks..."
+msgstr "{} nummers geladen..."
+
+msgctxt "#11527"
+msgid "Spotify Login"
+msgstr "Inloggen bij Spotify"
+
+msgctxt "#11528"
+msgid "Scan this QR code to sign in, or use the URL below manually on another device."
+msgstr "Scan deze QR-code om in te loggen, of gebruik de URL hieronder handmatig op een ander apparaat."
+
+msgctxt "#11529"
+msgid "Spotify sign-in timed out here.\n\nIf Spotify opened on your phone or computer, the browser now shows a local address with ?code=... . Pick Paste code and enter that value (it is 100-200 characters).\n\nYou can also leave it and pick Resume browser sign-in from Account and status."
+msgstr "De inlog bij Spotify is hier verlopen.\n\nAls Spotify op je telefoon of computer is geopend, toont de browser nu een lokaal adres met ?code=... . Kies Code plakken en vul die waarde in (het zijn 100 tot 200 tekens).\n\nJe kunt het ook laten staan en later Browserinlog hervatten kiezen via Account en status."
+
+msgctxt "#11530"
+msgid "Paste code"
+msgstr "Code plakken"
+
+msgctxt "#11531"
+msgid "Code: the part after ?code= in the browser address"
+msgstr "Code: het deel na ?code= in het browseradres"
+
+msgctxt "#11532"
+msgid "Paste the code: the part after ?code= in the browser address"
+msgstr "Plak de code: het deel na ?code= in het browseradres"
+
+msgctxt "#11533"
+msgid "Fully signed in to Spotify. Search, playlists and playback are ready."
+msgstr "Volledig ingelogd bij Spotify. Zoeken, playlists en afspelen zijn klaar."
+
+msgctxt "#11534"
+msgid "Browser sign-in complete. Search and playlists are ready; pair playback from setup when needed."
+msgstr "Inloggen in de browser voltooid. Zoeken en playlists zijn klaar; koppel het afspelen via de setup als dat nodig is."
+
+msgctxt "#11535"
+msgid "Signed in"
+msgstr "Ingelogd"
+
+msgctxt "#11536"
+msgid "Playlist unavailable: "
+msgstr "Playlist niet beschikbaar: "
+
+msgctxt "#11537"
+msgid "Resonance playlist options"
+msgstr "Resonance-playlistopties"
+
+msgctxt "#11538"
+msgid "Hide unreadable followed playlists in future"
+msgstr "Onleesbare gevolgde playlists voortaan verbergen"
+
+msgctxt "#11539"
+msgid "Show Spotify QR code"
+msgstr "Spotify-QR-code tonen"
+
+msgctxt "#11540"
+msgid "I made a copy - refresh playlists"
+msgstr "Ik heb een kopie gemaakt - playlists vernieuwen"
+
+msgctxt "#11541"
+msgid "Close"
+msgstr "Sluiten"
+
+msgctxt "#11542"
+msgid "Unreadable followed playlists will be hidden from the playlist list"
+msgstr "Onleesbare gevolgde playlists worden uit de playlistlijst verborgen"
+
+msgctxt "#11543"
+msgid "Open in Spotify: "
+msgstr "Openen in Spotify: "
+
+msgctxt "#11544"
+msgid "Scan to open this playlist in Spotify. Make your own copy there, then refresh playlists in Resonance."
+msgstr "Scan om deze playlist in Spotify te openen. Maak daar je eigen kopie en vernieuw daarna de playlists in Resonance."
+
+msgctxt "#11545"
+msgid "Playlists refreshed. Reopen Playlists to find your copy."
+msgstr "Playlists vernieuwd. Open Playlists opnieuw om je kopie te vinden."
+
+msgctxt "#11546"
+msgid "Could not refresh playlists. Try again from Account and status."
+msgstr "Playlists konden niet worden vernieuwd. Probeer het opnieuw via Account en status."
+
+msgctxt "#11547"
+msgid "Sign out of Spotify?\n\nYour playlists and settings are kept. You can sign in again from Settings."
+msgstr "Uitloggen bij Spotify?\n\nJe playlists en instellingen blijven bewaard. Je kunt daarna weer inloggen via Instellingen."
+
+msgctxt "#11548"
+msgid "Clear the music cache (playlists, search results, rate-limit state)?\n\nYou stay signed in."
+msgstr "Muziekcache wissen (playlists, zoekresultaten, limietstatus)?\n\nJe blijft ingelogd."
+
+msgctxt "#11549"
+msgid "Unfollow '{}'?\n\nIt leaves Your Spotify Library. The playlist itself is not deleted."
+msgstr "'{}' niet meer volgen?\n\nHet verdwijnt uit je Spotify-bibliotheek. De playlist zelf wordt niet verwijderd."
+
+msgctxt "#11550"
+msgid "Unfollow"
+msgstr "Niet meer volgen"
+
+msgctxt "#11551"
+msgid "Unfollow '{}'?\n\nThe artist leaves your Followed Artists list. The artist itself is not deleted."
+msgstr "'{}' niet meer volgen?\n\nDeze artiest verdwijnt uit je lijst met gevolgde artiesten. De artiest zelf wordt niet verwijderd."
+
+msgctxt "#11552"
+msgid "Add this track to '{}'?"
+msgstr "Dit nummer toevoegen aan '{}'?"
+
+msgctxt "#11553"
+msgid "Remove this track from '{}'?"
+msgstr "Dit nummer uit '{}' verwijderen?"
+
+msgctxt "#11554"
+msgid "Track added to "
+msgstr "Nummer toegevoegd aan "
+
+msgctxt "#11555"
+msgid "Track removed from "
+msgstr "Nummer verwijderd uit "
+
+msgctxt "#11556"
+msgid "Playlist created: "
+msgstr "Playlist aangemaakt: "
+
+msgctxt "#11557"
+msgid "Playback quality: "
+msgstr "Afspeelkwaliteit: "
+
+msgctxt "#11558"
+msgid "Spotify change failed"
+msgstr "Wijziging in Spotify mislukt"
+
+msgctxt "#11559"
+msgid "Resonance could not complete the Spotify request. Check the Kodi log for details."
+msgstr "Resonance kon het verzoek aan Spotify niet afronden. Bekijk het Kodi-logboek voor details."
+
+msgctxt "#11560"
+msgid "Spotify may not have granted Resonance permission for this change yet. Open Account and status, sign in with Spotify again, then approve the requested permissions."
+msgstr "Spotify heeft Resonance nog geen toestemming voor deze wijziging gegeven. Open Account en status, log opnieuw in bij Spotify en keur de gevraagde rechten goed."
+
+msgctxt "#11561"
+msgid "Like on Spotify"
+msgstr "Liken op Spotify"
+
+msgctxt "#11562"
+msgid "Unlike on Spotify"
+msgstr "Like ongedaan maken op Spotify"
+
+msgctxt "#11563"
+msgid "Add to Spotify playlist..."
+msgstr "Toevoegen aan Spotify-playlist..."
+
+msgctxt "#11564"
+msgid "Create playlist with this track..."
+msgstr "Playlist maken met dit nummer..."
+
+msgctxt "#11565"
+msgid "Save album on Spotify"
+msgstr "Album opslaan op Spotify"
+
+msgctxt "#11566"
+msgid "Remove album from Spotify library"
+msgstr "Album verwijderen uit Spotify-bibliotheek"
+
+msgctxt "#11567"
+msgid "Remove from "
+msgstr "Verwijderen uit "
+
+msgctxt "#11568"
+msgid "this playlist"
+msgstr "deze playlist"
+
+msgctxt "#11569"
+msgid "Unfollow playlist"
+msgstr "Playlist niet meer volgen"
+
+msgctxt "#11570"
+msgid "Artist: everything"
+msgstr "Artiest: alles"
+
+msgctxt "#11571"
+msgid "Artist: top songs"
+msgstr "Artiest: populaire nummers"
+
+msgctxt "#11572"
+msgid "Artist: albums"
+msgstr "Artiest: albums"
+
+msgctxt "#11573"
+msgid "Artist: singles"
+msgstr "Artiest: singles"
+
+msgctxt "#11574"
+msgid "Artist: appears on"
+msgstr "Artiest: komt voor op"
+
+msgctxt "#11575"
+msgid "Unfollow artist"
+msgstr "Artiest niet meer volgen"
+
+msgctxt "#11576"
+msgid "Untitled"
+msgstr "Naamloos"
+
+msgctxt "#11577"
+msgid "Artist"
+msgstr "Artiest"
+
+msgctxt "#11578"
+msgid "Singles"
+msgstr "Singles"
+
+msgctxt "#11579"
+msgid "Appears on"
+msgstr "Komt voor op"
+
+msgctxt "#11580"
+msgid "More {}..."
+msgstr "Meer {}..."
+
+msgctxt "#11581"
+msgid "playlist"
+msgstr "playlist"
+
+msgctxt "#11582"
+msgid "Spotify will not let Resonance read the songs in this playlist because your account does not own it or collaborate on it. Spotify's API only provides playlist contents to the owner or collaborators, so Resonance cannot copy the songs automatically.\n\nTo use it in Resonance:\n1. Open the playlist in Spotify using the link below.\n2. In Spotify, make your own playlist copy, or ask the owner to add you as a collaborator.\n3. Return to Resonance and refresh playlists from Account and status.\n\nFollowing or saving the playlist to Your Library alone does not grant Resonance access.\n\nSpotify link:\n{}"
+msgstr "Spotify laat Resonance de nummers in deze playlist niet lezen, omdat je account de playlist niet bezit en er ook niet aan meewerkt. De Spotify-API geeft de inhoud van een playlist alleen aan de eigenaar of medewerkers, dus Resonance kan de nummers niet automatisch kopiëren.\n\nZo gebruik je hem in Resonance:\n1. Open de playlist in Spotify via de link hieronder.\n2. Maak in Spotify je eigen kopie van de playlist, of vraag de eigenaar om je als medewerker toe te voegen.\n3. Ga terug naar Resonance en vernieuw de playlists via Account en status.\n\nAlleen volgen of opslaan in je bibliotheek geeft Resonance geen toegang.\n\nSpotify-link:\n{}"
+
+msgctxt "#11583"
+msgid "Fully signed in to Spotify"
+msgstr "Volledig ingelogd bij Spotify"
+
+msgctxt "#11584"
+msgid "Playback pairing complete. Next, sign in with the URL for search and playlists."
+msgstr "Afspelen gekoppeld. Log daarna in met de URL voor zoeken en playlists."
+
+msgctxt "#11585"
+msgid "Browser sign-in complete. Search and playlists are ready."
+msgstr "Inloggen in de browser voltooid. Zoeken en playlists zijn klaar."
+
+msgctxt "#11586"
+msgid "Signed out"
+msgstr "Uitgelogd"
+
+msgctxt "#11587"
+msgid "Signed in; catalogue token unavailable"
+msgstr "Ingelogd; catalogustoken niet beschikbaar"
+
+msgctxt "#11588"
+msgid "Waiting for Spotify connection"
+msgstr "Wachten op verbinding met Spotify"
+
+msgctxt "#11589"
+msgid "Scan QR Code"
+msgstr "QR-code scannen"
+
+msgctxt "#11590"
+msgid "No QR code could be shown because the link was empty."
+msgstr "Er kan geen QR-code worden getoond omdat de link leeg is."
+
+msgctxt "#11591"
+msgid "The QR code could not be shown. Please use the link displayed on screen."
+msgstr "De QR-code kon niet worden getoond. Gebruik de link op het scherm."
+
+msgctxt "#11592"
+msgid "Connect your Spotify account first"
+msgstr "Koppel eerst je Spotify-account"
+
+msgctxt "#11593"
+msgid "Spotify is temporarily rate limited"
+msgstr "Spotify beperkt verzoeken tijdelijk"
+
+msgctxt "#11594"
+msgid "Spotify could not complete this change"
+msgstr "Spotify kon deze wijziging niet afronden"
+
+msgctxt "#11595"
+msgid "No imported Spotify playlists are available yet"
+msgstr "Er zijn nog geen geïmporteerde Spotify-playlists"
+
+msgctxt "#11596"
+msgid "A playlist name is required"
+msgstr "Een playlistnaam is verplicht"
+
+msgctxt "#11597"
+msgid "this artist"
+msgstr "deze artiest"
+
+msgctxt "#11598"
+msgid "What's new"
+msgstr "Wat is er nieuw"
+
+msgctxt "#11599"
+msgid "Spotify has not granted Resonance permission to read Liked Songs.\n\nSign in again from Account and status to approve the library permission."
+msgstr "Spotify heeft Resonance geen toestemming gegeven om Gelikete nummers te lezen.\n\nLog opnieuw in via Account en status om de bibliotheekrechten goed te keuren."
+
+msgctxt "#11600"
+msgid "Spotify has not granted Resonance permission to read followed artists.\n\nSign in with Spotify again from Account and status to approve that permission."
+msgstr "Spotify heeft Resonance geen toestemming gegeven om gevolgde artiesten te lezen.\n\nLog opnieuw in bij Spotify via Account en status om die toestemming goed te keuren."
+
+msgctxt "#11601"
+msgid "Spotify will not let Resonance read this playlist.\n\nReason: you do not own or collaborate on it.\n\nMake a copy in Spotify, then refresh playlists.\n\nYou can hide these in Settings > Catalogue."
+msgstr "Spotify laat Resonance deze playlist niet lezen.\n\nReden: je bezit hem niet en werkt er niet aan mee.\n\nMaak een kopie in Spotify en vernieuw daarna de playlists.\n\nJe kunt deze verbergen via Instellingen > Catalogus."
+
+msgctxt "#11602"
+msgid "{}: retry in {} min"
+msgstr "{}: probeer over {} min opnieuw"
+
+msgctxt "#11603"
+msgid "{}: temporarily rate limited"
+msgstr "{}: tijdelijk beperkt"
+
+msgctxt "#11604"
+msgid "{}: service unavailable"
+msgstr "{}: dienst niet beschikbaar"
+
+msgctxt "#11401"
+msgid "Resonance setup"
+msgstr "Resonance-setup"
+
+msgctxt "#11402"
+msgid "Welcome to Resonance.\n\nSetup takes a few minutes: a Spotify app Client ID, pairing this box for playback, and signing in to Spotify."
+msgstr "Welkom bij Resonance.\n\nDe setup duurt een paar minuten: een Spotify Client ID, dit apparaat koppelen voor afspelen en inloggen bij Spotify."
+
+msgctxt "#11403"
+msgid "Continue Resonance setup?\n\nSteps you already finished are skipped."
+msgstr "Resonance-setup voortzetten?\n\nStappen die je al hebt afgerond, worden overgeslagen."
+
+msgctxt "#11404"
+msgid "Start"
+msgstr "Start"
+
+msgctxt "#11405"
+msgid "Skip"
+msgstr "Overslaan"
+
+msgctxt "#11406"
+msgid "Step 1 of 3: Spotify app"
+msgstr "Stap 1 van 3: Spotify-app"
+
+msgctxt "#11407"
+msgid "Create a free app at developer.spotify.com/dashboard and add this Redirect URI:\n\n{}\n\nNext, enter the app's 32-character Client ID."
+msgstr "Maak een gratis app aan op developer.spotify.com/dashboard en voeg deze Redirect URI toe:\n\n{}\n\nVul daarna de Client ID van 32 tekens van de app in."
+
+msgctxt "#11408"
+msgid "Spotify Client ID"
+msgstr "Spotify Client ID"
+
+msgctxt "#11409"
+msgid "That is not a valid Client ID. Run guided setup again from Settings."
+msgstr "Dat is geen geldige Client ID. Start de begeleide setup opnieuw via Instellingen."
+
+msgctxt "#11410"
+msgid "Step 2 of 3: Playback"
+msgstr "Stap 2 van 3: Afspelen"
+
+msgctxt "#11411"
+msgid "Playback needs this box paired with Spotify once. The next screen waits for it."
+msgstr "Afspelen vereist eenmalig een koppeling van dit apparaat met Spotify. Het volgende scherm wacht daarop."
+
+msgctxt "#11412"
+msgid "Step 3 of 3: Sign in"
+msgstr "Stap 3 van 3: Inloggen"
+
+msgctxt "#11413"
+msgid "Sign in with Spotify in your browser for search and playlists."
+msgstr "Log in bij Spotify in je browser voor zoeken en playlists."
+
+msgctxt "#11414"
+msgid "Setup complete. Search, playlists and playback are ready."
+msgstr "Setup voltooid. Zoeken, playlists en afspelen zijn klaar."
+
+msgctxt "#11415"
+msgid "Waiting for Spotify to pair...\n\nOn your phone or PC, open Spotify, tap the speaker icon, and pick '{}'."
+msgstr "Wachten tot Spotify koppelt...\n\nOpen Spotify op je telefoon of pc, tik op het speakerpictogram en kies '{}'."
+
+msgctxt "#11416"
+msgid "Not paired yet.\n\nOn your phone or PC, open Spotify, tap the speaker icon, and pick '{}'. Then retry."
+msgstr "Nog niet gekoppeld.\n\nOpen Spotify op je telefoon of pc, tik op het speakerpictogram en kies '{}'. Probeer het daarna opnieuw."
+
+msgctxt "#11417"
+msgid "Not paired yet. Open Spotify, tap the speaker icon, pick '{}', then try again."
+msgstr "Nog niet gekoppeld. Open Spotify, tik op het speakerpictogram, kies '{}' en probeer het opnieuw."
+
+msgctxt "#11418"
+msgid "Retry"
+msgstr "Opnieuw proberen"
+
+msgctxt "#11419"
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgctxt "#11420"
+msgid "Next: enter your Spotify Client ID"
+msgstr "Volgende: vul je Spotify Client ID in"
+
+msgctxt "#11421"
+msgid "Next: pair playback with Spotify"
+msgstr "Volgende: koppel het afspelen met Spotify"
+
+msgctxt "#11422"
+msgid "Next: sign in for search and playlists"
+msgstr "Volgende: log in voor zoeken en playlists"
+
+msgctxt "#11423"
+msgid "Reset Resonance"
+msgstr "Resonance resetten"
+
+msgctxt "#11424"
+msgid "Clears Spotify sign-in, playback pairing, cache and setup choices. A backup is kept. Restart Kodi afterwards."
+msgstr "Wist de Spotify-inlog, afspeelkoppeling, cache en setupkeuzes. Er wordt een back-up bewaard. Herstart Kodi daarna."
+
+msgctxt "#11425"
+msgid "Reset Resonance? Spotify sign-in, playback pairing, the cache and setup choices are cleared. A backup is kept in the add-on data folder. Restart Kodi afterwards to finish."
+msgstr "Resonance resetten? De Spotify-inlog, afspeelkoppeling, cache en setupkeuzes worden gewist. Er wordt een back-up bewaard in de map van de add-on. Herstart Kodi daarna om af te ronden."
+
+msgctxt "#11426"
+msgid "Resonance was reset. Restart Kodi, then run guided setup."
+msgstr "Resonance is gereset. Herstart Kodi en start daarna de begeleide setup."
+
+msgctxt "#11427"
+msgid "Reset"
+msgstr "Resetten"
+
+msgctxt "#11428"
+msgid "Guided setup is already running."
+msgstr "De begeleide setup loopt al."
+
+msgctxt "#11429"
+msgid "Spotify Client ID saved."
+msgstr "Spotify Client ID opgeslagen."
+
+msgctxt "#11430"
+msgid "The Client ID was not saved. It must be the 32 letters and numbers from your Spotify app. Run guided setup again to retry."
+msgstr "De Client ID is niet opgeslagen. Het moeten de 32 letters en cijfers uit je Spotify-app zijn. Start de begeleide setup opnieuw om het nog eens te proberen."
+
+msgctxt "#11431"
+msgid "Playback is paired with Spotify as '{}'."
+msgstr "Afspelen is gekoppeld met Spotify als '{}'."
+
+msgctxt "#11432"
+msgid "Playback is not paired yet. Run guided setup again to finish pairing."
+msgstr "Afspelen is nog niet gekoppeld. Start de begeleide setup opnieuw om de koppeling af te ronden."
+
+msgctxt "#11433"
+msgid "Signed in to Spotify. Search and playlists are ready."
+msgstr "Ingelogd bij Spotify. Zoeken en playlists zijn klaar."
+
+msgctxt "#11434"
+msgid "Browser sign-in did not finish. Run guided setup again to finish it."
+msgstr "Inloggen in de browser is niet afgerond. Start de begeleide setup opnieuw om het af te maken."
+
+msgctxt "#11435"
+msgid "Setup summary"
+msgstr "Overzicht van de setup"
+
+msgctxt "#11436"
+msgid "Done"
+msgstr "Klaar"
+
+msgctxt "#11437"
+msgid "Not done"
+msgstr "Niet klaar"
+
+msgctxt "#11438"
+msgid "Already done"
+msgstr "Al klaar"
+
+msgctxt "#11439"
+msgid "Setup is not finished. Run guided setup again to complete the steps marked Not done."
+msgstr "Setup is nog niet klaar. Start de begeleide setup opnieuw om de stappen met 'Niet klaar' af te ronden."
+
+msgctxt "#11440"
+msgid "Spotify Client ID"
+msgstr "Spotify Client ID"
+
+msgctxt "#11441"
+msgid "Playback pairing"
+msgstr "Koppelen voor afspelen"
+
+msgctxt "#11442"
+msgid "Browser sign-in"
+msgstr "Inloggen in de browser"
+
+msgctxt "#11443"
+msgid "Resonance is not fully set up yet. Finish setup now?"
+msgstr "Resonance is nog niet volledig ingesteld. Setup nu afronden?"
+
+msgctxt "#11444"
+msgid "Finish setup"
+msgstr "Setup afronden"
+
+msgctxt "#11445"
+msgid "Later"
+msgstr "Later"

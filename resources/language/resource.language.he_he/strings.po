@@ -1428,3 +1428,819 @@ msgstr "Hides followed playlists that Spotify will not let this app open because
 msgctxt "#11398"
 msgid "Catalogue"
 msgstr "Catalogue"
+
+msgctxt "#11446"
+msgid "Waiting for playback pairing...\n\nIn Spotify on your phone or PC, tap the speaker icon and pick '{}'.\n\nMusic starts when you press play in Spotify."
+msgstr "ממתין לזיווג ההשמעה...\n\nבספוטיפיי בטלפון או במחשב, הקש על סמל הרמקול ובחר '{}'.\n\nהמוזיקה מתחילה כשתלחץ על נגן בספוטיפיי."
+
+msgctxt "#11447"
+msgid "Pairing is not finished yet.\n\nIn Spotify on your phone or PC, tap the speaker icon and pick '{}'. Then press Retry."
+msgstr "הזיווג עדיין לא הסתיים.\n\nבספוטיפיי בטלפון או במחשב, הקש על סמל הרמקול ובחר '{}'. ואז לחץ על נסה שוב."
+
+msgctxt "#11448"
+msgid "Playback is paired. Search and playlists still need sign-in."
+msgstr "ההשמעה מזווגת. חיפוש ורשימות השמעה עדיין דורשים כניסה."
+
+msgctxt "#11449"
+msgid "Signed in. Search and playlists work."
+msgstr "מחובר. חיפוש ורשימות השמעה עובדים."
+
+msgctxt "#11450"
+msgid "Sign in with Spotify first. Open Account and status and choose Sign in with Spotify."
+msgstr "היכנס קודם לספוטיפיי. פתח חשבון ומצב ובחר כניסה לספוטיפיי."
+
+msgctxt "#11451"
+msgid "A Spotify Client ID is needed before you can sign in.\n\nOpen Settings > Account > Run guided setup. It asks for your Client ID."
+msgstr "נדרש Client ID של ספוטיפיי לפני הכניסה.\n\nפתח הגדרות > חשבון > הפעל הגדרה מודרכת. שם יתבקש ה-Client ID שלך."
+
+msgctxt "#11452"
+msgid "ACCOUNT"
+msgstr "חשבון"
+
+msgctxt "#11453"
+msgid "PLAYBACK"
+msgstr "השמעה"
+
+msgctxt "#11454"
+msgid "CATALOGUE"
+msgstr "קטלוג"
+
+msgctxt "#11455"
+msgid "MAINTENANCE"
+msgstr "תחזוקה"
+
+msgctxt "#11456"
+msgid "NOW PLAYING"
+msgstr "מתנגן כעת"
+
+msgctxt "#11457"
+msgid "SETTINGS"
+msgstr "הגדרות"
+
+msgctxt "#11458"
+msgid "Playback: paired as {}"
+msgstr "השמעה: מזווגת בשם {}"
+
+msgctxt "#11459"
+msgid "Playback: not paired yet. Tap to pair."
+msgstr "השמעה: עדיין לא מזווגת. הקש כדי לזווג."
+
+msgctxt "#11460"
+msgid "Search and playlists: signed in"
+msgstr "חיפוש ורשימות: מחובר"
+
+msgctxt "#11461"
+msgid "Search and playlists: sign in needed. Tap to sign in."
+msgstr "חיפוש ורשימות: נדרשת כניסה. הקש כדי להיכנס."
+
+msgctxt "#11462"
+msgid "Resume browser sign-in"
+msgstr "המשך כניסה בדפדפן"
+
+msgctxt "#11463"
+msgid "{} playlists · {}"
+msgstr "{} רשימות · {}"
+
+msgctxt "#11464"
+msgid "Playlists not loaded. Tap to load."
+msgstr "רשימות לא נטענו. הקש לטעינה."
+
+msgctxt "#11465"
+msgid "unknown"
+msgstr "לא ידוע"
+
+msgctxt "#11466"
+msgid "Playback status"
+msgstr "מצב השמעה"
+
+msgctxt "#11467"
+msgid "Quality: {} kbps"
+msgstr "איכות: {} kbps"
+
+msgctxt "#11468"
+msgid "Nothing playing"
+msgstr "שום דבר לא מתנגן"
+
+msgctxt "#11469"
+msgid "Playback unavailable"
+msgstr "ההשמעה אינה זמינה"
+
+msgctxt "#11470"
+msgid "Unknown track"
+msgstr "רצועה לא ידועה"
+
+msgctxt "#11471"
+msgid "What's new in {}"
+msgstr "מה חדש ב-{}"
+
+msgctxt "#11472"
+msgid "What's new in this version"
+msgstr "מה חדש בגרסה הזו"
+
+msgctxt "#11473"
+msgid "Clear cache"
+msgstr "נקה מטמון"
+
+msgctxt "#11474"
+msgid "Sign out"
+msgstr "התנתק"
+
+msgctxt "#11475"
+msgid "Your Spotify Library"
+msgstr "הספרייה שלך בספוטיפיי"
+
+msgctxt "#11476"
+msgid "Search"
+msgstr "חיפוש"
+
+msgctxt "#11477"
+msgid "Account and status"
+msgstr "חשבון ומצב"
+
+msgctxt "#11478"
+msgid "Songs"
+msgstr "שירים"
+
+msgctxt "#11479"
+msgid "Albums"
+msgstr "אלבומים"
+
+msgctxt "#11480"
+msgid "Artists"
+msgstr "אמנים"
+
+msgctxt "#11481"
+msgid "Liked Songs"
+msgstr "שירים שאהבתי"
+
+msgctxt "#11482"
+msgid "Saved Albums"
+msgstr "אלבומים שמורים"
+
+msgctxt "#11483"
+msgid "Followed Artists"
+msgstr "אמנים במעקב"
+
+msgctxt "#11484"
+msgid "Saved and Followed Playlists"
+msgstr "רשימות שמורות ובמעקב"
+
+msgctxt "#11485"
+msgid "Create playlist..."
+msgstr "צור רשימת השמעה..."
+
+msgctxt "#11486"
+msgid "There are no release notes for this version."
+msgstr "אין הערות שחרור לגרסה הזו."
+
+msgctxt "#11487"
+msgid "More..."
+msgstr "עוד..."
+
+msgctxt "#11488"
+msgid "No results"
+msgstr "אין תוצאות"
+
+msgctxt "#11489"
+msgid "No artist results"
+msgstr "אין תוצאות אמנים"
+
+msgctxt "#11490"
+msgid "Invalid Spotify link"
+msgstr "קישור ספוטיפיי לא תקין"
+
+msgctxt "#11491"
+msgid "This old menu has been replaced. Open Resonance from Music add-ons."
+msgstr "התפריט הישן הוחלף. פתח את Resonance מתוספי המוזיקה."
+
+msgctxt "#11492"
+msgid "Unable to load this page"
+msgstr "לא ניתן לטעון את הדף הזה"
+
+msgctxt "#11493"
+msgid "The login response did not match this request. Please retry."
+msgstr "תשובת הכניסה אינה תואמת לבקשה הזו. נסה שוב."
+
+msgctxt "#11494"
+msgid "The pending sign-in expired. Start again from Account and status."
+msgstr "הכניסה הממתינה פגה. התחל מחדש מחשבון ומצב."
+
+msgctxt "#11495"
+msgid "No pending sign-in. Start it from Account and status first."
+msgstr "אין כניסה ממתינה. התחל אותה קודם מחשבון ומצב."
+
+msgctxt "#11496"
+msgid "Signed out of Spotify"
+msgstr "התנתקת מספוטיפיי"
+
+msgctxt "#11497"
+msgid "Could not complete sign out. Please try again."
+msgstr "לא הצלחנו להתנתק. נסה שוב."
+
+msgctxt "#11498"
+msgid "Could not clear the cache. Please try again."
+msgstr "לא ניתן לנקות את המטמון. נסה שוב."
+
+msgctxt "#11499"
+msgid "Cache cleared"
+msgstr "המטמון נוקה"
+
+msgctxt "#11500"
+msgid "Playlists updated"
+msgstr "רשימות ההשמעה עודכנו"
+
+msgctxt "#11501"
+msgid "Could not refresh playlists"
+msgstr "לא ניתן לרענן את רשימות ההשמעה"
+
+msgctxt "#11502"
+msgid "Like this song in your Spotify library?"
+msgstr "לאהוב את השיר הזה בספריית הספוטיפיי שלך?"
+
+msgctxt "#11503"
+msgid "Unlike this song in your Spotify library?"
+msgstr "לבטל את האהבה לשיר הזה בספריית הספוטיפיי שלך?"
+
+msgctxt "#11504"
+msgid "Save this album in your Spotify library?"
+msgstr "לשמור את האלבום הזה בספריית הספוטיפיי שלך?"
+
+msgctxt "#11505"
+msgid "Remove this album from your Spotify library?"
+msgstr "להסיר את האלבום הזה מספריית הספוטיפיי שלך?"
+
+msgctxt "#11506"
+msgid "Saved to Spotify Your Library → Albums"
+msgstr "נשמר בספריית הספוטיפיי שלך → אלבומים"
+
+msgctxt "#11507"
+msgid "Removed from Spotify Your Library → Albums"
+msgstr "הוסר מספריית הספוטיפיי שלך → אלבומים"
+
+msgctxt "#11508"
+msgid "Liked on Spotify"
+msgstr "נוסף לאהובים בספוטיפיי"
+
+msgctxt "#11509"
+msgid "Removed from Spotify Liked Songs"
+msgstr "הוסר משירים שאהבתי בספוטיפיי"
+
+msgctxt "#11510"
+msgid "No playlists owned by this Spotify account were found"
+msgstr "לא נמצאו רשימות השמעה בבעלות חשבון הספוטיפיי הזה"
+
+msgctxt "#11511"
+msgid "Add track to Spotify playlist"
+msgstr "הוסף שיר לרשימת השמעה בספוטיפיי"
+
+msgctxt "#11512"
+msgid "Open the playlist that holds the track and use its context menu "
+msgstr "פתח את רשימת ההשמעה שמכילה את השיר והשתמש בתפריט ההקשר שלה "
+
+msgctxt "#11513"
+msgid "to remove the track from there."
+msgstr "כדי להסיר את השיר משם."
+
+msgctxt "#11514"
+msgid "Playlist unfollowed"
+msgstr "רשימת ההשמעה הוסרה ממעקב"
+
+msgctxt "#11515"
+msgid "Artist unfollowed"
+msgstr "האמן הוסר ממעקב"
+
+msgctxt "#11516"
+msgid "New playlist name"
+msgstr "שם חדש לרשימת השמעה"
+
+msgctxt "#11517"
+msgid "New playlist name for this track"
+msgstr "שם חדש לרשימה עבור השיר הזה"
+
+msgctxt "#11518"
+msgid "Playback quality"
+msgstr "איכות השמעה"
+
+msgctxt "#11519"
+msgid "96 kbps (low)"
+msgstr "96 kbps (נמוכה)"
+
+msgctxt "#11520"
+msgid "160 kbps (normal)"
+msgstr "160 kbps (רגילה)"
+
+msgctxt "#11521"
+msgid "320 kbps (high)"
+msgstr "320 kbps (גבוהה)"
+
+msgctxt "#11522"
+msgid "Track metadata unavailable; cannot start playback"
+msgstr "פרטי השיר אינם זמינים; לא ניתן להתחיל השמעה"
+
+msgctxt "#11523"
+msgid "This page has no playable tracks"
+msgstr "לדף הזה אין שירים שניתנים להשמעה"
+
+msgctxt "#11524"
+msgid "Playlist loading cancelled"
+msgstr "טעינת רשימת ההשמעה בוטלה"
+
+msgctxt "#11525"
+msgid "This playlist has no playable tracks"
+msgstr "לרשימת ההשמעה הזו אין שירים שניתנים להשמעה"
+
+msgctxt "#11526"
+msgid "Loaded {} tracks..."
+msgstr "נטענו {} שירים..."
+
+msgctxt "#11527"
+msgid "Spotify Login"
+msgstr "כניסה לספוטיפיי"
+
+msgctxt "#11528"
+msgid "Scan this QR code to sign in, or use the URL below manually on another device."
+msgstr "סרוק את קוד ה-QR הזה כדי להיכנס, או השתמש בכתובת למטה ידנית במכשיר אחר."
+
+msgctxt "#11529"
+msgid "Spotify sign-in timed out here.\n\nIf Spotify opened on your phone or computer, the browser now shows a local address with ?code=... . Pick Paste code and enter that value (it is 100-200 characters).\n\nYou can also leave it and pick Resume browser sign-in from Account and status."
+msgstr "כניסה לספוטיפיי פגה כאן.\n\nאם ספוטיפיי נפתח בטלפון או במחשב, הדפדפן מציג עכשיו כתובת מקומית עם ?code=... . בחר הדבק קוד והזן את הערך הזה (100 עד 200 תווים).\n\nאפשר גם להשאיר ולבחור המשך כניסה בדפדפן מחשבון ומצב."
+
+msgctxt "#11530"
+msgid "Paste code"
+msgstr "הדבק קוד"
+
+msgctxt "#11531"
+msgid "Code: the part after ?code= in the browser address"
+msgstr "קוד: החלק אחרי ?code= בכתובת הדפדפן"
+
+msgctxt "#11532"
+msgid "Paste the code: the part after ?code= in the browser address"
+msgstr "הדבק את הקוד: החלק אחרי ?code= בכתובת הדפדפן"
+
+msgctxt "#11533"
+msgid "Fully signed in to Spotify. Search, playlists and playback are ready."
+msgstr "מחובר במלואו לספוטיפיי. חיפוש, רשימות השמעה והשמעה מוכנים."
+
+msgctxt "#11534"
+msgid "Browser sign-in complete. Search and playlists are ready; pair playback from setup when needed."
+msgstr "הכניסה בדפדפן הושלמה. חיפוש ורשימות השמעה מוכנים; זווג את ההשמעה מההגדרה במידת הצורך."
+
+msgctxt "#11535"
+msgid "Signed in"
+msgstr "מחובר"
+
+msgctxt "#11536"
+msgid "Playlist unavailable: "
+msgstr "רשימת השמעה לא זמינה: "
+
+msgctxt "#11537"
+msgid "Resonance playlist options"
+msgstr "אפשרויות רשימות השמעה של Resonance"
+
+msgctxt "#11538"
+msgid "Hide unreadable followed playlists in future"
+msgstr "להסתיר בעתיד רשימות במעקב שלא ניתן לקרוא"
+
+msgctxt "#11539"
+msgid "Show Spotify QR code"
+msgstr "הצג קוד QR של ספוטיפיי"
+
+msgctxt "#11540"
+msgid "I made a copy - refresh playlists"
+msgstr "יצרתי עותק – רענן רשימות השמעה"
+
+msgctxt "#11541"
+msgid "Close"
+msgstr "סגור"
+
+msgctxt "#11542"
+msgid "Unreadable followed playlists will be hidden from the playlist list"
+msgstr "רשימות במעקב שלא ניתן לקרוא יוסתרו מרשימת ההשמעה"
+
+msgctxt "#11543"
+msgid "Open in Spotify: "
+msgstr "פתח בספוטיפיי: "
+
+msgctxt "#11544"
+msgid "Scan to open this playlist in Spotify. Make your own copy there, then refresh playlists in Resonance."
+msgstr "סרוק כדי לפתוח את רשימת ההשמעה בספוטיפיי. צור שם עותק משלך ואז רענן את הרשימות ב-Resonance."
+
+msgctxt "#11545"
+msgid "Playlists refreshed. Reopen Playlists to find your copy."
+msgstr "רשימות ההשמעה רועננו. פתח שוב את רשימות ההשמעה כדי למצוא את העותק שלך."
+
+msgctxt "#11546"
+msgid "Could not refresh playlists. Try again from Account and status."
+msgstr "לא ניתן לרענן את רשימות ההשמעה. נסה שוב מחשבון ומצב."
+
+msgctxt "#11547"
+msgid "Sign out of Spotify?\n\nYour playlists and settings are kept. You can sign in again from Settings."
+msgstr "להתנתק מספוטיפיי?\n\nרשימות ההשמעה וההגדרות שלך יישמרו. אפשר להיכנס שוב מההגדרות."
+
+msgctxt "#11548"
+msgid "Clear the music cache (playlists, search results, rate-limit state)?\n\nYou stay signed in."
+msgstr "לנקות את מטמון המוזיקה (רשימות, תוצאות חיפוש, מצב הגבלת קצב)?\n\nתישאר מחובר."
+
+msgctxt "#11549"
+msgid "Unfollow '{}'?\n\nIt leaves Your Spotify Library. The playlist itself is not deleted."
+msgstr "להפסיק לעקוב אחרי '{}'?\n\nהיא תצא מספריית הספוטיפיי שלך. רשימת ההשמעה עצמה לא תימחק."
+
+msgctxt "#11550"
+msgid "Unfollow"
+msgstr "הפסק לעקוב"
+
+msgctxt "#11551"
+msgid "Unfollow '{}'?\n\nThe artist leaves your Followed Artists list. The artist itself is not deleted."
+msgstr "להפסיק לעקוב אחרי '{}'?\n\nהאמן יצא מרשימת האמנים במעקב שלך. האמן עצמו לא ימחק."
+
+msgctxt "#11552"
+msgid "Add this track to '{}'?"
+msgstr "להוסיף את השיר הזה ל-'{}'?"
+
+msgctxt "#11553"
+msgid "Remove this track from '{}'?"
+msgstr "להסיר את השיר הזה מ-'{}'?"
+
+msgctxt "#11554"
+msgid "Track added to "
+msgstr "השיר נוסף ל-"
+
+msgctxt "#11555"
+msgid "Track removed from "
+msgstr "השיר הוסר מ-"
+
+msgctxt "#11556"
+msgid "Playlist created: "
+msgstr "רשימת השמעה נוצרה: "
+
+msgctxt "#11557"
+msgid "Playback quality: "
+msgstr "איכות השמעה: "
+
+msgctxt "#11558"
+msgid "Spotify change failed"
+msgstr "השינוי בספוטיפיי נכשל"
+
+msgctxt "#11559"
+msgid "Resonance could not complete the Spotify request. Check the Kodi log for details."
+msgstr "Resonance לא הצליח להשלים את הבקשה לספוטיפיי. לפרטים, בדוק את יומן Kodi."
+
+msgctxt "#11560"
+msgid "Spotify may not have granted Resonance permission for this change yet. Open Account and status, sign in with Spotify again, then approve the requested permissions."
+msgstr "ייתכן שספוטיפיי עדיין לא נתן ל-Resonance הרשאה לשינוי הזה. פתח חשבון ומצב, היכנס שוב לספוטיפיי ואשר את ההרשאות המבוקשות."
+
+msgctxt "#11561"
+msgid "Like on Spotify"
+msgstr "אהוב בספוטיפיי"
+
+msgctxt "#11562"
+msgid "Unlike on Spotify"
+msgstr "בטל אהבה בספוטיפיי"
+
+msgctxt "#11563"
+msgid "Add to Spotify playlist..."
+msgstr "הוסף לרשימת השמעה בספוטיפיי..."
+
+msgctxt "#11564"
+msgid "Create playlist with this track..."
+msgstr "צור רשימת השמעה עם השיר הזה..."
+
+msgctxt "#11565"
+msgid "Save album on Spotify"
+msgstr "שמור אלבום בספוטיפיי"
+
+msgctxt "#11566"
+msgid "Remove album from Spotify library"
+msgstr "הסר אלבום מספריית הספוטיפיי"
+
+msgctxt "#11567"
+msgid "Remove from "
+msgstr "הסר מ-"
+
+msgctxt "#11568"
+msgid "this playlist"
+msgstr "רשימת השמעה זו"
+
+msgctxt "#11569"
+msgid "Unfollow playlist"
+msgstr "הפסק לעקוב אחרי רשימה"
+
+msgctxt "#11570"
+msgid "Artist: everything"
+msgstr "אמן: הכול"
+
+msgctxt "#11571"
+msgid "Artist: top songs"
+msgstr "אמן: שירים פופולריים"
+
+msgctxt "#11572"
+msgid "Artist: albums"
+msgstr "אמן: אלבומים"
+
+msgctxt "#11573"
+msgid "Artist: singles"
+msgstr "אמן: סינגלים"
+
+msgctxt "#11574"
+msgid "Artist: appears on"
+msgstr "אמן: מופיע ב-"
+
+msgctxt "#11575"
+msgid "Unfollow artist"
+msgstr "הפסק לעקוב אחרי אמן"
+
+msgctxt "#11576"
+msgid "Untitled"
+msgstr "ללא שם"
+
+msgctxt "#11577"
+msgid "Artist"
+msgstr "אמן"
+
+msgctxt "#11578"
+msgid "Singles"
+msgstr "סינגלים"
+
+msgctxt "#11579"
+msgid "Appears on"
+msgstr "מופיע ב-"
+
+msgctxt "#11580"
+msgid "More {}..."
+msgstr "עוד {}..."
+
+msgctxt "#11581"
+msgid "playlist"
+msgstr "רשימה"
+
+msgctxt "#11582"
+msgid "Spotify will not let Resonance read the songs in this playlist because your account does not own it or collaborate on it. Spotify's API only provides playlist contents to the owner or collaborators, so Resonance cannot copy the songs automatically.\n\nTo use it in Resonance:\n1. Open the playlist in Spotify using the link below.\n2. In Spotify, make your own playlist copy, or ask the owner to add you as a collaborator.\n3. Return to Resonance and refresh playlists from Account and status.\n\nFollowing or saving the playlist to Your Library alone does not grant Resonance access.\n\nSpotify link:\n{}"
+msgstr "ספוטיפיי לא מאפשר ל-Resonance לקרוא את השירים ברשימת ההשמעה הזו, כי החשבון שלך אינו הבעלים שלה ואינו משתף פעולה בה. ה-API של ספוטיפיי מספק תוכן של רשימות השמעה רק לבעלים או למשתפי הפעולה, ולכן Resonance לא יכול להעתיק את השירים אוטומטית.\n\nכדי להשתמש בה ב-Resonance:\n1. פתח את רשימת ההשמעה בספוטיפיי באמצעות הקישור למטה.\n2. בספוטיפיי, צור עותק משלך של הרשימה, או בקש מהבעלים להוסיף אותך כמשתף פעולה.\n3. חזור ל-Resonance ורענן את הרשימות מחשבון ומצב.\n\nמעקב אחרי הרשימה או שמירתה בספרייה לבדה לא נותן ל-Resonance גישה.\n\nקישור לספוטיפיי:\n{}"
+
+msgctxt "#11583"
+msgid "Fully signed in to Spotify"
+msgstr "מחובר במלואו לספוטיפיי"
+
+msgctxt "#11584"
+msgid "Playback pairing complete. Next, sign in with the URL for search and playlists."
+msgstr "זיווג ההשמעה הושלם. הבא, היכנס דרך הכתובת לחיפוש ולרשימות השמעה."
+
+msgctxt "#11585"
+msgid "Browser sign-in complete. Search and playlists are ready."
+msgstr "הכניסה בדפדפן הושלמה. חיפוש ורשימות השמעה מוכנים."
+
+msgctxt "#11586"
+msgid "Signed out"
+msgstr "מנותק"
+
+msgctxt "#11587"
+msgid "Signed in; catalogue token unavailable"
+msgstr "מחובר; אסימון הקטלוג אינו זמין"
+
+msgctxt "#11588"
+msgid "Waiting for Spotify connection"
+msgstr "ממתין לחיבור לספוטיפיי"
+
+msgctxt "#11589"
+msgid "Scan QR Code"
+msgstr "סרוק קוד QR"
+
+msgctxt "#11590"
+msgid "No QR code could be shown because the link was empty."
+msgstr "אי אפשר להציג קוד QR כי הקישור ריק."
+
+msgctxt "#11591"
+msgid "The QR code could not be shown. Please use the link displayed on screen."
+msgstr "לא ניתן היה להציג את קוד ה-QR. השתמש בקישור שמוצג על המסך."
+
+msgctxt "#11592"
+msgid "Connect your Spotify account first"
+msgstr "חבר תחילה את חשבון הספוטיפיי שלך"
+
+msgctxt "#11593"
+msgid "Spotify is temporarily rate limited"
+msgstr "ספוטיפיי הגביל זמנית את הבקשות"
+
+msgctxt "#11594"
+msgid "Spotify could not complete this change"
+msgstr "ספוטיפיי לא הצליח להשלים את השינוי"
+
+msgctxt "#11595"
+msgid "No imported Spotify playlists are available yet"
+msgstr "עדיין אין רשימות ספוטיפיי מיובאות"
+
+msgctxt "#11596"
+msgid "A playlist name is required"
+msgstr "נדרש שם לרשימת ההשמעה"
+
+msgctxt "#11597"
+msgid "this artist"
+msgstr "אמן זה"
+
+msgctxt "#11598"
+msgid "What's new"
+msgstr "מה חדש"
+
+msgctxt "#11599"
+msgid "Spotify has not granted Resonance permission to read Liked Songs.\n\nSign in again from Account and status to approve the library permission."
+msgstr "ספוטיפיי לא נתן ל-Resonance הרשאה לקרוא שירים שאהבתי.\n\nהיכנס שוב מחשבון ומצב כדי לאשר את הרשאת הספרייה."
+
+msgctxt "#11600"
+msgid "Spotify has not granted Resonance permission to read followed artists.\n\nSign in with Spotify again from Account and status to approve that permission."
+msgstr "ספוטיפיי לא נתן ל-Resonance הרשאה לקרוא אמנים במעקב.\n\nהיכנס שוב לספוטיפיי מחשבון ומצב כדי לאשר את ההרשאה."
+
+msgctxt "#11601"
+msgid "Spotify will not let Resonance read this playlist.\n\nReason: you do not own or collaborate on it.\n\nMake a copy in Spotify, then refresh playlists.\n\nYou can hide these in Settings > Catalogue."
+msgstr "ספוטיפיי לא מאפשר ל-Resonance לקרוא את רשימת ההשמעה הזו.\n\nסיבה: אינך הבעלים שלה ואינך משתף פעולה בה.\n\nצור עותק בספוטיפיי ואז רענן את הרשימות.\n\nאפשר להסתיר אותן מהגדרות > קטלוג."
+
+msgctxt "#11602"
+msgid "{}: retry in {} min"
+msgstr "{}: נסה שוב בעוד {} דק׳"
+
+msgctxt "#11603"
+msgid "{}: temporarily rate limited"
+msgstr "{}: הוגבל זמנית"
+
+msgctxt "#11604"
+msgid "{}: service unavailable"
+msgstr "{}: השירות אינו זמין"
+
+msgctxt "#11401"
+msgid "Resonance setup"
+msgstr "הגדרת Resonance"
+
+msgctxt "#11402"
+msgid "Welcome to Resonance.\n\nSetup takes a few minutes: a Spotify app Client ID, pairing this box for playback, and signing in to Spotify."
+msgstr "ברוך הבא ל-Resonance.\n\nההגדרה לוקחת כמה דקות: Client ID של אפליקציית ספוטיפיי, זיווג המכשיר להשמעה וכניסה לספוטיפיי."
+
+msgctxt "#11403"
+msgid "Continue Resonance setup?\n\nSteps you already finished are skipped."
+msgstr "להמשיך בהגדרת Resonance?\n\nשלבים שכבר הסתיימו ידולגו."
+
+msgctxt "#11404"
+msgid "Start"
+msgstr "התחל"
+
+msgctxt "#11405"
+msgid "Skip"
+msgstr "דלג"
+
+msgctxt "#11406"
+msgid "Step 1 of 3: Spotify app"
+msgstr "שלב 1 מתוך 3: אפליקציית ספוטיפיי"
+
+msgctxt "#11407"
+msgid "Create a free app at developer.spotify.com/dashboard and add this Redirect URI:\n\n{}\n\nNext, enter the app's 32-character Client ID."
+msgstr "צור אפליקציה חינמית ב-developer.spotify.com/dashboard והוסף את ה-Redirect URI הזה:\n\n{}\n\nאחר כך הזן את ה-Client ID של האפליקציה, בן 32 תווים."
+
+msgctxt "#11408"
+msgid "Spotify Client ID"
+msgstr "Client ID של ספוטיפיי"
+
+msgctxt "#11409"
+msgid "That is not a valid Client ID. Run guided setup again from Settings."
+msgstr "זה לא Client ID תקין. הפעל שוב את ההגדרה המודרכת מההגדרות."
+
+msgctxt "#11410"
+msgid "Step 2 of 3: Playback"
+msgstr "שלב 2 מתוך 3: השמעה"
+
+msgctxt "#11411"
+msgid "Playback needs this box paired with Spotify once. The next screen waits for it."
+msgstr "השמעה דורשת זיווג חד-פעמי של המכשיר עם ספוטיפיי. המסך הבא ממתין לכך."
+
+msgctxt "#11412"
+msgid "Step 3 of 3: Sign in"
+msgstr "שלב 3 מתוך 3: כניסה"
+
+msgctxt "#11413"
+msgid "Sign in with Spotify in your browser for search and playlists."
+msgstr "היכנס לספוטיפיי בדפדפן לחיפוש ולרשימות השמעה."
+
+msgctxt "#11414"
+msgid "Setup complete. Search, playlists and playback are ready."
+msgstr "ההגדרה הושלמה. חיפוש, רשימות השמעה והשמעה מוכנים."
+
+msgctxt "#11415"
+msgid "Waiting for Spotify to pair...\n\nOn your phone or PC, open Spotify, tap the speaker icon, and pick '{}'."
+msgstr "ממתין לזיווג עם ספוטיפיי...\n\nבטלפון או במחשב, פתח את ספוטיפיי, הקש על סמל הרמקול ובחר '{}'."
+
+msgctxt "#11416"
+msgid "Not paired yet.\n\nOn your phone or PC, open Spotify, tap the speaker icon, and pick '{}'. Then retry."
+msgstr "עדיין לא מזווג.\n\nבטלפון או במחשב, פתח את ספוטיפיי, הקש על סמל הרמקול ובחר '{}'. ואז נסה שוב."
+
+msgctxt "#11417"
+msgid "Not paired yet. Open Spotify, tap the speaker icon, pick '{}', then try again."
+msgstr "עדיין לא מזווג. פתח את ספוטיפיי, הקש על סמל הרמקול, בחר '{}' ונסה שוב."
+
+msgctxt "#11418"
+msgid "Retry"
+msgstr "נסה שוב"
+
+msgctxt "#11419"
+msgid "Cancel"
+msgstr "ביטול"
+
+msgctxt "#11420"
+msgid "Next: enter your Spotify Client ID"
+msgstr "הבא: הזן את ה-Client ID של ספוטיפיי"
+
+msgctxt "#11421"
+msgid "Next: pair playback with Spotify"
+msgstr "הבא: זווג את ההשמעה עם ספוטיפיי"
+
+msgctxt "#11422"
+msgid "Next: sign in for search and playlists"
+msgstr "הבא: היכנס לחיפוש ולרשימות השמעה"
+
+msgctxt "#11423"
+msgid "Reset Resonance"
+msgstr "אפס את Resonance"
+
+msgctxt "#11424"
+msgid "Clears Spotify sign-in, playback pairing, cache and setup choices. A backup is kept. Restart Kodi afterwards."
+msgstr "מוחק את הכניסה לספוטיפיי, זיווג ההשמעה, המטמון ובחירות ההגדרה. נשמר גיבוי. לאחר מכן הפעל מחדש את Kodi."
+
+msgctxt "#11425"
+msgid "Reset Resonance? Spotify sign-in, playback pairing, the cache and setup choices are cleared. A backup is kept in the add-on data folder. Restart Kodi afterwards to finish."
+msgstr "לאפס את Resonance? הכניסה לספוטיפיי, זיווג ההשמעה, המטמון ובחירות ההגדרה יימחקו. נשמר גיבוי בתיקיית הנתונים של התוסף. הפעל מחדש את Kodi כדי להשלים."
+
+msgctxt "#11426"
+msgid "Resonance was reset. Restart Kodi, then run guided setup."
+msgstr "Resonance אופס. הפעל מחדש את Kodi, ואז הפעל את ההגדרה המודרכת."
+
+msgctxt "#11427"
+msgid "Reset"
+msgstr "אפס"
+
+msgctxt "#11428"
+msgid "Guided setup is already running."
+msgstr "ההגדרה המודרכת כבר פועלת."
+
+msgctxt "#11429"
+msgid "Spotify Client ID saved."
+msgstr "Client ID של ספוטיפיי נשמר."
+
+msgctxt "#11430"
+msgid "The Client ID was not saved. It must be the 32 letters and numbers from your Spotify app. Run guided setup again to retry."
+msgstr "ה-Client ID לא נשמר. הוא חייב להיות 32 האותיות והמספרים מאפליקציית ספוטיפיי שלך. הפעל שוב את ההגדרה המודרכת כדי לנסות שוב."
+
+msgctxt "#11431"
+msgid "Playback is paired with Spotify as '{}'."
+msgstr "ההשמעה מזווגת לספוטיפיי בשם '{}'."
+
+msgctxt "#11432"
+msgid "Playback is not paired yet. Run guided setup again to finish pairing."
+msgstr "ההשמעה עדיין לא מזווגת. הפעל שוב את ההגדרה המודרכת כדי להשלים את הזיווג."
+
+msgctxt "#11433"
+msgid "Signed in to Spotify. Search and playlists are ready."
+msgstr "מחובר לספוטיפיי. חיפוש ורשימות השמעה מוכנים."
+
+msgctxt "#11434"
+msgid "Browser sign-in did not finish. Run guided setup again to finish it."
+msgstr "הכניסה בדפדפן לא הסתיימה. הפעל שוב את ההגדרה המודרכת כדי להשלים אותה."
+
+msgctxt "#11435"
+msgid "Setup summary"
+msgstr "סיכום ההגדרה"
+
+msgctxt "#11436"
+msgid "Done"
+msgstr "בוצע"
+
+msgctxt "#11437"
+msgid "Not done"
+msgstr "לא בוצע"
+
+msgctxt "#11438"
+msgid "Already done"
+msgstr "כבר בוצע"
+
+msgctxt "#11439"
+msgid "Setup is not finished. Run guided setup again to complete the steps marked Not done."
+msgstr "ההגדרה לא הסתיימה. הפעל שוב את ההגדרה המודרכת כדי להשלים את השלבים שמסומנים 'לא בוצע'."
+
+msgctxt "#11440"
+msgid "Spotify Client ID"
+msgstr "Client ID של ספוטיפיי"
+
+msgctxt "#11441"
+msgid "Playback pairing"
+msgstr "זיווג השמעה"
+
+msgctxt "#11442"
+msgid "Browser sign-in"
+msgstr "כניסה בדפדפן"
+
+msgctxt "#11443"
+msgid "Resonance is not fully set up yet. Finish setup now?"
+msgstr "Resonance עדיין לא הוגדר במלואו. להשלים את ההגדרה עכשיו?"
+
+msgctxt "#11444"
+msgid "Finish setup"
+msgstr "השלם הגדרה"
+
+msgctxt "#11445"
+msgid "Later"
+msgstr "מאוחר יותר"

@@ -17,7 +17,7 @@ through bundled Spotty/librespot playback helpers.
 | Not supported | Windows, macOS, Linux x86/x64 |
 | Catalogue | Regular Spotify Web API with browser PKCE token |
 | Playback | Spotify Device Connect with Spotty/librespot |
-| Version | 1.2.1 |
+| Version | 1.2.2 |
 
 | | |
 | --- | --- |
@@ -26,7 +26,7 @@ through bundled Spotty/librespot playback helpers.
 
 ## Quick Start
 
-1. Run `python scripts/package_addon.py` and install `dist/plugin.audio.resonance-1.2.1.zip`. Upstream releases are available on the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
+1. Run `python scripts/package_addon.py` and install `dist/plugin.audio.resonance-1.2.2.zip`. Upstream releases are available on the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
 2. In Kodi, install it with **Add-ons -> Install from zip file**.
 3. Restart Kodi once.
 4. Open **Add-ons -> Music add-ons -> Resonance**.
@@ -48,6 +48,7 @@ https://resonance-spotify-callback.vercel.app/api/callback
 ## Features
 
 - Search Spotify tracks, albums and artists.
+- Menus, dialogs and notifications in English, Dutch, German, Spanish, French and Hebrew.
 - Browse and play tracks from your Spotify Liked Songs library.
 - Browse saved albums, followed artists, and saved or followed playlists in **Your Spotify Library**.
 - Like or unlike tracks and save or remove albums in your Spotify library.
@@ -202,7 +203,7 @@ code)** and paste the `code` value from the browser address bar.
 - From a playlist track, choose **Play playlist from here** to queue that song and the remaining playlist tracks.
 - Spotify links are no longer on the main menu. Open `open.spotify.com/...` URLs or `spotify:...` URIs with the plugin's `open_link` action, for example from a Kodi favourites entry pointing at `plugin://plugin.audio.resonance/?action=open_link`.
 - Use **Playback status** to see the current Kodi track, configured Spotify bitrate and playback pairing.
-- Use **Account and status** to see the state of the add-on at a glance. The page is grouped into **Account** (sign-in state, reauthorize), **Catalogue** (playlists, token), **Playback** (status, pairing, quality) and **Maintenance** (clear cache, sign out). Every row has its own icon, so the page can be scanned without reading long sentences.
+- Use **Account and status** to see the state of the add-on at a glance. The page is grouped into **Account** (playback pairing and search sign-in), **Catalogue** (playlists), **Playback** (status and quality) and **Maintenance** (what's new, clear cache, sign out). Each row shows the current state, and tapping it does the next step.
 - Existing users need to choose **Reauthorize Spotify** under **Account and status** and approve the Spotify library, playlist, and followed-artist permissions before using these views or Spotify write actions.
 
 Playlist data refreshes roughly every 30 minutes while signed in. A manual
