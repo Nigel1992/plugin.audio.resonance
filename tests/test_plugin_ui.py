@@ -6,6 +6,7 @@ its own references to them afterwards.
 """
 import contextlib
 import importlib.util
+import json
 import os
 import pathlib
 import re
@@ -108,6 +109,21 @@ class _Dialog:
         return None
 
 
+def _english_strings():
+    """Read the English source strings so the tests see the real labels."""
+    texts, sid = {}, None
+    path = ROOT / "resources" / "language" / "resource.language.en_gb" / "strings.po"
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.startswith('msgctxt "#'):
+            sid = int(line[len('msgctxt "#'):-1])
+        elif line.startswith("msgid ") and sid is not None:
+            texts[sid] = json.loads(line[len("msgid "):])
+    return texts
+
+
+ENGLISH = _english_strings()
+
+
 def _load_plugin():
     stubs = {
         "xbmc": _stub(
@@ -120,7 +136,7 @@ def _load_plugin():
         "xbmcaddon": _stub(Addon=lambda *a, **k: types.SimpleNamespace(
             getAddonInfo=lambda key: PROFILE if key == "profile" else (VERSION if key == "version" else str(ROOT)),
             getSetting=lambda key: ADDON_SETTINGS.get(key, ""),
-            getLocalizedString=lambda sid: "L%s" % sid,
+            getLocalizedString=lambda sid: ENGLISH.get(sid, "L%s" % sid),
             setSetting=lambda key, value: ADDON_SETTINGS.__setitem__(key, value),
         )),
         "xbmcgui": _stub(
@@ -300,7 +316,7 @@ class MenuTests(unittest.TestCase):
         self.assertTrue(DIALOGS)
         heading, notes = DIALOGS[-1]
         self.assertIn(VERSION, heading)
-        self.assertIn("what's new", heading)
+        self.assertIn("What's new", heading)
         self.assertTrue(notes.strip())
         self.assertEqual(ADDON_SETTINGS.get("last_notes_version"), VERSION)
 

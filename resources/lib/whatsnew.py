@@ -8,6 +8,21 @@ user who skips several releases still sees the full picture.
 """
 
 NOTES = {
+    "1.2.2": """NEW
+  * Account and status shows one row per topic. Tap the row to
+    pair playback or sign in.
+  * After pairing, browser sign-in starts straight away if needed.
+  * The home menu shows the next setup step.
+  * Menus, dialogs and notifications are translated: English,
+    Dutch, German, Spanish, French and Hebrew.
+
+FIXED
+  * Playing without sign-in shows a clear message.
+  * The old Set up Spotify route asks for the Client ID first.
+  * Setup texts that were only in English are translated.
+
+""",
+
     "1.2.1": """NEW
   * Guided setup asks to finish setup when Resonance is not
     fully signed in. Run it again from Settings > Account.

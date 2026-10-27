@@ -70,6 +70,14 @@ LOCAL_STREAM_HOST = "127.0.0.1" if platform.system() == "Windows" else "localhos
 # Independent addon instance
 ADDON_ID = "plugin.audio.resonance"
 
+
+def localize(string_id: int, default: str = "") -> str:
+    """Return the translated add-on string, or the English default when unavailable."""
+    try:
+        return xbmcaddon.Addon(id=ADDON_ID).getLocalizedString(string_id) or default
+    except Exception:
+        return default
+
 ADDON_PATH = xbmcvfs.translatePath(
     f"special://home/addons/{ADDON_ID}"
 )
