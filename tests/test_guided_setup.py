@@ -153,7 +153,7 @@ class GuidedSetupTests(WizardHarness):
             self.plugin.guided_setup()
         self.assertEqual(ADDON_SETTINGS["spotify_webapi_client_id"], CLIENT_ID)
         self.assertEqual(self.calls, ["pairing", "login"])
-        self.assertEqual(_FakeDialog.messages[-1], "L11435", "the last dialog should be the setup summary")
+        self.assertEqual(_FakeDialog.messages[-1], "Setup summary", "the last dialog should be the setup summary")
         self.assertEqual(ADDON_SETTINGS["setup_wizard_completed"], "true")
 
     def test_invalid_client_id_stops_without_marking_done(self):

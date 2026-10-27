@@ -150,16 +150,16 @@ def show_release_notes():
     version, notes = release_notes()
     heading = "Resonance " + version if version else "Resonance"
     if not notes:
-        xbmcgui.Dialog().ok(heading, "There are no release notes for this version.")
+        xbmcgui.Dialog().ok(heading, _t(11486))
         return
     dialog = xbmcgui.Dialog()
     # The text viewer is the big scrollable window. Older Kodi versions only
     # know the small message box.
     viewer = getattr(dialog, "textviewer", None)
     if viewer is not None:
-        viewer(heading + " - what's new", notes)
+        viewer(heading + " - " + _t(11598), notes)
     else:
-        dialog.ok(heading + " - what's new", notes)
+        dialog.ok(heading + " - " + _t(11598), notes)
 
 
 def maybe_show_release_notes():
@@ -223,18 +223,18 @@ def spotify_write_context_menu(entry, kind, liked=None, saved=None):
     if kind == "track" and re.fullmatch(r"[A-Za-z0-9]{22}", identity):
         actions = []
         if liked is None or identity not in liked:
-            actions.append(("Like on Spotify", "RunPlugin(" + url(action="spotify_library", kind="track", id=identity, save="1") + ")"))
+            actions.append((_t(11561), "RunPlugin(" + url(action="spotify_library", kind="track", id=identity, save="1") + ")"))
         if liked is None or identity in liked:
-            actions.append(("Unlike on Spotify", "RunPlugin(" + url(action="spotify_library", kind="track", id=identity, save="0") + ")"))
-        actions.append(("Add to Spotify playlist...", "RunPlugin(" + url(action="choose_playlist", id=identity) + ")"))
-        actions.append(("Create playlist with this track...", "RunPlugin(" + url(action="create_playlist", id=identity) + ")"))
+            actions.append((_t(11562), "RunPlugin(" + url(action="spotify_library", kind="track", id=identity, save="0") + ")"))
+        actions.append((_t(11563), "RunPlugin(" + url(action="choose_playlist", id=identity) + ")"))
+        actions.append((_t(11564), "RunPlugin(" + url(action="create_playlist", id=identity) + ")"))
         return actions
     if kind == "album" and re.fullmatch(r"[A-Za-z0-9]{22}", identity):
         actions = []
         if saved is None or identity not in saved:
-            actions.append(("Save album on Spotify", "RunPlugin(" + url(action="spotify_library", kind="album", id=identity, save="1") + ")"))
+            actions.append((_t(11565), "RunPlugin(" + url(action="spotify_library", kind="album", id=identity, save="1") + ")"))
         if saved is None or identity in saved:
-            actions.append(("Remove album from Spotify library", "RunPlugin(" + url(action="spotify_library", kind="album", id=identity, save="0") + ")"))
+            actions.append((_t(11566), "RunPlugin(" + url(action="spotify_library", kind="album", id=identity, save="0") + ")"))
         return actions
     return []
 
@@ -252,7 +252,7 @@ def playlist_remove_context_menu(entry, playlist=None):
     identity = str(entry.get("id") or "")
     if not editable or not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
         return []
-    label = "Remove from " + (playlist_name or "this playlist")
+    label = _t(11567) + (playlist_name or _t(11568))
     return [(label, "RunPlugin(" + url(
         action="remove_from_playlist", playlist=playlist_id, id=identity,
         name=playlist_name or "",
@@ -271,7 +271,7 @@ def playlist_context_menu(entry, client=None):
         # Owned playlists are not followed, so there is nothing to unfollow.
         return []
     return [(
-        "Unfollow playlist",
+        _t(11569),
         "RunPlugin(" + url(action="unfollow_playlist", id=identity, name=entry.get("name") or "") + ")",
     )]
 
@@ -309,11 +309,11 @@ def artist_context_menu(entry, kind, followed=None):
         return []
     suffix = " - " + artist_name if artist_name else ""
     actions = [
-        ("Artist: everything" + suffix, "artist_everything"),
-        ("Artist: top songs" + suffix, "artist_top_tracks"),
-        ("Artist: albums" + suffix, "artist_albums"),
-        ("Artist: singles" + suffix, "artist_singles"),
-        ("Artist: appears on" + suffix, "artist_appears_on"),
+        (_t(11570) + suffix, "artist_everything"),
+        (_t(11571) + suffix, "artist_top_tracks"),
+        (_t(11572) + suffix, "artist_albums"),
+        (_t(11573) + suffix, "artist_singles"),
+        (_t(11574) + suffix, "artist_appears_on"),
     ]
     items = [
         (label, "Container.Update(" + url(action=action, id=artist_id, name=artist_name) + ")")
@@ -322,19 +322,19 @@ def artist_context_menu(entry, kind, followed=None):
     if kind == "artist" and followed is not None and artist_id in followed:
         # Only artists the account follows can be unfollowed.
         items.append((
-            "Unfollow artist" + suffix,
+            _t(11575) + suffix,
             "RunPlugin(" + url(action="unfollow_artist", id=artist_id, name=artist_name) + ")",
         ))
     return items
 
 
 def track_item(track, path):
-    item = xbmcgui.ListItem(track.get("name") or "Untitled", path=path)
+    item = xbmcgui.ListItem(track.get("name") or _t(11576), path=path)
     item.setProperty("IsPlayable", "true")
     item.setProperty("do_not_analyze", "true")
     album = track.get("album") or {}
     info = item.getMusicInfoTag()
-    info.setTitle(track.get("name") or "Untitled")
+    info.setTitle(track.get("name") or _t(11576))
     info.setArtist(" / ".join(a.get("name", "") for a in track.get("artists", [])))
     info.setAlbum(album.get("name") or "")
     info.setDuration(int(track.get("duration_ms") or 0) // 1000)
@@ -346,7 +346,7 @@ def track_item(track, path):
 
 
 def directory_item(entry, kind, path, client=None, saved=None, followed=None):
-    item = xbmcgui.ListItem(entry.get("name") or "Untitled")
+    item = xbmcgui.ListItem(entry.get("name") or _t(11576))
     _apply_art(item, _image_url(entry))
     item.addContextMenuItems(
         spotify_write_context_menu(entry, kind, saved=saved)
@@ -379,70 +379,59 @@ def section(label):
 def status(client):
     """Render the account and status page.
 
-    The page is grouped into short sections with one icon per row so the
-    state of the add-on can be read at a glance instead of reading long
-    sentences.
+    Each group shows the current state in one row, and the row itself is the
+    action that changes it, so the page reads as a status overview.
     """
-    from utils import get_playback_settings, get_spotify_device_name, resonance_signed_in, spotty_has_credentials
+    from utils import get_playback_settings, get_spotify_device_name, spotty_has_credentials
 
-    signed_in = resonance_signed_in()
-    account_state = xbmcgui.Window(10000).getProperty("resonance.status")
-
-    section("ACCOUNT")
-    step = next_setup_step()
-    if step:
-        row(step[0], step[1], icon="setup.png")
-    if signed_in:
-        row(account_state or "Signed in", icon="account.png")
-        row("Reauthorize Spotify", "web_login", icon="key.png")
+    section(_t(11452))
+    if spotty_has_credentials():
+        row(_t(11458, get_spotify_device_name()), "connect_playback", icon="cast.png")
     else:
-        row(account_state or "Signed out", icon="account.png")
-        row("Sign in with Spotify", "web_login", icon="key.png")
-        try:
-            import web_auth
-            from utils import get_spotify_webapi_client_id
-            if web_auth.load_login_request(DATA, get_spotify_webapi_client_id(), clock=time.time):
-                row("Resume browser sign-in", "web_login_paste", icon="key.png")
-        except Exception:
-            pass
+        row(_t(11459), "guided_setup", icon="setup.png")
+    if token():
+        row(_t(11460), "web_login", icon="key.png")
+    else:
+        row(_t(11461), "web_login", icon="key.png")
+    try:
+        import web_auth
+        from utils import get_spotify_webapi_client_id
+        if web_auth.load_login_request(DATA, get_spotify_webapi_client_id(), clock=time.time):
+            row(_t(11462), "web_login_paste", icon="key.png")
+    except Exception:
+        pass
 
-    section("CATALOGUE")
+    section(_t(11454))
     refreshed = client.cached("playlists-refreshed", stale=True)
     if isinstance(refreshed, dict) and refreshed.get("count"):
         count = int(refreshed.get("count") or 0)
         stamp = float(refreshed.get("at") or 0)
-        when = time.strftime("%d %b %H:%M", time.localtime(stamp)) if stamp else "unknown"
-        row(f"{count} playlist{'s' if count != 1 else ''} · {when}", "refresh_playlists", icon="refresh.png")
+        when = time.strftime("%d %b %H:%M", time.localtime(stamp)) if stamp else _t(11465)
+        row(_t(11463, count, when), "refresh_playlists", icon="refresh.png")
     else:
-        row("Playlists not loaded", "refresh_playlists", icon="refresh.png")
-    if not token():
-        row("Catalogue token missing", "web_login", icon="key.png")
+        row(_t(11464), "refresh_playlists", icon="refresh.png")
 
-    section("PLAYBACK")
-    row("Playback status", "playback_status", icon="playback.png")
-    if spotty_has_credentials():
-        row("Connect: " + get_spotify_device_name(), "connect_playback", icon="cast.png")
-    else:
-        row("Not paired", "guided_setup", icon="setup.png")
-    row("Quality: " + get_playback_settings()[0] + " kbps", "playback_quality", icon="quality.png")
+    section(_t(11453))
+    row(_t(11466), "playback_status", icon="playback.png")
+    row(_t(11467, get_playback_settings()[0]), "playback_quality", icon="quality.png")
 
-    section("MAINTENANCE")
+    section(_t(11455))
     version = str(ADDON.getAddonInfo("version") or "")
-    row("What's new in " + (version or "this version"), "whats_new", icon="info.png")
-    row("Clear cache", "clear_cache", icon="cache.png")
-    row("Sign out", "sign_out", icon="sign_out.png")
+    row(_t(11471, version) if version else _t(11472), "whats_new", icon="info.png")
+    row(_t(11473), "clear_cache", icon="cache.png")
+    row(_t(11474), "sign_out", icon="sign_out.png")
     end_directory(cache_to_disc=False)
 
 
 def playback_status():
     from utils import get_playback_settings, get_spotify_device_name, spotty_has_credentials
 
-    section("NOW PLAYING")
+    section(_t(11456))
     try:
         player = xbmc.Player()
         if player.isPlayingAudio():
             tag = player.getMusicInfoTag()
-            title = tag.getTitle() or "Unknown track"
+            title = tag.getTitle() or _t(11470)
             artists = tag.getArtist() or []
             if isinstance(artists, str):
                 artists = [artists]
@@ -451,21 +440,19 @@ def playback_status():
                 label += " - " + " / ".join(artists)
             row(label, icon="playback.png")
         else:
-            row("Nothing playing", icon="playback.png")
+            row(_t(11468), icon="playback.png")
     except Exception:
-        row("Playback unavailable", icon="playback.png")
+        row(_t(11469), icon="playback.png")
 
-    section("SETTINGS")
-    row("Quality: " + get_playback_settings()[0] + " kbps", "playback_quality", icon="quality.png")
+    section(_t(11457))
+    row(_t(11467, get_playback_settings()[0]), "playback_quality", icon="quality.png")
     if spotty_has_credentials():
-        row("Connect: " + get_spotify_device_name(), "connect_playback", icon="cast.png")
+        row(_t(11458, get_spotify_device_name()), "connect_playback", icon="cast.png")
     else:
-        # The unpaired state of the Connect row. It starts the same pairing
-        # flow, so only Quality and Connect react to a click on this page.
-        row("Not paired", "connect_playback", icon="cast.png")
+        row(_t(11459), "connect_playback", icon="cast.png")
     account_state = xbmcgui.Window(10000).getProperty("resonance.status")
     if account_state:
-        section("ACCOUNT")
+        section(_t(11452))
         row(account_state, icon="account.png")
     end_directory(cache_to_disc=False)
 
@@ -552,7 +539,7 @@ def render(client, items, kind, more, params):
                         marker = "[COLOR skyblue][SHARED][/COLOR] "
                     else:
                         marker = "[COLOR orange][FOLLOWED][/COLOR] "
-                    display_entry["name"] = marker + (entry.get("name") or "Untitled")
+                    display_entry["name"] = marker + (entry.get("name") or _t(11576))
             item = directory_item(
                 display_entry, kind, path, client=client,
                 saved=library if kind == "album" else None,
@@ -564,9 +551,9 @@ def render(client, items, kind, more, params):
             next_params = dict(params, after=more)
         else:
             next_params = dict(params, offset=more)
-        row("More...", **next_params)
+        row(_t(11487), **next_params)
     if not items:
-        row("No results")
+        row(_t(11488))
     end_directory(cache_to_disc=False)
 
 
@@ -609,9 +596,10 @@ def render_artist_everything(client, sections, artist_name, artist_id):
                 "Appears on": "artist_appears_on",
             }.get(label)
             if more_action:
-                row("More " + label.lower() + "...", more_action, id=artist_id, name=artist_name)
+                more_label = {"Albums": _t(11479), "Singles": _t(11578), "Appears on": _t(11579)}.get(label, label)
+                row(_t(11580).format(more_label.lower()), more_action, id=artist_id, name=artist_name)
     if not sections:
-        row("No artist results")
+        row(_t(11489))
     end_directory(cache_to_disc=False)
 
 
@@ -631,8 +619,7 @@ def web_login():
     if not re.fullmatch(r"[0-9A-Fa-f]{32}", client_id or ""):
         xbmcgui.Dialog().ok(
             "Resonance",
-            "Set your own Spotify Web API Client ID in Settings > Advanced first "
-            "(create a Spotify app at developer.spotify.com and paste its Client ID).",
+            _t(11451),
         )
         return
     redirect_uri = (ADDON.getSetting("web_auth_redirect_uri").strip()
@@ -672,8 +659,8 @@ def web_login():
         from qr_dialog import show_qr_dialog
         qr_dialog = show_qr_dialog(
             display,
-            title="Spotify Login",
-            message="Scan this QR code to sign in, or use the URL below manually on another device.",
+            title=_t(11527),
+            message=_t(11528),
             modal=False,
         )
     except Exception:
@@ -722,22 +709,22 @@ def web_login():
         return
     if result.get("state"):
         web_auth.clear_login_request(DATA)
-        xbmcgui.Dialog().notification("Resonance", "The login response did not match this request. Please retry.")
+        xbmcgui.Dialog().notification("Resonance", _t(11493))
         return
     # The callback never arrived (the Spotify page opened on a device that
     # cannot reach this box). Offer to paste the code from the address bar.
     if xbmcgui.Dialog().yesno(
         "Resonance",
-        "Spotify sign-in timed out here.\n\nIf Spotify opened on your phone or computer, the browser now shows a local address with ?code=... . Pick Paste code and enter that value (it is 100-200 characters).\n\nYou can also leave it and pick Resume browser sign-in from Account and status.",
-        nolabel="Cancel",
-        yeslabel="Paste code",
+        _t(11529),
+        nolabel=_t(11419),
+        yeslabel=_t(11530),
     ):
-        code = xbmcgui.Dialog().input("Code: the part after ?code= in the browser address").strip()
+        code = xbmcgui.Dialog().input(_t(11531)).strip()
         if code:
             request = web_auth.load_login_request(DATA, client_id)
             if not request:
                 web_auth.clear_login_request(DATA)
-                xbmcgui.Dialog().notification("Resonance", "The pending sign-in expired. Start again with Sign in with browser.")
+                xbmcgui.Dialog().notification("Resonance", _t(11494))
                 return
             try:
                 token_data = web_auth.exchange_code(client_id, request["redirect_uri"], code, request["verifier"])
@@ -774,16 +761,16 @@ def _finish_web_login(client_id, redirect_uri, token_data):
         cache_auth_client_id(client_id)
     window = xbmcgui.Window(10000)
     window.setProperty("resonance.signed-in", "1")
-    window.setProperty("resonance.status", "Signed in")
+    window.setProperty("resonance.status", _t(11535))
     try:
         from utils import spotty_has_credentials
         complete = spotty_has_credentials()
     except Exception:
         complete = False
     message = (
-        "Fully signed in to Spotify. Search, playlists and playback are ready."
+        _t(11533)
         if complete
-        else "Browser sign-in complete. Search and playlists are ready; pair playback from setup when needed."
+        else _t(11534)
     )
     xbmcgui.Dialog().notification("Resonance", message)
     xbmc.executebuiltin("Container.Update(" + url(action="home") + ",replace)")
@@ -796,9 +783,9 @@ def resume_web_login_paste():
     client_id = get_spotify_webapi_client_id()
     request = web_auth.load_login_request(DATA, client_id)
     if not request:
-        xbmcgui.Dialog().notification("Resonance", "No pending Spotify sign-in. Start it from Sign in with browser first.")
+        xbmcgui.Dialog().notification("Resonance", _t(11495))
         return
-    code = xbmcgui.Dialog().input("Paste the code: the part after ?code= in the browser address").strip()
+    code = xbmcgui.Dialog().input(_t(11532)).strip()
     if not code:
         return
     try:
@@ -828,12 +815,7 @@ def connect_device(navigate, wait_for_playback=False):
     while True:
         _ensure_device_connect_receiver()
         progress = xbmcgui.DialogProgress()
-        instruction = (
-            "Waiting for playback pairing...\n\nIn Spotify on your phone or PC, tap the speaker icon and pick '{}'."
-            if wait_for_playback
-            else "Waiting for sign-in...\n\nIn Spotify on your phone or PC, tap the speaker icon and pick '{}'."
-        )
-        progress.create("Spotify", instruction.format(device))
+        progress.create("Spotify", _t(11446, device))
         try:
             start = time.monotonic()
             while True:
@@ -856,31 +838,14 @@ def connect_device(navigate, wait_for_playback=False):
             return True
         retry = xbmcgui.Dialog().yesno(
             "Spotify",
-            "Not signed in yet.\n\nIn Spotify on your phone or PC, tap the speaker icon and pick '{}'. Then retry.".format(device),
-            nolabel="Cancel",
-            yeslabel="Retry",
+            _t(11447, device),
+            nolabel=_t(11419),
+            yeslabel=_t(11418),
         )
         if not retry:
             if navigate:
                 xbmc.executebuiltin("Container.Update(" + url(action="home") + ",replace)")
             return False
-
-
-def setup_spotify():
-    from utils import spotty_has_credentials
-    if not spotty_has_credentials():
-        if not connect_device(navigate=False, wait_for_playback=True):
-            xbmc.executebuiltin("Container.Update(" + url(action="home") + ",replace)")
-            return
-        xbmcgui.Dialog().notification(
-            "Resonance",
-            "Playback pairing complete. Step 1 of 2 done; next, sign in with the URL for search and playlists.",
-        )
-    if not token():
-        web_login()
-        return
-    xbmcgui.Dialog().notification("Resonance", "Spotify is already set up")
-    xbmc.executebuiltin("Container.Update(" + url(action="home") + ",replace)")
 
 
 WIZARD_DONE_SETTING = "setup_wizard_completed"
@@ -1107,7 +1072,7 @@ def stream_url(track, client):
     identity = track.get("id") or ""
     duration = int(track.get("duration_ms") or 0) / 1000
     if not re.fullmatch(r"[A-Za-z0-9]{22}", identity) or duration <= 0:
-        raise catalogue.Unavailable("Track metadata unavailable; cannot start playback")
+        raise catalogue.Unavailable(_t(11522))
     reason = client.unplayable(track)
     if reason:
         raise catalogue.Unavailable(reason)
@@ -1116,64 +1081,57 @@ def stream_url(track, client):
 
 def show_playlist_copy_help(identity, name="", client=None):
     """Offer a Spotify link when Spotify blocks reading a followed playlist."""
-    title = (name or "this playlist").strip()
+    title = (name or _t(11568)).strip()
     spotify_url = "https://open.spotify.com/playlist/" + identity
-    message = (
-        "Spotify will not let Resonance read the songs in this playlist because your account does not own it "
-        "or collaborate on it. Spotify's API only provides playlist contents to the owner or collaborators, "
-        "so Resonance cannot copy the songs automatically.\n\n"
-        "To use it in Resonance:\n"
-        "1. Open the playlist in Spotify using the link below.\n"
-        "2. In Spotify, make your own playlist copy, or ask the owner to add you as a collaborator.\n"
-        "3. Return to Resonance and refresh playlists from Account and status.\n\n"
-        "Following or saving the playlist to Your Library alone does not grant Resonance access.\n\n"
-        "Spotify link:\n" + spotify_url
-    )
+    message = _t(11582).format(spotify_url)
     xbmcgui.Dialog().textviewer(
-        "Playlist unavailable: " + title,
+        _t(11536) + title,
         message,
         usemono=False,
     )
     choice = xbmcgui.Dialog().select(
-        "Resonance playlist options",
+        _t(11537),
         [
-            "Hide unreadable followed playlists in future",
-            "Show Spotify QR code",
-            "I made a copy - refresh playlists",
-            "Close",
+            _t(11538),
+            _t(11539),
+            _t(11540),
+            _t(11541),
         ],
     )
     if choice == 0:
         ADDON.setSetting("hide_unreadable_playlists", "true")
         xbmcgui.Dialog().notification(
             "Resonance",
-            "Unreadable followed playlists will be hidden from the playlist list",
+            _t(11542),
         )
     elif choice == 1:
         from qr_dialog import show_qr_dialog
         show_qr_dialog(
             spotify_url,
-            title="Open in Spotify: " + title,
-            message="Scan to open this playlist in Spotify. Make your own copy there, then refresh playlists in Resonance.",
+            title=_t(11543) + title,
+            message=_t(11544),
         )
     elif choice == 2 and client is not None:
         refreshed = client.refresh_playlists()
         xbmcgui.Dialog().notification(
             "Resonance",
-            "Playlists refreshed. Reopen Playlists to find your copy."
-            if refreshed else "Could not refresh playlists. Try again from Account and status.",
+            _t(11545)
+            if refreshed else _t(11546),
         )
 
 
 def home_menu():
     from utils import resonance_signed_in
+    step = next_setup_step()
+    if step:
+        row(step[0], step[1], icon="setup.png")
     if resonance_signed_in():
-        row("Your Spotify Library", "spotify_library_menu")
-        row("Search", "search_menu")
+        row(_t(11475), "spotify_library_menu")
+        row(_t(11476), "search_menu")
     else:
-        row("Search", "search_menu")
-    row("Playback status", "playback_status")
-    row("Account and status", "status")
+        row(_t(11476), "search_menu")
+    row(_t(11466), "playback_status")
+    row(_t(11477), "status")
     end_directory(cache_to_disc=False)
 
 
@@ -1220,11 +1178,11 @@ def run():
         home_menu()
         return
     if action == "spotify_library_menu":
-        row("Liked Songs", "liked_songs")
-        row("Saved Albums", "saved_albums")
-        row("Followed Artists", "followed_artists")
-        row("Saved and Followed Playlists", "saved_playlists")
-        row("Create playlist...", "create_playlist", icon="plus.png")
+        row(_t(11481), "liked_songs")
+        row(_t(11482), "saved_albums")
+        row(_t(11483), "followed_artists")
+        row(_t(11484), "saved_playlists")
+        row(_t(11485), "create_playlist", icon="plus.png")
         end_directory(cache_to_disc=False)
         return
     if action == "search_menu":
@@ -1232,9 +1190,9 @@ def run():
         # the owner and collaborators, so a global playlist search could only
         # list playlists that Resonance cannot open. Playlists stay reachable
         # through Your Spotify Library.
-        for kind, label, icon in (("track", "Songs", "songs.png"),
-                                  ("album", "Albums", "albums.png"),
-                                  ("artist", "Artists", "artists.png")):
+        for kind, label, icon in (("track", _t(11478), "songs.png"),
+                                  ("album", _t(11479), "albums.png"),
+                                  ("artist", _t(11480), "artists.png")):
             row(label, "search", icon=icon, kind=kind)
         end_directory(cache_to_disc=False)
         return
@@ -1250,9 +1208,9 @@ def run():
         if action == "sign_out":
             if xbmcgui.Dialog().yesno(
                 "Resonance",
-                "Sign out of Spotify?\n\nYour playlists and settings are kept. You can sign in again from Settings.",
-                nolabel="Cancel",
-                yeslabel="Sign out",
+                _t(11547),
+                nolabel=_t(11419),
+                yeslabel=_t(11474),
             ):
                 window = xbmcgui.Window(10000)
                 window.clearProperty("resonance.logout.result")
@@ -1263,25 +1221,25 @@ def run():
                     if monitor.waitForAbort(0.1):
                         break
                 if window.getProperty("resonance.logout.result") == "ok":
-                    xbmcgui.Dialog().notification("Resonance", "Signed out of Spotify")
+                    xbmcgui.Dialog().notification("Resonance", _t(11496))
                     xbmc.executebuiltin("Container.Refresh")
                 else:
-                    xbmcgui.Dialog().ok("Resonance", "Could not complete sign out. Please try again.")
+                    xbmcgui.Dialog().ok("Resonance", _t(11497))
         else:
             from utils import clear_resonance_cache
             if xbmcgui.Dialog().yesno(
                 "Resonance",
-                "Clear the music cache (playlists, search results, rate-limit state)?\n\nYou stay signed in.",
-                nolabel="Cancel",
-                yeslabel="Clear cache",
+                _t(11548),
+                nolabel=_t(11419),
+                yeslabel=_t(11473),
             ):
                 try:
                     clear_resonance_cache()
                 except Exception as exc:
                     xbmc.log("Resonance cache clearing failed: " + str(exc), xbmc.LOGERROR)
-                    xbmcgui.Dialog().ok("Resonance", "Could not clear the cache. Please try again.")
+                    xbmcgui.Dialog().ok("Resonance", _t(11498))
                 else:
-                    xbmcgui.Dialog().notification("Resonance", "Cache cleared")
+                    xbmcgui.Dialog().notification("Resonance", _t(11499))
                     xbmc.executebuiltin("Container.Refresh")
         return
     if action == "web_login":
@@ -1291,14 +1249,16 @@ def run():
         resume_web_login_paste()
         return
     if action in ("connect", "connect_settings"):
-        # Both the in-browser button and the Settings action return to a
-        # refreshed main menu once the account is signed in.
-        setup_spotify()
+        # Older menus linked here. The guided setup is the one setup path now.
+        guided_setup()
         return
     if action == "connect_playback":
-        # Browser login is done; this waits for the Device-Connect pairing
-        # that unlocks playback.
-        connect_device(navigate=True, wait_for_playback=True)
+        # Pairing from the menu continues straight into browser sign-in when
+        # that is still missing, so the user does not have to find it again.
+        if connect_device(navigate=False, wait_for_playback=True) and not token():
+            web_login()
+        else:
+            xbmc.executebuiltin("Container.Update(" + url(action="home") + ",replace)")
         return
     from utils import get_catalogue_settings
     client = catalogue.Catalogue(DATA, token, signed_in=resonance_signed_in(), **get_catalogue_settings())
@@ -1310,18 +1270,23 @@ def run():
                 updated = client.refresh_playlists()
             except Exception:
                 updated = False
-            xbmcgui.Dialog().notification("Resonance", "Playlists updated" if updated else "Could not refresh playlists")
+            xbmcgui.Dialog().notification("Resonance", _t(11500) if updated else _t(11501))
             status(client)
         elif action == "spotify_library":
             kind = PARAMS.get("kind", "track")
             identity = PARAMS.get("id", "")
             save = PARAMS.get("save") == "1"
-            label = ("Like" if kind == "track" else "Save") if save else ("Unlike" if kind == "track" else "Remove")
-            if xbmcgui.Dialog().yesno("Spotify", f"{label} this {kind} in your Spotify library?"):
+            question = {
+                (True, "track"): _t(11502),
+                (False, "track"): _t(11503),
+                (True, "album"): _t(11504),
+                (False, "album"): _t(11505),
+            }[(save, kind)]
+            if xbmcgui.Dialog().yesno("Spotify", question):
                 client.save_library_item(kind, identity, save=save)
-                result = ("Saved to Spotify Your Library → Albums" if kind == "album" and save
-                          else "Removed from Spotify Your Library → Albums" if kind == "album"
-                          else ("Liked on Spotify" if save else "Removed from Spotify Liked Songs"))
+                result = (_t(11506) if kind == "album" and save
+                          else _t(11507) if kind == "album"
+                          else (_t(11508) if save else _t(11509)))
                 xbmcgui.Dialog().ok("Resonance", result)
                 from utils import clear_resonance_cache
                 clear_resonance_cache()
@@ -1331,70 +1296,70 @@ def run():
             track_id = PARAMS.get("id", "")
             owned = owned_playlists(client)
             if not owned:
-                raise catalogue.Unavailable("No playlists owned by this Spotify account were found")
+                raise catalogue.Unavailable(_t(11510))
             choice = xbmcgui.Dialog().select(
-                "Add track to Spotify playlist",
-                [item.get("name") or "Untitled" for item in owned],
+                _t(11511),
+                [item.get("name") or _t(11576) for item in owned],
             )
             if choice >= 0:
                 target = owned[choice]
-                if xbmcgui.Dialog().yesno("Spotify", "Add this track to '{}' ?".format(target.get("name") or "Untitled")):
+                if xbmcgui.Dialog().yesno("Spotify", _t(11552).format(target.get("name") or _t(11576))):
                     client.add_track_to_playlist(target["id"], track_id)
-                    xbmcgui.Dialog().notification("Resonance", "Track added to " + (target.get("name") or "playlist"))
+                    xbmcgui.Dialog().notification("Resonance", _t(11554) + (target.get("name") or _t(11581)))
                     from utils import clear_resonance_cache
                     clear_resonance_cache()
             end_directory(cache_to_disc=False)
         elif action == "remove_from_playlist":
             track_id = PARAMS.get("id", "")
             playlist_id = PARAMS.get("playlist", "")
-            name = PARAMS.get("name", "") or "this playlist"
+            name = PARAMS.get("name", "") or _t(11568)
             if not re.fullmatch(r"[A-Za-z0-9]{22}", playlist_id or ""):
                 raise catalogue.Unavailable(
-                    "Open the playlist that holds the track and use its context menu "
-                    "to remove the track from there."
+                    _t(11512) +
+                    _t(11513)
                 )
-            if xbmcgui.Dialog().yesno("Spotify", "Remove this track from '{}' ?".format(name)):
+            if xbmcgui.Dialog().yesno("Spotify", _t(11553).format(name)):
                 client.remove_track_from_playlist(playlist_id, track_id)
-                xbmcgui.Dialog().notification("Resonance", "Track removed from " + name)
+                xbmcgui.Dialog().notification("Resonance", _t(11555) + name)
                 from utils import clear_resonance_cache
                 clear_resonance_cache()
                 xbmc.executebuiltin("Container.Refresh")
             end_directory(cache_to_disc=False)
         elif action == "unfollow_playlist":
             identity = PARAMS.get("id", "")
-            name = PARAMS.get("name", "") or "this playlist"
+            name = PARAMS.get("name", "") or _t(11568)
             if xbmcgui.Dialog().yesno(
                 "Spotify",
-                "Unfollow '{}'?\n\nIt leaves Your Spotify Library. The playlist itself is not deleted.".format(name),
-                nolabel="Cancel",
-                yeslabel="Unfollow",
+                _t(11549).format(name),
+                nolabel=_t(11419),
+                yeslabel=_t(11550),
             ):
                 client.save_library_item("playlist", identity, save=False)
                 from utils import clear_resonance_cache
                 clear_resonance_cache()
-                xbmcgui.Dialog().notification("Resonance", "Playlist unfollowed")
+                xbmcgui.Dialog().notification("Resonance", _t(11514))
                 xbmc.executebuiltin("Container.Refresh")
             end_directory(cache_to_disc=False)
         elif action == "unfollow_artist":
             identity = PARAMS.get("id", "")
-            name = PARAMS.get("name", "") or "this artist"
+            name = PARAMS.get("name", "") or _t(11597)
             if xbmcgui.Dialog().yesno(
                 "Spotify",
-                "Unfollow '{}'?\n\nThe artist leaves your Followed Artists list. The artist itself is not deleted.".format(name),
-                nolabel="Cancel",
-                yeslabel="Unfollow",
+                _t(11551).format(name),
+                nolabel=_t(11419),
+                yeslabel=_t(11550),
             ):
                 client.save_library_item("artist", identity, save=False)
                 from utils import clear_resonance_cache
                 clear_resonance_cache()
-                xbmcgui.Dialog().notification("Resonance", "Artist unfollowed")
+                xbmcgui.Dialog().notification("Resonance", _t(11515))
                 xbmc.executebuiltin("Container.Refresh")
             end_directory(cache_to_disc=False)
         elif action == "create_playlist":
             track_id = PARAMS.get("id", "")
-            heading = "New playlist name"
+            heading = _t(11516)
             if track_id:
-                heading = "New playlist name for this track"
+                heading = _t(11517)
             name = (xbmcgui.Dialog().input(heading, defaultt="") or "").strip()
             if name:
                 playlist = client.create_playlist(name)
@@ -1402,18 +1367,18 @@ def run():
                     client.add_track_to_playlist(playlist.get("id"), track_id)
                 from utils import clear_resonance_cache
                 clear_resonance_cache()
-                xbmcgui.Dialog().notification("Resonance", "Playlist created: " + name)
+                xbmcgui.Dialog().notification("Resonance", _t(11556) + name)
                 xbmc.executebuiltin("Container.Refresh")
             end_directory(cache_to_disc=False)
         elif action == "playback_quality":
             from utils import get_playback_settings
             qualities = ("96", "160", "320")
-            labels = ("96 kbps (low)", "160 kbps (normal)", "320 kbps (high)")
+            labels = (_t(11519), _t(11520), _t(11521))
             current = get_playback_settings()[0]
-            choice = xbmcgui.Dialog().select("Playback quality", list(labels), preselect=qualities.index(current) if current in qualities else 2)
+            choice = xbmcgui.Dialog().select(_t(11518), list(labels), preselect=qualities.index(current) if current in qualities else 2)
             if choice >= 0:
                 ADDON.setSetting("audio_quality", qualities[choice])
-                xbmcgui.Dialog().notification("Resonance", "Playback quality: " + labels[choice])
+                xbmcgui.Dialog().notification("Resonance", _t(11557) + labels[choice])
             status(client)
         elif action == "whats_new":
             show_release_notes()
@@ -1467,7 +1432,7 @@ def run():
             render(client, items, "album" if kind == "artist" else "track", more, dict(PARAMS, offset=offset))
         elif action == "artist_top_tracks":
             items, more = client.artist_top_tracks(PARAMS["id"], PARAMS.get("name", ""))
-            xbmcplugin.setProperty(HANDLE, "FolderName", (PARAMS.get("name") or "Artist") + " - Top songs")
+            xbmcplugin.setProperty(HANDLE, "FolderName", (PARAMS.get("name") or _t(11577)) + " - Top songs")
             render(client, items, "track", more, dict(action=action, id=PARAMS["id"], name=PARAMS.get("name", ""), offset=offset))
         elif action in ("artist_albums", "artist_singles", "artist_appears_on"):
             group = {
@@ -1476,12 +1441,12 @@ def run():
                 "artist_appears_on": "appears_on",
             }[action]
             title = {
-                "album": "Albums",
-                "single": "Singles",
-                "appears_on": "Appears on",
+                "album": _t(11479),
+                "single": _t(11578),
+                "appears_on": _t(11579),
             }[group]
             items, more = client.artist_albums(PARAMS["id"], group, offset)
-            xbmcplugin.setProperty(HANDLE, "FolderName", (PARAMS.get("name") or "Artist") + " - " + title)
+            xbmcplugin.setProperty(HANDLE, "FolderName", (PARAMS.get("name") or _t(11577)) + " - " + title)
             render(client, items, "album", more, dict(action=action, id=PARAMS["id"], name=PARAMS.get("name", ""), offset=offset))
         elif action == "artist_everything":
             sections = client.artist_everything(PARAMS["id"], PARAMS.get("name", ""))
@@ -1491,6 +1456,8 @@ def run():
                 xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem())
                 guide_playback_pairing(PARAMS["id"])
                 return
+            if not token():
+                raise catalogue.Unavailable(_t(11450))
             track = client.metadata(client.track(PARAMS["id"]))
             item = track_item(track, stream_url(track, client))
             item.setMimeType("audio/wav")
@@ -1508,7 +1475,7 @@ def run():
                     path = stream_url(entry, client)
                     prepared.append((path, track_item(entry, path)))
             if not prepared:
-                raise catalogue.Unavailable("This page has no playable tracks")
+                raise catalogue.Unavailable(_t(11523))
             queue = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
             queue.clear()
             for path, item in prepared:
@@ -1529,7 +1496,7 @@ def run():
             try:
                 while True:
                     if progress.iscanceled():
-                        raise catalogue.Unavailable("Playlist loading cancelled")
+                        raise catalogue.Unavailable(_t(11524))
                     page, more = client.tracks("playlist", playlist_id, page_offset)
                     if page_offset == (start_index // 40) * 40:
                         page = page[first_index:]
@@ -1538,12 +1505,12 @@ def run():
                         if entry.get("id") and entry.get("duration_ms"):
                             path = stream_url(entry, client)
                             prepared.append((path, track_item(entry, path)))
-                    progress.update(0, "Loaded {} tracks...".format(len(prepared)))
+                    progress.update(0, _t(11526).format(len(prepared)))
                     if more is None:
                         break
                     page_offset = more
                 if not prepared:
-                    raise catalogue.Unavailable("This playlist has no playable tracks")
+                    raise catalogue.Unavailable(_t(11525))
             finally:
                 progress.close()
             queue = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
@@ -1556,7 +1523,7 @@ def run():
             match = re.search(r"(?:open\.spotify\.com/(?:intl-[^/]+/)?|spotify:)(track|album|playlist|artist)[/:]([A-Za-z0-9]{22})(?:[?/#]|$)", value)
             if not match:
                 if value:
-                    row("Invalid Spotify link")
+                    row(_t(11490))
                 end_directory(cache_to_disc=False)
                 return
             kind, identity = match.groups()
@@ -1577,15 +1544,15 @@ def run():
                 xbmc.log("RESONANCE_DEBUG str %d => " + str(value), xbmc.LOGINFO)
             end_directory(cache_to_disc=False)
         else:
-            row("This old menu has been replaced. Open Resonance from Music add-ons.")
+            row(_t(11491))
             row("Resonance", "home")
             end_directory(cache_to_disc=False)
     except (catalogue.Unavailable, ValueError, KeyError) as exc:
         if action in ("spotify_library", "choose_playlist", "remove_from_playlist", "unfollow_playlist", "unfollow_artist"):
             message = str(exc)
             if "refused" in message.lower() or "403" in message:
-                message += "\n\nSpotify may not have granted Resonance permission for this change yet. Choose Reauthorize Spotify under Account and status, then approve the requested permissions."
-            xbmcgui.Dialog().ok("Spotify change failed", message)
+                message += "\n\nSpotify may not have granted Resonance permission for this change yet. Open Account and status, sign in with Spotify again, then approve the requested permissions."
+            xbmcgui.Dialog().ok(_t(11558), message)
             end_directory(succeeded=False, cache_to_disc=False)
         elif action == "play":
             xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem())
@@ -1595,7 +1562,7 @@ def run():
         elif action == "queue_playlist":
             xbmcgui.Dialog().notification("Resonance", str(exc))
         elif action == "collection" and PARAMS.get("kind") == "playlist":
-            if "Spotify will not let Resonance read this playlist" in str(exc):
+            if str(exc) == _t(11601):
                 show_playlist_copy_help(PARAMS.get("id", ""), PARAMS.get("name", ""), client)
             else:
                 xbmcgui.Dialog().ok("Resonance", str(exc))
@@ -1606,12 +1573,12 @@ def run():
     except Exception as exc:
         xbmc.log("Resonance plugin error: " + type(exc).__name__ + ": " + str(exc), xbmc.LOGERROR)
         if action in ("spotify_library", "choose_playlist", "remove_from_playlist", "unfollow_playlist", "unfollow_artist"):
-            xbmcgui.Dialog().ok("Spotify change failed", "Resonance could not complete the Spotify request. Check the Kodi log for details.")
+            xbmcgui.Dialog().ok(_t(11558), _t(11559))
             end_directory(succeeded=False, cache_to_disc=False)
         elif action == "play":
             xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem())
         elif action not in ("queue", "queue_playlist"):
-            row("Unable to load this page")
+            row(_t(11492))
             end_directory(cache_to_disc=False)
     finally:
         client.close()

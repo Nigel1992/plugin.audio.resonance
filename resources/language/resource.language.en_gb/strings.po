@@ -1737,3 +1737,639 @@ msgstr "Finish setup"
 msgctxt "#11445"
 msgid "Later"
 msgstr "Later"
+
+msgctxt "#11446"
+msgid "Waiting for playback pairing...\n\nIn Spotify on your phone or PC, tap the speaker icon and pick '{}'.\n\nMusic starts when you press play in Spotify."
+msgstr "Waiting for playback pairing...\n\nIn Spotify on your phone or PC, tap the speaker icon and pick '{}'.\n\nMusic starts when you press play in Spotify."
+
+msgctxt "#11447"
+msgid "Pairing is not finished yet.\n\nIn Spotify on your phone or PC, tap the speaker icon and pick '{}'. Then press Retry."
+msgstr "Pairing is not finished yet.\n\nIn Spotify on your phone or PC, tap the speaker icon and pick '{}'. Then press Retry."
+
+msgctxt "#11448"
+msgid "Playback is paired. Search and playlists still need sign-in."
+msgstr "Playback is paired. Search and playlists still need sign-in."
+
+msgctxt "#11449"
+msgid "Signed in. Search and playlists work."
+msgstr "Signed in. Search and playlists work."
+
+msgctxt "#11450"
+msgid "Sign in with Spotify first. Open Account and status and choose Sign in with Spotify."
+msgstr "Sign in with Spotify first. Open Account and status and choose Sign in with Spotify."
+
+msgctxt "#11451"
+msgid "A Spotify Client ID is needed before you can sign in.\n\nOpen Settings > Account > Run guided setup. It asks for your Client ID."
+msgstr "A Spotify Client ID is needed before you can sign in.\n\nOpen Settings > Account > Run guided setup. It asks for your Client ID."
+
+msgctxt "#11452"
+msgid "ACCOUNT"
+msgstr "ACCOUNT"
+
+msgctxt "#11453"
+msgid "PLAYBACK"
+msgstr "PLAYBACK"
+
+msgctxt "#11454"
+msgid "CATALOGUE"
+msgstr "CATALOGUE"
+
+msgctxt "#11455"
+msgid "MAINTENANCE"
+msgstr "MAINTENANCE"
+
+msgctxt "#11456"
+msgid "NOW PLAYING"
+msgstr "NOW PLAYING"
+
+msgctxt "#11457"
+msgid "SETTINGS"
+msgstr "SETTINGS"
+
+msgctxt "#11458"
+msgid "Playback: paired as {}"
+msgstr "Playback: paired as {}"
+
+msgctxt "#11459"
+msgid "Playback: not paired yet. Tap to pair."
+msgstr "Playback: not paired yet. Tap to pair."
+
+msgctxt "#11460"
+msgid "Search and playlists: signed in"
+msgstr "Search and playlists: signed in"
+
+msgctxt "#11461"
+msgid "Search and playlists: sign in needed. Tap to sign in."
+msgstr "Search and playlists: sign in needed. Tap to sign in."
+
+msgctxt "#11462"
+msgid "Resume browser sign-in"
+msgstr "Resume browser sign-in"
+
+msgctxt "#11463"
+msgid "{} playlists · {}"
+msgstr "{} playlists · {}"
+
+msgctxt "#11464"
+msgid "Playlists not loaded. Tap to load."
+msgstr "Playlists not loaded. Tap to load."
+
+msgctxt "#11465"
+msgid "unknown"
+msgstr "unknown"
+
+msgctxt "#11466"
+msgid "Playback status"
+msgstr "Playback status"
+
+msgctxt "#11467"
+msgid "Quality: {} kbps"
+msgstr "Quality: {} kbps"
+
+msgctxt "#11468"
+msgid "Nothing playing"
+msgstr "Nothing playing"
+
+msgctxt "#11469"
+msgid "Playback unavailable"
+msgstr "Playback unavailable"
+
+msgctxt "#11470"
+msgid "Unknown track"
+msgstr "Unknown track"
+
+msgctxt "#11471"
+msgid "What's new in {}"
+msgstr "What's new in {}"
+
+msgctxt "#11472"
+msgid "What's new in this version"
+msgstr "What's new in this version"
+
+msgctxt "#11473"
+msgid "Clear cache"
+msgstr "Clear cache"
+
+msgctxt "#11474"
+msgid "Sign out"
+msgstr "Sign out"
+
+msgctxt "#11475"
+msgid "Your Spotify Library"
+msgstr "Your Spotify Library"
+
+msgctxt "#11476"
+msgid "Search"
+msgstr "Search"
+
+msgctxt "#11477"
+msgid "Account and status"
+msgstr "Account and status"
+
+msgctxt "#11478"
+msgid "Songs"
+msgstr "Songs"
+
+msgctxt "#11479"
+msgid "Albums"
+msgstr "Albums"
+
+msgctxt "#11480"
+msgid "Artists"
+msgstr "Artists"
+
+msgctxt "#11481"
+msgid "Liked Songs"
+msgstr "Liked Songs"
+
+msgctxt "#11482"
+msgid "Saved Albums"
+msgstr "Saved Albums"
+
+msgctxt "#11483"
+msgid "Followed Artists"
+msgstr "Followed Artists"
+
+msgctxt "#11484"
+msgid "Saved and Followed Playlists"
+msgstr "Saved and Followed Playlists"
+
+msgctxt "#11485"
+msgid "Create playlist..."
+msgstr "Create playlist..."
+
+msgctxt "#11486"
+msgid "There are no release notes for this version."
+msgstr "There are no release notes for this version."
+
+msgctxt "#11487"
+msgid "More..."
+msgstr "More..."
+
+msgctxt "#11488"
+msgid "No results"
+msgstr "No results"
+
+msgctxt "#11489"
+msgid "No artist results"
+msgstr "No artist results"
+
+msgctxt "#11490"
+msgid "Invalid Spotify link"
+msgstr "Invalid Spotify link"
+
+msgctxt "#11491"
+msgid "This old menu has been replaced. Open Resonance from Music add-ons."
+msgstr "This old menu has been replaced. Open Resonance from Music add-ons."
+
+msgctxt "#11492"
+msgid "Unable to load this page"
+msgstr "Unable to load this page"
+
+msgctxt "#11493"
+msgid "The login response did not match this request. Please retry."
+msgstr "The login response did not match this request. Please retry."
+
+msgctxt "#11494"
+msgid "The pending sign-in expired. Start again from Account and status."
+msgstr "The pending sign-in expired. Start again from Account and status."
+
+msgctxt "#11495"
+msgid "No pending sign-in. Start it from Account and status first."
+msgstr "No pending sign-in. Start it from Account and status first."
+
+msgctxt "#11496"
+msgid "Signed out of Spotify"
+msgstr "Signed out of Spotify"
+
+msgctxt "#11497"
+msgid "Could not complete sign out. Please try again."
+msgstr "Could not complete sign out. Please try again."
+
+msgctxt "#11498"
+msgid "Could not clear the cache. Please try again."
+msgstr "Could not clear the cache. Please try again."
+
+msgctxt "#11499"
+msgid "Cache cleared"
+msgstr "Cache cleared"
+
+msgctxt "#11500"
+msgid "Playlists updated"
+msgstr "Playlists updated"
+
+msgctxt "#11501"
+msgid "Could not refresh playlists"
+msgstr "Could not refresh playlists"
+
+msgctxt "#11502"
+msgid "Like this song in your Spotify library?"
+msgstr "Like this song in your Spotify library?"
+
+msgctxt "#11503"
+msgid "Unlike this song in your Spotify library?"
+msgstr "Unlike this song in your Spotify library?"
+
+msgctxt "#11504"
+msgid "Save this album in your Spotify library?"
+msgstr "Save this album in your Spotify library?"
+
+msgctxt "#11505"
+msgid "Remove this album from your Spotify library?"
+msgstr "Remove this album from your Spotify library?"
+
+msgctxt "#11506"
+msgid "Saved to Spotify Your Library → Albums"
+msgstr "Saved to Spotify Your Library → Albums"
+
+msgctxt "#11507"
+msgid "Removed from Spotify Your Library → Albums"
+msgstr "Removed from Spotify Your Library → Albums"
+
+msgctxt "#11508"
+msgid "Liked on Spotify"
+msgstr "Liked on Spotify"
+
+msgctxt "#11509"
+msgid "Removed from Spotify Liked Songs"
+msgstr "Removed from Spotify Liked Songs"
+
+msgctxt "#11510"
+msgid "No playlists owned by this Spotify account were found"
+msgstr "No playlists owned by this Spotify account were found"
+
+msgctxt "#11511"
+msgid "Add track to Spotify playlist"
+msgstr "Add track to Spotify playlist"
+
+msgctxt "#11512"
+msgid "Open the playlist that holds the track and use its context menu "
+msgstr "Open the playlist that holds the track and use its context menu "
+
+msgctxt "#11513"
+msgid "to remove the track from there."
+msgstr "to remove the track from there."
+
+msgctxt "#11514"
+msgid "Playlist unfollowed"
+msgstr "Playlist unfollowed"
+
+msgctxt "#11515"
+msgid "Artist unfollowed"
+msgstr "Artist unfollowed"
+
+msgctxt "#11516"
+msgid "New playlist name"
+msgstr "New playlist name"
+
+msgctxt "#11517"
+msgid "New playlist name for this track"
+msgstr "New playlist name for this track"
+
+msgctxt "#11518"
+msgid "Playback quality"
+msgstr "Playback quality"
+
+msgctxt "#11519"
+msgid "96 kbps (low)"
+msgstr "96 kbps (low)"
+
+msgctxt "#11520"
+msgid "160 kbps (normal)"
+msgstr "160 kbps (normal)"
+
+msgctxt "#11521"
+msgid "320 kbps (high)"
+msgstr "320 kbps (high)"
+
+msgctxt "#11522"
+msgid "Track metadata unavailable; cannot start playback"
+msgstr "Track metadata unavailable; cannot start playback"
+
+msgctxt "#11523"
+msgid "This page has no playable tracks"
+msgstr "This page has no playable tracks"
+
+msgctxt "#11524"
+msgid "Playlist loading cancelled"
+msgstr "Playlist loading cancelled"
+
+msgctxt "#11525"
+msgid "This playlist has no playable tracks"
+msgstr "This playlist has no playable tracks"
+
+msgctxt "#11526"
+msgid "Loaded {} tracks..."
+msgstr "Loaded {} tracks..."
+
+msgctxt "#11527"
+msgid "Spotify Login"
+msgstr "Spotify Login"
+
+msgctxt "#11528"
+msgid "Scan this QR code to sign in, or use the URL below manually on another device."
+msgstr "Scan this QR code to sign in, or use the URL below manually on another device."
+
+msgctxt "#11529"
+msgid "Spotify sign-in timed out here.\n\nIf Spotify opened on your phone or computer, the browser now shows a local address with ?code=... . Pick Paste code and enter that value (it is 100-200 characters).\n\nYou can also leave it and pick Resume browser sign-in from Account and status."
+msgstr "Spotify sign-in timed out here.\n\nIf Spotify opened on your phone or computer, the browser now shows a local address with ?code=... . Pick Paste code and enter that value (it is 100-200 characters).\n\nYou can also leave it and pick Resume browser sign-in from Account and status."
+
+msgctxt "#11530"
+msgid "Paste code"
+msgstr "Paste code"
+
+msgctxt "#11531"
+msgid "Code: the part after ?code= in the browser address"
+msgstr "Code: the part after ?code= in the browser address"
+
+msgctxt "#11532"
+msgid "Paste the code: the part after ?code= in the browser address"
+msgstr "Paste the code: the part after ?code= in the browser address"
+
+msgctxt "#11533"
+msgid "Fully signed in to Spotify. Search, playlists and playback are ready."
+msgstr "Fully signed in to Spotify. Search, playlists and playback are ready."
+
+msgctxt "#11534"
+msgid "Browser sign-in complete. Search and playlists are ready; pair playback from setup when needed."
+msgstr "Browser sign-in complete. Search and playlists are ready; pair playback from setup when needed."
+
+msgctxt "#11535"
+msgid "Signed in"
+msgstr "Signed in"
+
+msgctxt "#11536"
+msgid "Playlist unavailable: "
+msgstr "Playlist unavailable: "
+
+msgctxt "#11537"
+msgid "Resonance playlist options"
+msgstr "Resonance playlist options"
+
+msgctxt "#11538"
+msgid "Hide unreadable followed playlists in future"
+msgstr "Hide unreadable followed playlists in future"
+
+msgctxt "#11539"
+msgid "Show Spotify QR code"
+msgstr "Show Spotify QR code"
+
+msgctxt "#11540"
+msgid "I made a copy - refresh playlists"
+msgstr "I made a copy - refresh playlists"
+
+msgctxt "#11541"
+msgid "Close"
+msgstr "Close"
+
+msgctxt "#11542"
+msgid "Unreadable followed playlists will be hidden from the playlist list"
+msgstr "Unreadable followed playlists will be hidden from the playlist list"
+
+msgctxt "#11543"
+msgid "Open in Spotify: "
+msgstr "Open in Spotify: "
+
+msgctxt "#11544"
+msgid "Scan to open this playlist in Spotify. Make your own copy there, then refresh playlists in Resonance."
+msgstr "Scan to open this playlist in Spotify. Make your own copy there, then refresh playlists in Resonance."
+
+msgctxt "#11545"
+msgid "Playlists refreshed. Reopen Playlists to find your copy."
+msgstr "Playlists refreshed. Reopen Playlists to find your copy."
+
+msgctxt "#11546"
+msgid "Could not refresh playlists. Try again from Account and status."
+msgstr "Could not refresh playlists. Try again from Account and status."
+
+msgctxt "#11547"
+msgid "Sign out of Spotify?\n\nYour playlists and settings are kept. You can sign in again from Settings."
+msgstr "Sign out of Spotify?\n\nYour playlists and settings are kept. You can sign in again from Settings."
+
+msgctxt "#11548"
+msgid "Clear the music cache (playlists, search results, rate-limit state)?\n\nYou stay signed in."
+msgstr "Clear the music cache (playlists, search results, rate-limit state)?\n\nYou stay signed in."
+
+msgctxt "#11549"
+msgid "Unfollow '{}'?\n\nIt leaves Your Spotify Library. The playlist itself is not deleted."
+msgstr "Unfollow '{}'?\n\nIt leaves Your Spotify Library. The playlist itself is not deleted."
+
+msgctxt "#11550"
+msgid "Unfollow"
+msgstr "Unfollow"
+
+msgctxt "#11551"
+msgid "Unfollow '{}'?\n\nThe artist leaves your Followed Artists list. The artist itself is not deleted."
+msgstr "Unfollow '{}'?\n\nThe artist leaves your Followed Artists list. The artist itself is not deleted."
+
+msgctxt "#11552"
+msgid "Add this track to '{}'?"
+msgstr "Add this track to '{}'?"
+
+msgctxt "#11553"
+msgid "Remove this track from '{}'?"
+msgstr "Remove this track from '{}'?"
+
+msgctxt "#11554"
+msgid "Track added to "
+msgstr "Track added to "
+
+msgctxt "#11555"
+msgid "Track removed from "
+msgstr "Track removed from "
+
+msgctxt "#11556"
+msgid "Playlist created: "
+msgstr "Playlist created: "
+
+msgctxt "#11557"
+msgid "Playback quality: "
+msgstr "Playback quality: "
+
+msgctxt "#11558"
+msgid "Spotify change failed"
+msgstr "Spotify change failed"
+
+msgctxt "#11559"
+msgid "Resonance could not complete the Spotify request. Check the Kodi log for details."
+msgstr "Resonance could not complete the Spotify request. Check the Kodi log for details."
+
+msgctxt "#11560"
+msgid "Spotify may not have granted Resonance permission for this change yet. Open Account and status, sign in with Spotify again, then approve the requested permissions."
+msgstr "Spotify may not have granted Resonance permission for this change yet. Open Account and status, sign in with Spotify again, then approve the requested permissions."
+
+msgctxt "#11561"
+msgid "Like on Spotify"
+msgstr "Like on Spotify"
+
+msgctxt "#11562"
+msgid "Unlike on Spotify"
+msgstr "Unlike on Spotify"
+
+msgctxt "#11563"
+msgid "Add to Spotify playlist..."
+msgstr "Add to Spotify playlist..."
+
+msgctxt "#11564"
+msgid "Create playlist with this track..."
+msgstr "Create playlist with this track..."
+
+msgctxt "#11565"
+msgid "Save album on Spotify"
+msgstr "Save album on Spotify"
+
+msgctxt "#11566"
+msgid "Remove album from Spotify library"
+msgstr "Remove album from Spotify library"
+
+msgctxt "#11567"
+msgid "Remove from "
+msgstr "Remove from "
+
+msgctxt "#11568"
+msgid "this playlist"
+msgstr "this playlist"
+
+msgctxt "#11569"
+msgid "Unfollow playlist"
+msgstr "Unfollow playlist"
+
+msgctxt "#11570"
+msgid "Artist: everything"
+msgstr "Artist: everything"
+
+msgctxt "#11571"
+msgid "Artist: top songs"
+msgstr "Artist: top songs"
+
+msgctxt "#11572"
+msgid "Artist: albums"
+msgstr "Artist: albums"
+
+msgctxt "#11573"
+msgid "Artist: singles"
+msgstr "Artist: singles"
+
+msgctxt "#11574"
+msgid "Artist: appears on"
+msgstr "Artist: appears on"
+
+msgctxt "#11575"
+msgid "Unfollow artist"
+msgstr "Unfollow artist"
+
+msgctxt "#11576"
+msgid "Untitled"
+msgstr "Untitled"
+
+msgctxt "#11577"
+msgid "Artist"
+msgstr "Artist"
+
+msgctxt "#11578"
+msgid "Singles"
+msgstr "Singles"
+
+msgctxt "#11579"
+msgid "Appears on"
+msgstr "Appears on"
+
+msgctxt "#11580"
+msgid "More {}..."
+msgstr "More {}..."
+
+msgctxt "#11581"
+msgid "playlist"
+msgstr "playlist"
+
+msgctxt "#11582"
+msgid "Spotify will not let Resonance read the songs in this playlist because your account does not own it or collaborate on it. Spotify's API only provides playlist contents to the owner or collaborators, so Resonance cannot copy the songs automatically.\n\nTo use it in Resonance:\n1. Open the playlist in Spotify using the link below.\n2. In Spotify, make your own playlist copy, or ask the owner to add you as a collaborator.\n3. Return to Resonance and refresh playlists from Account and status.\n\nFollowing or saving the playlist to Your Library alone does not grant Resonance access.\n\nSpotify link:\n{}"
+msgstr "Spotify will not let Resonance read the songs in this playlist because your account does not own it or collaborate on it. Spotify's API only provides playlist contents to the owner or collaborators, so Resonance cannot copy the songs automatically.\n\nTo use it in Resonance:\n1. Open the playlist in Spotify using the link below.\n2. In Spotify, make your own playlist copy, or ask the owner to add you as a collaborator.\n3. Return to Resonance and refresh playlists from Account and status.\n\nFollowing or saving the playlist to Your Library alone does not grant Resonance access.\n\nSpotify link:\n{}"
+
+msgctxt "#11583"
+msgid "Fully signed in to Spotify"
+msgstr "Fully signed in to Spotify"
+
+msgctxt "#11584"
+msgid "Playback pairing complete. Next, sign in with the URL for search and playlists."
+msgstr "Playback pairing complete. Next, sign in with the URL for search and playlists."
+
+msgctxt "#11585"
+msgid "Browser sign-in complete. Search and playlists are ready."
+msgstr "Browser sign-in complete. Search and playlists are ready."
+
+msgctxt "#11586"
+msgid "Signed out"
+msgstr "Signed out"
+
+msgctxt "#11587"
+msgid "Signed in; catalogue token unavailable"
+msgstr "Signed in; catalogue token unavailable"
+
+msgctxt "#11588"
+msgid "Waiting for Spotify connection"
+msgstr "Waiting for Spotify connection"
+
+msgctxt "#11589"
+msgid "Scan QR Code"
+msgstr "Scan QR Code"
+
+msgctxt "#11590"
+msgid "No QR code could be shown because the link was empty."
+msgstr "No QR code could be shown because the link was empty."
+
+msgctxt "#11591"
+msgid "The QR code could not be shown. Please use the link displayed on screen."
+msgstr "The QR code could not be shown. Please use the link displayed on screen."
+
+msgctxt "#11592"
+msgid "Connect your Spotify account first"
+msgstr "Connect your Spotify account first"
+
+msgctxt "#11593"
+msgid "Spotify is temporarily rate limited"
+msgstr "Spotify is temporarily rate limited"
+
+msgctxt "#11594"
+msgid "Spotify could not complete this change"
+msgstr "Spotify could not complete this change"
+
+msgctxt "#11595"
+msgid "No imported Spotify playlists are available yet"
+msgstr "No imported Spotify playlists are available yet"
+
+msgctxt "#11596"
+msgid "A playlist name is required"
+msgstr "A playlist name is required"
+
+msgctxt "#11597"
+msgid "this artist"
+msgstr "this artist"
+
+msgctxt "#11598"
+msgid "What's new"
+msgstr "What's new"
+
+msgctxt "#11599"
+msgid "Spotify has not granted Resonance permission to read Liked Songs.\n\nSign in again from Account and status to approve the library permission."
+msgstr "Spotify has not granted Resonance permission to read Liked Songs.\n\nSign in again from Account and status to approve the library permission."
+
+msgctxt "#11600"
+msgid "Spotify has not granted Resonance permission to read followed artists.\n\nSign in with Spotify again from Account and status to approve that permission."
+msgstr "Spotify has not granted Resonance permission to read followed artists.\n\nSign in with Spotify again from Account and status to approve that permission."
+
+msgctxt "#11601"
+msgid "Spotify will not let Resonance read this playlist.\n\nReason: you do not own or collaborate on it.\n\nMake a copy in Spotify, then refresh playlists.\n\nYou can hide these in Settings > Catalogue."
+msgstr "Spotify will not let Resonance read this playlist.\n\nReason: you do not own or collaborate on it.\n\nMake a copy in Spotify, then refresh playlists.\n\nYou can hide these in Settings > Catalogue."
+
+msgctxt "#11602"
+msgid "{}: retry in {} min"
+msgstr "{}: retry in {} min"
+
+msgctxt "#11603"
+msgid "{}: temporarily rate limited"
+msgstr "{}: temporarily rate limited"
+
+msgctxt "#11604"
+msgid "{}: service unavailable"
+msgstr "{}: service unavailable"
