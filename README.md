@@ -3,6 +3,8 @@
 
 # Resonance for Kodi
 
+[![Vibe Coded](https://img.shields.io/badge/Vibe_Coded-✨-8A2BE2?style=for-the-badge)](https://github.com)
+
 ![Resonance](resources/logo.png)
 
 **Resonance plays Spotify Premium music through Kodi.** It browses Spotify
