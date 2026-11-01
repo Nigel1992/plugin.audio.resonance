@@ -19,7 +19,7 @@ through bundled Spotty/librespot playback helpers.
 | Not supported | Windows, macOS, Linux x86/x64 |
 | Catalogue | Regular Spotify Web API with browser PKCE token |
 | Playback | Spotify Device Connect with Spotty/librespot |
-| Version | 1.2.2 |
+| Version | 1.2.3 |
 
 | | |
 | --- | --- |
@@ -28,7 +28,7 @@ through bundled Spotty/librespot playback helpers.
 
 ## Quick Start
 
-1. Run `python scripts/package_addon.py` and install `dist/plugin.audio.resonance-1.2.2.zip`. Upstream releases are available on the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
+1. Run `python scripts/package_addon.py` and install `dist/plugin.audio.resonance-1.2.3.zip`. Upstream releases are available on the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
 2. In Kodi, install it with **Add-ons -> Install from zip file**.
 3. Restart Kodi once.
 4. Open **Add-ons -> Music add-ons -> Resonance**.
@@ -71,6 +71,10 @@ https://resonance-spotify-callback.vercel.app/api/callback
 - See the release notes of the running version in a big window after every update, and any time under **Account and status** with the row **What's new**.
 - Cache successful catalogue responses.
 - Refresh playlist membership in the background while signed in.
+- Show clear messages for tracks that cannot be played on this device, and hide
+  them with the Catalogue setting **Hide songs Resonance cannot play**.
+- Close Kodi's busy dialog before showing playback errors to avoid a crash
+  from two overlapping dialogs.
 
 The catalogue uses Spotify's regular Web API only. There is no public catalogue
 fallback service.
