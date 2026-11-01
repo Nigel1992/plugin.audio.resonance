@@ -47,13 +47,13 @@
       <group id="1">
         <setting id="hide_unreadable_playlists" type="boolean" label="11396">
           <level>0</level>
-          <default>false</default>
+          <default>true</default>
           <help>11397</help>
           <control type="toggle" />
         </setting>
         <setting id="hide_unplayable_tracks" type="boolean" label="11605">
           <level>0</level>
-          <default>false</default>
+          <default>true</default>
           <help>11606</help>
           <control type="toggle" />
         </setting>
