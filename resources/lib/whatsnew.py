@@ -8,6 +8,21 @@ user who skips several releases still sees the full picture.
 """
 
 NOTES = {
+    "1.2.3": """NEW
+  * Tracks that Spotify will not let this device play now show a clear
+    message in plain English instead of a technical error.
+  * New Catalogue setting "Hide songs Resonance cannot play" removes those
+    tracks from album, playlist and artist lists.
+  * "Hide playlists Resonance cannot read" and "Hide songs Resonance cannot
+    play" are now on by default for new installs.
+
+FIXED
+  * Kodi's busy dialog is closed before the playback error message is shown,
+    preventing a crash from two overlapping dialogs.
+  * Failed tracks are remembered so the player does not stall on them again.
+
+""",
+
     "1.2.2": """NEW
   * Account and status shows one row per topic. Tap the row to
     pair playback or sign in.
