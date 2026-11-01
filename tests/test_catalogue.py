@@ -522,8 +522,7 @@ class CatalogueTests(unittest.TestCase):
     def test_spotify_market_verdict_keeps_clear_message(self):
         client, http = self.client([])
         track = {"id": "a" * 22, "is_playable": False, "restrictions": {"reason": "market"}}
-        self.assertEqual(client.unplayable(track), "This track is not available for playback in your region")
-
+        self.assertEqual(client.unplayable(track), "This song isn't available in your country or region.")
     def test_spotify_track_verification_short_circuits_playable_cache(self):
         cached = {"id": "a" * 22, "name": "Known", "duration_ms": 200000, "is_playable": True}
         client, http = self.client([Response({}, 400)])

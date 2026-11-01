@@ -615,6 +615,7 @@ def get_catalogue_settings() -> dict:
     return {
         "bypass_response_cache": addon.getSetting("dev_bypass_response_cache") == "true",
         "hide_unreadable_playlists": addon.getSetting("hide_unreadable_playlists") == "true",
+        "hide_unplayable_tracks": addon.getSetting("hide_unplayable_tracks") == "true",
         "spotify_user_id": (
             get_cached_value_from_kodi(KODI_PROPERTY_SPOTIFY_ACCOUNT_ID, wait_ms=0)
             or str(profile.get("id") or "")
