@@ -1068,21 +1068,30 @@ def _browser_session_saved():
         return False
 
 
+def close_busy_dialogs():
+    """Close any Kodi busy dialog that may still be open.
+
+    Kodi shows a busy dialog while a plugin directory is loading. If the
+    addon then opens another dialog without closing it first, Kodi can end
+    up with two overlapping busy dialogs, which crashes the application on
+    some platforms ("Logic error due to two concurrent busydialogs").
+    """
+    for name in ("busydialog", "busydialognocancel"):
+        try:
+            xbmc.executebuiltin("Dialog.Close(" + name + ",true)")
+        except Exception:
+            pass
+
+
 def stream_url(track, client):
     identity = track.get("id") or ""
     duration = int(track.get("duration_ms") or 0) / 1000
     if not re.fullmatch(r"[A-Za-z0-9]{22}", identity) or duration <= 0:
+        close_busy_dialogs()
         raise catalogue.Unavailable(_t(11522))
     reason = client.unplayable(track)
     if reason:
-        # Kodi may still have a busy dialog open while the container is
-        # loading. Close it before raising so Kodi cannot end up with two
-        # overlapping dialogs (which crashes Kodi on some platforms).
-        try:
-            xbmc.executebuiltin("Dialog.Close(busydialog,true)")
-            xbmc.executebuiltin("Dialog.Close(busydialognocancel,true)")
-        except Exception:
-            pass
+        close_busy_dialogs()
         raise catalogue.Unavailable(reason)
     return f"http://127.0.0.1:52309/track/{identity}/{duration}"
 
@@ -1461,10 +1470,12 @@ def run():
             render_artist_everything(client, sections, PARAMS.get("name", ""), PARAMS["id"])
         elif action == "play":
             if not spotty_has_credentials():
+                close_busy_dialogs()
                 xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem())
                 guide_playback_pairing(PARAMS["id"])
                 return
             if not token():
+                close_busy_dialogs()
                 raise catalogue.Unavailable(_t(11450))
             track = client.metadata(client.track(PARAMS["id"]))
             item = track_item(track, stream_url(track, client))
@@ -1498,6 +1509,7 @@ def run():
             start_index = max(0, int(PARAMS.get("offset", 0)))
             page_offset = (start_index // 40) * 40
             first_index = start_index - page_offset
+            close_busy_dialogs()
             progress = xbmcgui.DialogProgress()
             progress.create("Resonance", "Loading playlist tracks...")
             prepared = []
@@ -1556,6 +1568,7 @@ def run():
             row("Resonance", "home")
             end_directory(cache_to_disc=False)
     except (catalogue.Unavailable, ValueError, KeyError) as exc:
+        close_busy_dialogs()
         if action in ("spotify_library", "choose_playlist", "remove_from_playlist", "unfollow_playlist", "unfollow_artist"):
             message = str(exc)
             if "refused" in message.lower() or "403" in message:
@@ -1580,6 +1593,7 @@ def run():
             end_directory(cache_to_disc=False)
     except Exception as exc:
         xbmc.log("Resonance plugin error: " + type(exc).__name__ + ": " + str(exc), xbmc.LOGERROR)
+        close_busy_dialogs()
         if action in ("spotify_library", "choose_playlist", "remove_from_playlist", "unfollow_playlist", "unfollow_artist"):
             xbmcgui.Dialog().ok(_t(11558), _t(11559))
             end_directory(succeeded=False, cache_to_disc=False)

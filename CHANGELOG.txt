@@ -1,5 +1,12 @@
 Resonance Version 1
 
+v1.2.4 - 2026-11-01
+
+- Fixed a crash when playing a playlist or album: Kodi could end up with two
+  overlapping busy dialogs ("Logic error due to two concurrent busydialogs")
+  when a track failed to load and playback advanced to the next item. Busy
+  dialogs are now closed before any error or progress dialog is shown.
+
 v1.2.3 - 2026-11-01
 
 - "Hide playlists Resonance cannot read" and "Hide songs Resonance cannot
