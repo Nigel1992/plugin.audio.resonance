@@ -1,11 +1,9 @@
 Resonance Version 1
 
-v1.2.4 - 2026-11-01
+v1.2.3 - 2026-11-01
 
 - "Hide playlists Resonance cannot read" and "Hide songs Resonance cannot
   play" are now enabled by default for new installs.
-
-v1.2.3 - 2026-11-01
 
 - Tracks that Spotify will not let this device play (for example songs not
   available in your country or region) now show a clear message in plain
