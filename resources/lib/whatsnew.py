@@ -8,6 +8,14 @@ user who skips several releases still sees the full picture.
 """
 
 NOTES = {
+    "1.2.4": """FIXED
+  * Playing a playlist or album no longer crashes Kodi. When a track failed
+    to load and playback moved on to the next item, two busy dialogs could
+    overlap ("Logic error due to two concurrent busydialogs"). Busy dialogs
+    are now closed before any error or progress dialog is shown.
+
+""",
+
     "1.2.3": """NEW
   * Tracks that Spotify will not let this device play now show a clear
     message in plain English instead of a technical error.
