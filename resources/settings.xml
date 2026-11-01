@@ -51,6 +51,12 @@
           <help>11397</help>
           <control type="toggle" />
         </setting>
+        <setting id="hide_unplayable_tracks" type="boolean" label="11605">
+          <level>0</level>
+          <default>false</default>
+          <help>11606</help>
+          <control type="toggle" />
+        </setting>
       </group>
     </category>
     <category id="maintenance" label="11346">

@@ -1075,6 +1075,14 @@ def stream_url(track, client):
         raise catalogue.Unavailable(_t(11522))
     reason = client.unplayable(track)
     if reason:
+        # Kodi may still have a busy dialog open while the container is
+        # loading. Close it before raising so Kodi cannot end up with two
+        # overlapping dialogs (which crashes Kodi on some platforms).
+        try:
+            xbmc.executebuiltin("Dialog.Close(busydialog,true)")
+            xbmc.executebuiltin("Dialog.Close(busydialognocancel,true)")
+        except Exception:
+            pass
         raise catalogue.Unavailable(reason)
     return f"http://127.0.0.1:52309/track/{identity}/{duration}"
 

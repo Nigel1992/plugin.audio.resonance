@@ -2373,3 +2373,11 @@ msgstr "{}: temporarily rate limited"
 msgctxt "#11604"
 msgid "{}: service unavailable"
 msgstr "{}: service unavailable"
+
+msgctxt "#11605"
+msgid "Hide songs Resonance cannot play"
+msgstr "Hide songs Resonance cannot play"
+
+msgctxt "#11606"
+msgid "Hides tracks that Spotify will not let this device play, such as songs that are not available in your country or region."
+msgstr "Hides tracks that Spotify will not let this device play, such as songs that are not available in your country or region."

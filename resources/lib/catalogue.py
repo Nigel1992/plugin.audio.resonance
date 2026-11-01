@@ -42,9 +42,8 @@ def unplayable_reason(track):
     local streamer would only discover the failure after repeated timeouts.
     """
     if track.get("is_playable") is False and track.get("restrictions"):
-        return "This track is not available for playback in your region"
+        return "This song isn't available in your country or region."
     return ""
-
 
 def _image_url(item):
     raw = (item or {}).get("images") or (item or {}).get("thumbnail") or []
@@ -107,7 +106,7 @@ def remember_failed(directory, identity):
             "INSERT OR REPLACE INTO pages VALUES (?,?,?)",
             (
                 "tfail:" + identity,
-                json.dumps({"reason": "This track could not be streamed on this device"}),
+                json.dumps({"reason": "This song couldn't be played on this device."}),
                 time.time() + 604800,
             ),
         )
@@ -119,7 +118,7 @@ def remember_failed(directory, identity):
 class Catalogue:
     def __init__(self, directory, token, session=None, clock=time.time, signed_in=False,
                  bypass_response_cache=False, hide_unreadable_playlists=False,
-                 spotify_user_id=""):
+                 hide_unplayable_tracks=False, spotify_user_id=""):
         self.directory = directory
         self.token = token
         # Most browse and play invocations use the persistent catalogue cache.
@@ -130,6 +129,7 @@ class Catalogue:
         self.signed_in = bool(signed_in)
         self.bypass_response_cache = bypass_response_cache
         self.hide_unreadable_playlists = bool(hide_unreadable_playlists)
+        self.hide_unplayable_tracks = bool(hide_unplayable_tracks)
         self.spotify_user_id = str(spotify_user_id or "")
         self.notice = ""
         os.makedirs(directory, exist_ok=True)
@@ -508,18 +508,38 @@ class Catalogue:
         if kind == "playlist":
             items = [i.get("track") or i.get("item") for i in items if i]
         album = self.cached("collection:album:" + identity, stale=True) if kind == "album" else None
-        return [
+        normalized = [
             normalize(i, "album" if kind == "artist" else "track", album=album)
             for i in items
             if i
-        ], offset + limit if data.get("next") else None
+        ]
+        if self.hide_unplayable_tracks and kind != "artist":
+            normalized = [
+                track for track in normalized
+                if not (
+                    unplayable_reason(track)
+                    or self.unplayable(track)
+                    or str((track.get("restrictions") or {}).get("reason") or "").lower() == "market"
+                )
+            ]
+        return normalized, offset + limit if data.get("next") else None
 
     def artist_top_tracks(self, identity, artist_name=""):
         if not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
             raise ValueError("Invalid Spotify ID")
         try:
             data = self.request("spotify", f"/artists/{identity}/top-tracks", {"market": "from_token"})
-            return [normalize(i, "track") for i in data.get("tracks", []) if i], None
+            tracks = [normalize(i, "track") for i in data.get("tracks", []) if i]
+            if self.hide_unplayable_tracks:
+                tracks = [
+                    track for track in tracks
+                    if not (
+                        unplayable_reason(track)
+                        or self.unplayable(track)
+                        or str((track.get("restrictions") or {}).get("reason") or "").lower() == "market"
+                    )
+                ]
+            return tracks, None
         except Forbidden:
             if not artist_name:
                 artist = self.request("spotify", f"/artists/{identity}")
@@ -575,8 +595,8 @@ class Catalogue:
         """Return a playback-blocking reason, or empty when safe to stream."""
         if track.get("is_playable") is False:
             if track.get("restrictions"):
-                return "This track is not available for playback in your region"
-            return "This track is not available on this account"
+                return "This song isn't available in your country or region."
+            return "This song isn't available on your account."
         if track.get("is_playable") is True:
             return ""
         row = self.db.execute(

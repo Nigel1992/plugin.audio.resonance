@@ -1,5 +1,16 @@
 Resonance Version 1
 
+v1.2.3 - 2026-11-01
+
+- Tracks that Spotify will not let this device play (for example songs not
+  available in your country or region) now show a clear message in plain
+  English instead of a technical error.
+- A new Catalogue setting, "Hide songs Resonance cannot play", removes
+  those tracks from album, playlist and artist track lists.
+- When a track cannot be streamed, Kodi's busy dialog is closed before the
+  error message is shown, preventing a crash from two overlapping dialogs.
+- Failed tracks are remembered so the player does not stall on them again.
+
 v1.2.2 - 2026-10-27
 
 - Account and status is simpler: each topic has one row that shows its state.

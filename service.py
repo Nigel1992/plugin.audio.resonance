@@ -112,6 +112,7 @@ class ResonanceMonitor(xbmc.Monitor):
     def __init__(self):
         super().__init__()
         self.hide_unreadable_playlists = self._hide_unreadable_playlists()
+        self.hide_unplayable_tracks = self._hide_unplayable_tracks()
         self.menu_settings = self._menu_settings()
 
     @staticmethod
@@ -127,24 +128,35 @@ class ResonanceMonitor(xbmc.Monitor):
         except Exception:
             return False
 
+    @staticmethod
+    def _hide_unplayable_tracks() -> bool:
+        try:
+            return bool(utils.get_catalogue_settings().get("hide_unplayable_tracks"))
+        except Exception:
+            return False
+
     def onSettingsChanged(self):
         try:
             utils.reload_verbose_debug_logging()
         except Exception:
             pass
         hide_unreadable_playlists = self._hide_unreadable_playlists()
+        hide_unplayable_tracks = self._hide_unplayable_tracks()
         menu_settings = self._menu_settings()
         changed = (hide_unreadable_playlists != self.hide_unreadable_playlists
+                   or hide_unplayable_tracks != self.hide_unplayable_tracks
                    or menu_settings != self.menu_settings)
         self.menu_settings = menu_settings
-        if hide_unreadable_playlists != self.hide_unreadable_playlists:
+        if (hide_unreadable_playlists != self.hide_unreadable_playlists
+                or hide_unplayable_tracks != self.hide_unplayable_tracks):
             self.hide_unreadable_playlists = hide_unreadable_playlists
+            self.hide_unplayable_tracks = hide_unplayable_tracks
             try:
                 utils.clear_resonance_cache()
                 utils.clear_resonance_addon_cache()
-                xbmc.log("Resonance settings changed: cleared catalogue and addon caches after playlist hide toggle", xbmc.LOGINFO)
+                xbmc.log("Resonance settings changed: cleared catalogue and addon caches after track hide toggle", xbmc.LOGINFO)
                 notify(
-                    "Playlist visibility changed. Resonance cleared its catalogue and addon caches, then refreshed the menu.",
+                    "Catalogue visibility changed. Resonance cleared its catalogue and addon caches, then refreshed the menu.",
                     "Resonance settings",
                 )
             except Exception as exc:
