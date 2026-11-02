@@ -1481,6 +1481,10 @@ def run():
             item = track_item(track, stream_url(track, client))
             item.setMimeType("audio/wav")
             item.setContentLookup(False)
+            # Kodi keeps the directory busy dialog open until the resolved
+            # URL is handed back. Close it before starting the player so a
+            # failed stream cannot overlap the next playback request.
+            close_busy_dialogs()
             xbmcplugin.setResolvedUrl(HANDLE, True, item)
         elif action == "queue":
             if not spotty_has_credentials():

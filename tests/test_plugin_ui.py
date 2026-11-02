@@ -14,6 +14,7 @@ import sys
 import tempfile
 import types
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).parents[1]
 PROFILE = tempfile.mkdtemp(prefix="resonance-menu-test-")
@@ -344,6 +345,58 @@ class MenuTests(unittest.TestCase):
             self.plugin.HANDLE = handle
         self.assertTrue(DIALOGS)
         self.assertEqual(ADDED, [])
+
+    def test_playback_closes_busy_dialog_before_resolving_url(self):
+        events = []
+
+        class FakeClient:
+            def import_playlists(self):
+                pass
+
+            def track(self, identity):
+                return {"id": identity, "duration_ms": 1000}
+
+            def metadata(self, track):
+                return track
+
+            def close(self):
+                pass
+
+        class FakeItem:
+            def setMimeType(self, value):
+                pass
+
+            def setContentLookup(self, value):
+                pass
+
+        client = FakeClient()
+        with _stub_utils():
+            utils_module = sys.modules["utils"]
+            patches = (
+                mock.patch.object(self.plugin.catalogue, "Catalogue", return_value=client),
+                mock.patch.object(utils_module, "spotty_has_credentials", return_value=True),
+                mock.patch.object(self.plugin, "token", return_value="token"),
+                mock.patch.object(utils_module, "resonance_signed_in", return_value=True),
+                mock.patch.object(self.plugin, "track_item", return_value=FakeItem()),
+                mock.patch.object(self.plugin, "stream_url", return_value="http://stream"),
+                mock.patch.object(
+                    self.plugin,
+                    "close_busy_dialogs",
+                    side_effect=lambda: events.append("close"),
+                ),
+                mock.patch.object(
+                    self.plugin.xbmcplugin,
+                    "setResolvedUrl",
+                    side_effect=lambda *args: events.append("resolve"),
+                ),
+            )
+            with contextlib.ExitStack() as stack:
+                for patch in patches:
+                    stack.enter_context(patch)
+                self.plugin.PARAMS = {"action": "play", "id": "a" * 22}
+                self.plugin.run()
+
+        self.assertEqual(events, ["close", "resolve"])
 
 
 class ContextMenuTests(unittest.TestCase):

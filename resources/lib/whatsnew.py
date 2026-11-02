@@ -8,6 +8,17 @@ user who skips several releases still sees the full picture.
 """
 
 NOTES = {
+    "1.2.5": """FIXED
+  * Successful playback now closes Kodi's busy dialog before handing the
+    stream back to Kodi. This prevents a failed stream from overlapping the
+    next playback request and crashing Kodi.
+
+DIAGNOSTICS
+  * Android ARMv7 playback troubleshooting is documented. Spotty track-load
+    failures are separate from the Kodi busy-dialog crash.
+
+""",
+
     "1.2.4": """FIXED
   * Playing a playlist or album no longer crashes Kodi. When a track failed
     to load and playback moved on to the next item, two busy dialogs could

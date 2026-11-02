@@ -1,5 +1,14 @@
 Resonance Version 1
 
+v1.2.5 - 2026-11-02
+
+- Fixed a Kodi crash caused by overlapping busy dialogs when a failed playback
+  request advanced to another track.
+- Successful playback now closes Kodi's busy dialog before handing the stream
+  back to Kodi.
+- Documented Android ARMv7 playback troubleshooting and the distinction between
+  Spotty track-load failures and the Kodi crash.
+
 v1.2.4 - 2026-11-01
 
 - Fixed a crash when playing a playlist or album: Kodi could end up with two
