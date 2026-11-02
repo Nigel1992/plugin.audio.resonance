@@ -91,6 +91,24 @@ class CatalogueTests(unittest.TestCase):
         self.assertEqual(len(http.calls), 1)
         self.assertIn("api.spotify.com", http.calls[0][0])
 
+    def test_play_track_on_named_device(self):
+        client, http = self.client([
+            Response({"devices": [{"id": "device-1", "name": "Kodi-Resonance"}]}),
+            Response({}, 204),
+        ])
+        self.assertTrue(client.play_track_on_device("a" * 22, "Kodi-Resonance"))
+        self.assertEqual(http.calls[0][0], "GET https://api.spotify.com/v1/me/player/devices")
+        self.assertEqual(http.calls[1][0], "PUT https://api.spotify.com/v1/me/player/play")
+        self.assertEqual(http.calls[1][1]["params"], {"device_id": "device-1"})
+        self.assertEqual(http.calls[1][1]["json"], {"uris": ["spotify:track:" + "a" * 22]})
+
+    def test_play_track_on_named_device_returns_false_when_missing(self):
+        client, http = self.client([
+            Response({"devices": [{"id": "other", "name": "Other speaker"}]}),
+        ])
+        self.assertFalse(client.play_track_on_device("a" * 22, "Kodi-Resonance"))
+        self.assertEqual(len(http.calls), 1)
+
     def test_search_failure_does_not_try_another_provider(self):
         client, http = self.client([Response({}, 500)])
         with self.assertRaises(module.Unavailable):

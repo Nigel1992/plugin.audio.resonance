@@ -147,6 +147,37 @@ class ConnectBridge:
         except RuntimeError:
             return False
 
+    def _enrich_metadata(self, event):
+        """Fill Kodi's music tag with artist/album data used by lyrics addons."""
+        uri = str(event.get("uri") or "")
+        track_id = uri.rsplit(":", 1)[-1] if uri.startswith("spotify:track:") else ""
+        if not track_id:
+            return event
+        try:
+            from catalogue import Catalogue
+            from utils import ADDON_DATA_PATH, get_cached_auth_token, get_catalogue_settings
+            client = Catalogue(
+                ADDON_DATA_PATH,
+                get_cached_auth_token,
+                signed_in=True,
+                **get_catalogue_settings(),
+            )
+            try:
+                details = client.metadata(client.track(track_id))
+            finally:
+                client.close()
+            artists = details.get("artists") or []
+            event = dict(event)
+            event["artist"] = " / ".join(
+                str(item.get("name") or "") for item in artists if isinstance(item, dict)
+            )
+            album = details.get("album") or {}
+            event["album"] = str(album.get("name") or "")
+            event["year"] = str(album.get("release_date") or "")[:4]
+        except (OSError, RuntimeError, ValueError):
+            pass
+        return event
+
     def command(self, name, **values):
         xbmc.log("Resonance Connect command: " + name, xbmc.LOGDEBUG)
         with self.command_lock:
@@ -258,7 +289,7 @@ class ConnectBridge:
             if kind == "pipe_stats":
                 xbmc.log("Resonance Connect pipe: " + str(event), xbmc.LOGDEBUG)
             elif kind == "track":
-                self.metadata = event
+                self.metadata = self._enrich_metadata(event)
             elif kind in ("playing", "paused", "loading", "stopped", "unavailable"):
                 self.remote_state = kind
                 if event.get("uri"):
@@ -334,8 +365,24 @@ class ConnectBridge:
         item = xbmcgui.ListItem(label=self.metadata.get("name") or "Spotify Connect", path=url)
         item.setMimeType("audio/wav")
         item.setContentLookup(False)
+        item.setProperty("IsPlayable", "true")
+        item.setProperty("do_not_analyze", "true")
         tag = item.getMusicInfoTag()
         tag.setTitle(self.metadata.get("name") or "Spotify Connect")
+        if self.metadata.get("artist"):
+            tag.setArtist(self.metadata["artist"])
+            try:
+                tag.setArtists([self.metadata["artist"]])
+            except (AttributeError, TypeError):
+                pass
+        if self.metadata.get("album"):
+            tag.setAlbum(self.metadata["album"])
+        try:
+            year = int(self.metadata.get("year") or 0)
+            if year > 1900:
+                tag.setYear(year)
+        except (TypeError, ValueError):
+            pass
         tag.setDuration(int(self.metadata.get("duration_ms", 0) / 1000))
         if self.metadata.get("cover"):
             item.setArt({"thumb": self.metadata["cover"]})
@@ -344,7 +391,15 @@ class ConnectBridge:
         # Use Kodi's streaming demuxer for this non-seekable live source.
         response = json.loads(xbmc.executeJSONRPC(json.dumps({
             "jsonrpc": "2.0", "id": 1, "method": "Player.Open",
-            "params": {"item": {"file": url}, "options": {"playername": "VideoPlayer"}},
+            "params": {
+                "item": {
+                    "file": url,
+                    "title": self.metadata.get("name") or "Spotify Connect",
+                    "artist": [self.metadata["artist"]] if self.metadata.get("artist") else [],
+                    "album": self.metadata.get("album") or "",
+                },
+                "options": {"playername": "VideoPlayer"},
+            },
         })))
         if "error" in response:
             raise RuntimeError("Kodi could not open Connect stream: " + str(response["error"]))

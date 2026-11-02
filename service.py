@@ -242,14 +242,14 @@ class AudioRequest(BaseHTTPRequestHandler):
             self.send_header("Content-Length", "0")
             self.end_headers()
             return
-        self.send_response(206 if self.headers.get("Range") else 200)
-        self.send_header("Content-Type", "audio/wav")
-        self.send_header("Content-Length", str(end - start + 1))
-        self.send_header("Accept-Ranges", "bytes")
-        if self.headers.get("Range"):
-            self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
-        self.end_headers()
         if head:
+            self.send_response(206 if self.headers.get("Range") else 200)
+            self.send_header("Content-Type", "audio/wav")
+            self.send_header("Content-Length", str(end - start + 1))
+            self.send_header("Accept-Ranges", "bytes")
+            if self.headers.get("Range"):
+                self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+            self.end_headers()
             return
         self.connection.settimeout(60)
         stream = SpottyAudioStreamer(self.server.spotty)
@@ -265,7 +265,37 @@ class AudioRequest(BaseHTTPRequestHandler):
         try:
             remaining = end - start + 1
             written = 0
-            for chunk in stream.send_part_audio_stream(end - start + 1, start):
+            audio = stream.send_part_audio_stream(end - start + 1, start)
+            first_chunk = next(audio, None)
+            if not first_chunk:
+                message = (
+                    "Spotify did not provide playable audio. "
+                    "Check the Kodi log for PLAYBACK_DIAG and Spotty audio-key errors."
+                ).encode("utf-8")
+                xbmc.log(
+                    "Resonance playback returned no audio; sending HTTP 503 "
+                    f"for track={identity}",
+                    xbmc.LOGWARNING,
+                )
+                self.send_response(503)
+                self.send_header("Content-Type", "text/plain; charset=utf-8")
+                self.send_header("Content-Length", str(len(message)))
+                self.send_header("Connection", "close")
+                self.end_headers()
+                self.wfile.write(message)
+                return
+            self.send_response(206 if self.headers.get("Range") else 200)
+            self.send_header("Content-Type", "audio/wav")
+            self.send_header("Content-Length", str(end - start + 1))
+            self.send_header("Accept-Ranges", "bytes")
+            if self.headers.get("Range"):
+                self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+            self.end_headers()
+            chunk = first_chunk[:remaining]
+            self.wfile.write(chunk)
+            written += len(chunk)
+            remaining -= len(chunk)
+            for chunk in audio:
                 chunk = chunk[:remaining]
                 self.wfile.write(chunk)
                 written += len(chunk)
@@ -284,9 +314,28 @@ class AudioRequest(BaseHTTPRequestHandler):
 
     def live_connect(self, head):
         bridge = self.server.connect
-        if bridge is None or not bridge.active or self.path != bridge.stream_path():
+        current = self.path == "/connect/current.wav"
+        expected_prefix = "/connect/" + bridge.session + "/" if bridge is not None else ""
+        if (
+            bridge is None
+            or (
+                not current
+                and (
+                    not bridge.active
+                    or not self.path.startswith(expected_prefix)
+                    or not re.fullmatch(r"/connect/[a-f0-9]+/\d+\.wav", self.path)
+                )
+            )
+        ):
             self.send_error(404)
             return
+        if current:
+            deadline = time.monotonic() + 10
+            while not bridge.active and time.monotonic() < deadline:
+                time.sleep(0.1)
+            if not bridge.active:
+                self.send_error(404)
+                return
         generation = bridge.audio.generation
         self.send_response(200)
         self.send_header("Content-Type", "audio/wav")

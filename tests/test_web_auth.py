@@ -61,6 +61,8 @@ class TestPkce(unittest.TestCase):
         self.assertIn("playlist-modify-private", module.DEFAULT_SCOPE)
         self.assertIn("playlist-modify-public", module.DEFAULT_SCOPE)
         self.assertIn("user-follow-read", module.DEFAULT_SCOPE)
+        self.assertIn("user-read-playback-state", module.DEFAULT_SCOPE)
+        self.assertIn("user-modify-playback-state", module.DEFAULT_SCOPE)
 
     def test_pair_matches(self):
         verifier, challenge = module.pkce_pair()

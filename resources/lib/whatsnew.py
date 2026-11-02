@@ -8,6 +8,21 @@ user who skips several releases still sees the full picture.
 """
 
 NOTES = {
+    "1.2.6": """NEW
+  * Browser playback can use the Kodi Spotify Connect device when available,
+    so Spotify Desktop and mobile show the same current track and position.
+  * Connect playback now handles changing stream generations, supplies Kodi
+    music metadata, and remains playable from Kodi playlists.
+  * An optional setting enables automatic Spotify Connect playback.
+
+FIXED
+  * Local playback waits for the first audio bytes before returning a
+    successful WAV response. If Spotify returns no audio, Resonance returns
+    HTTP 503 instead of an empty or partial stream, preventing Kodi retry
+    loops and busy-dialog crashes.
+
+""",
+
     "1.2.5": """FIXED
   * Successful playback now closes Kodi's busy dialog before handing the
     stream back to Kodi. This prevents a failed stream from overlapping the

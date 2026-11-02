@@ -295,6 +295,42 @@ class Catalogue:
         except (requests.RequestException, ValueError) as exc:
             raise Unavailable(_localized(11594, "Spotify could not complete this change")) from exc
 
+    def play_track_on_device(self, track_id, device_name):
+        """Start a track on Resonance's Spotify Connect device.
+
+        Playback started through the Web API is owned by Spotify Connect, so
+        other Spotify clients can display and control the same session.
+        """
+        return self.play_tracks_on_device([track_id], device_name)
+
+    def play_tracks_on_device(self, track_ids, device_name):
+        """Start a sequence of tracks on Resonance's Spotify Connect device."""
+        if not track_ids or len(track_ids) > 100 or any(
+            not re.fullmatch(r"[A-Za-z0-9]{22}", track_id) for track_id in track_ids
+        ):
+            raise ValueError("Invalid Spotify track IDs")
+        devices = self.write_request("GET", "/me/player/devices")
+        if not isinstance(devices, dict):
+            return False
+        wanted = str(device_name or "").strip().casefold()
+        device = next(
+            (
+                item for item in devices.get("devices", [])
+                if isinstance(item, dict)
+                and str(item.get("name") or "").strip().casefold() == wanted
+            ),
+            None,
+        )
+        if not device or not device.get("id"):
+            return False
+        self.write_request(
+            "PUT",
+            "/me/player/play",
+            params={"device_id": device["id"]},
+            body={"uris": [f"spotify:track:{track_id}" for track_id in track_ids]},
+        )
+        return True
+
     def save_library_item(self, kind, identity, save=True):
         if kind not in ("track", "album", "playlist", "artist") or not re.fullmatch(r"[A-Za-z0-9]{22}", identity):
             raise ValueError("Invalid Spotify library item")
