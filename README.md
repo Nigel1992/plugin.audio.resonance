@@ -19,7 +19,7 @@ through bundled Spotty/librespot playback helpers.
 | Not supported | Windows, macOS, Linux x86/x64 |
 | Catalogue | Regular Spotify Web API with browser PKCE token |
 | Playback | Spotify Device Connect with Spotty/librespot |
-| Version | 1.2.4 |
+| Version | 1.2.5 |
 
 | | |
 | --- | --- |
@@ -28,7 +28,7 @@ through bundled Spotty/librespot playback helpers.
 
 ## Quick Start
 
-1. Run `python scripts/package_addon.py` and install `dist/plugin.audio.resonance-1.2.4.zip`. Upstream releases are available on the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
+1. Run `python scripts/package_addon.py` and install `dist/plugin.audio.resonance-1.2.5.zip`. Upstream releases are available on the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
 2. In Kodi, install it with **Add-ons -> Install from zip file**.
 3. Restart Kodi once.
 4. Open **Add-ons -> Music add-ons -> Resonance**.
@@ -75,9 +75,21 @@ https://resonance-spotify-callback.vercel.app/api/callback
   them with the Catalogue setting **Hide songs Resonance cannot play**.
 - Close Kodi's busy dialog before showing playback errors to avoid a crash
   from two overlapping dialogs.
+- Close Kodi's busy dialog before handing successful playback back to Kodi,
+  preventing a failed stream from overlapping the next playback request.
 
 The catalogue uses Spotify's regular Web API only. There is no public catalogue
 fallback service.
+
+### Android ARMv7 playback troubleshooting
+
+On 32-bit Android devices such as some Chromecast with Google TV HD models,
+Resonance selects the bundled ARMv7 Spotty playback helper automatically. If
+playback still fails after updating, try a different known-available Spotify
+track and check the Kodi log for `PLAYBACK_DIAG` lines. A Spotty message such as
+`unable to load track` indicates a playback/helper or Spotify availability
+failure; it is separate from the Kodi busy-dialog crash. Also confirm that the
+same track plays on another Spotify device and that the account is Premium.
 
 <details>
 <summary><b>Setup Details</b></summary>
