@@ -2165,6 +2165,14 @@ msgctxt "#11604"
 msgid "{}: service unavailable"
 msgstr "{}: dienst niet beschikbaar"
 
+msgctxt "#11607"
+msgid "Sync playback to Spotify Connect"
+msgstr "Afspelen synchroniseren met Spotify Connect"
+
+msgctxt "#11608"
+msgid "Start Resonance playback through Spotify Connect so other Spotify devices can control it automatically."
+msgstr "Start Resonance-afspelen via Spotify Connect zodat andere Spotify-apparaten het automatisch kunnen bedienen."
+
 msgctxt "#11401"
 msgid "Resonance setup"
 msgstr "Resonance-setup"

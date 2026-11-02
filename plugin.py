@@ -1478,6 +1478,28 @@ def run():
                 close_busy_dialogs()
                 raise catalogue.Unavailable(_t(11450))
             track = client.metadata(client.track(PARAMS["id"]))
+            from utils import get_spotify_device_name, sync_playback_to_spotify
+            try:
+                if sync_playback_to_spotify() and client.play_track_on_device(
+                        PARAMS["id"], get_spotify_device_name()):
+                    close_busy_dialogs()
+                    # The Connect bridge opens the Kodi stream after Spotify
+                    # emits its playing event. Do not start a second local
+                    # Spotty decoder for the same track.
+                    item = xbmcgui.ListItem(
+                        label=track.get("name") or _t(11576),
+                        path="http://127.0.0.1:52309/connect/current.wav",
+                    )
+                    item.setMimeType("audio/wav")
+                    item.setContentLookup(False)
+                    xbmcplugin.setResolvedUrl(HANDLE, True, item)
+                    return
+            except (catalogue.Unavailable, catalogue.Forbidden, ValueError) as exc:
+                xbmc.log(
+                    "Resonance Connect playback unavailable; using local stream: "
+                    + type(exc).__name__ + ": " + str(exc),
+                    xbmc.LOGWARNING,
+                )
             item = track_item(track, stream_url(track, client))
             item.setMimeType("audio/wav")
             item.setContentLookup(False)
@@ -1492,13 +1514,35 @@ def run():
                 if not spotty_has_credentials():
                     return
             tracks = client.cached("queue:" + PARAMS["key"], stale=True) or []
+            entries = tracks[int(PARAMS.get("index", 0)):]
             prepared = []
-            for entry in tracks[int(PARAMS.get("index", 0)):]:
+            for entry in entries:
                 if entry.get("id") and entry.get("duration_ms"):
                     path = stream_url(entry, client)
                     prepared.append((path, track_item(entry, path)))
             if not prepared:
                 raise catalogue.Unavailable(_t(11523))
+            try:
+                from utils import get_spotify_device_name, sync_playback_to_spotify
+                if sync_playback_to_spotify() and client.play_tracks_on_device(
+                    [entry["id"] for entry in entries if entry.get("id") and entry.get("duration_ms")],
+                    get_spotify_device_name(),
+                ):
+                    item = xbmcgui.ListItem(
+                        label=entries[0].get("name") or _t(11576),
+                        path="http://127.0.0.1:52309/connect/current.wav",
+                    )
+                    item.setMimeType("audio/wav")
+                    item.setContentLookup(False)
+                    close_busy_dialogs()
+                    xbmcplugin.setResolvedUrl(HANDLE, True, item)
+                    return
+            except (catalogue.Unavailable, catalogue.Forbidden, ValueError) as exc:
+                xbmc.log(
+                    "Resonance Connect queue unavailable; using local playlist: "
+                    + type(exc).__name__ + ": " + str(exc),
+                    xbmc.LOGWARNING,
+                )
             queue = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
             queue.clear()
             for path, item in prepared:
@@ -1517,6 +1561,7 @@ def run():
             progress = xbmcgui.DialogProgress()
             progress.create("Resonance", "Loading playlist tracks...")
             prepared = []
+            connect_ids = []
             try:
                 while True:
                     if progress.iscanceled():
@@ -1529,6 +1574,7 @@ def run():
                         if entry.get("id") and entry.get("duration_ms"):
                             path = stream_url(entry, client)
                             prepared.append((path, track_item(entry, path)))
+                            connect_ids.append(entry["id"])
                     progress.update(0, _t(11526).format(len(prepared)))
                     if more is None:
                         break
@@ -1537,6 +1583,25 @@ def run():
                     raise catalogue.Unavailable(_t(11525))
             finally:
                 progress.close()
+            try:
+                from utils import get_spotify_device_name, sync_playback_to_spotify
+                if sync_playback_to_spotify() and client.play_tracks_on_device(
+                        connect_ids, get_spotify_device_name()):
+                    item = xbmcgui.ListItem(
+                        label=prepared[0][1].getLabel() or _t(11576),
+                        path="http://127.0.0.1:52309/connect/current.wav",
+                    )
+                    item.setMimeType("audio/wav")
+                    item.setContentLookup(False)
+                    close_busy_dialogs()
+                    xbmcplugin.setResolvedUrl(HANDLE, True, item)
+                    return
+            except (catalogue.Unavailable, catalogue.Forbidden, ValueError) as exc:
+                xbmc.log(
+                    "Resonance Connect playlist unavailable; using local playlist: "
+                    + type(exc).__name__ + ": " + str(exc),
+                    xbmc.LOGWARNING,
+                )
             queue = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
             queue.clear()
             for path, item in prepared:

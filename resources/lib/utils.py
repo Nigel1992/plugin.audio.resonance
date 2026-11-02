@@ -609,6 +609,14 @@ def get_playback_settings() -> "tuple[str, str, str]":
     return quality, volume, gain
 
 
+def sync_playback_to_spotify() -> bool:
+    """Return whether local playback should be started through Spotify Connect."""
+    try:
+        return xbmcaddon.Addon(id=ADDON_ID).getSetting("sync_playback_to_spotify").lower() == "true"
+    except Exception:
+        return False
+
+
 def get_catalogue_settings() -> dict:
     addon = xbmcaddon.Addon(id=ADDON_ID)
     profile = load_persistent_spotify_profile()

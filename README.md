@@ -19,7 +19,7 @@ through bundled Spotty/librespot playback helpers.
 | Not supported | Windows, macOS, Linux x86/x64 |
 | Catalogue | Regular Spotify Web API with browser PKCE token |
 | Playback | Spotify Device Connect with Spotty/librespot |
-| Version | 1.2.5 |
+| Version | 1.2.6 |
 
 | | |
 | --- | --- |
@@ -28,7 +28,7 @@ through bundled Spotty/librespot playback helpers.
 
 ## Quick Start
 
-1. Run `python scripts/package_addon.py` and install `dist/plugin.audio.resonance-1.2.5.zip`. Upstream releases are available on the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
+1. Run `python scripts/package_addon.py` and install `dist/plugin.audio.resonance-1.2.6.zip`. Upstream releases are available on the [Releases page](https://github.com/Nigel1992/plugin.audio.resonance/releases).
 2. In Kodi, install it with **Add-ons -> Install from zip file**.
 3. Restart Kodi once.
 4. Open **Add-ons -> Music add-ons -> Resonance**.
@@ -217,6 +217,12 @@ code)** and paste the `code` value from the browser address bar.
 - Use a track context menu to unfollow a playlist from **Saved and Followed Playlists** and an artist from **Followed Artists**. Unfollowing only removes the item from your library; Spotify keeps the playlist or artist itself.
 - Choose **Create playlist...** in **Your Spotify Library** to make a new playlist, or **Create playlist with this track...** in a track context menu to start one with that track. New playlists are created with the private flag, which Spotify only allows with the playlist modification permission that **Reauthorize Spotify** grants, and they show up in **Saved and Followed Playlists**.
 - Select a track to play it.
+- When browser sign-in includes playback control, tracks selected in Resonance
+  are started through the Kodi Spotify Connect device. Spotify Desktop and
+  mobile then show the same current track and playback position. Existing
+  accounts must use **Reauthorize Spotify** once to grant these playback
+  permissions; if the device is unavailable, Resonance keeps using its local
+  stream fallback.
 - Use a track context menu to start playback from that row through the rest of the current page.
 - From a playlist track, choose **Play playlist from here** to queue that song and the remaining playlist tracks.
 - Spotify links are no longer on the main menu. Open `open.spotify.com/...` URLs or `spotify:...` URIs with the plugin's `open_link` action, for example from a Kodi favourites entry pointing at `plugin://plugin.audio.resonance/?action=open_link`.
@@ -235,6 +241,7 @@ refresh is available from **Account and status**.
 | Account | Reset Resonance | Moves sign-in, cache and runtime files into a backup folder in the add-on data folder. Restart Kodi afterwards. |
 | Playback | Playback quality | Spotify bitrate: 96, 160 or 320 kbps. |
 | Playback | Volume normalization | Spotty normalization mode: Track, Album or Automatic. |
+| Playback | Sync playback to Spotify Connect | When enabled, Resonance starts tracks through Spotify Connect so other Spotify devices can control playback without selecting Resonance manually. |
 | Maintenance | Sign out of Spotify | Clears the local sign-in state and catalogue cache. |
 | Maintenance | Clear cache | Clears cached catalogue responses without removing sign-in state. |
 | Advanced | Spotify Web API client ID | Your Spotify app Client ID for browser sign-in. |

@@ -41,6 +41,8 @@ DEFAULT_SCOPE = [
     "playlist-modify-private",
     "playlist-modify-public",
     "user-follow-read",
+    "user-read-playback-state",
+    "user-modify-playback-state",
 ]
 TOKEN_LIFETIME = 3600
 

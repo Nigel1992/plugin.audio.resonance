@@ -41,6 +41,11 @@
           </constraints>
           <control type="list" format="string" />
         </setting>
+        <setting id="sync_playback_to_spotify" type="boolean" label="11607">
+          <level>0</level><default>false</default>
+          <help>11608</help>
+          <control type="toggle" />
+        </setting>
       </group>
     </category>
     <category id="catalogue" label="11398">

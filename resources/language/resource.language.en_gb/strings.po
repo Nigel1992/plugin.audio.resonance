@@ -2381,3 +2381,11 @@ msgstr "Hide songs Resonance cannot play"
 msgctxt "#11606"
 msgid "Hides tracks that Spotify will not let this device play, such as songs that are not available in your country or region."
 msgstr "Hides tracks that Spotify will not let this device play, such as songs that are not available in your country or region."
+
+msgctxt "#11607"
+msgid "Sync playback to Spotify Connect"
+msgstr "Sync playback to Spotify Connect"
+
+msgctxt "#11608"
+msgid "Start Resonance playback through Spotify Connect so other Spotify devices can control it automatically."
+msgstr "Start Resonance playback through Spotify Connect so other Spotify devices can control it automatically."
