@@ -186,6 +186,7 @@ def _stub_utils(signed_in=True):
     module.spotty_has_credentials = lambda: True
     module.get_playback_settings = lambda: ("320", "1.0", "track")
     module.get_spotify_device_name = lambda: "Kodi"
+    module.sync_playback_to_spotify = lambda: False
     module.get_catalogue_settings = lambda: {}
     module.get_cached_auth_token = lambda: ""
     module.get_spotify_webapi_client_id = lambda: ""

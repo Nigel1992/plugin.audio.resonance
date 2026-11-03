@@ -1,5 +1,11 @@
 Resonance Version 1
 
+v1.2.7 - 2026-11-03
+
+- Fixed the remaining Kodi crash after failed playback. A new playback
+  request now closes any previous busy dialog immediately, before metadata or
+  stream setup can start another request.
+
 v1.2.6 - 2026-11-02
 
 - Browser playback can use the Kodi Spotify Connect device when available, so

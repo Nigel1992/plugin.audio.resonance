@@ -8,6 +8,13 @@ user who skips several releases still sees the full picture.
 """
 
 NOTES = {
+    "1.2.7": """FIXED
+  * A new playback request now closes any previous Kodi busy dialog
+    immediately. This prevents the concurrent-busydialog crash when Kodi
+    advances after a failed track.
+
+""",
+
     "1.2.6": """NEW
   * Browser playback can use the Kodi Spotify Connect device when available,
     so Spotify Desktop and mobile show the same current track and position.
