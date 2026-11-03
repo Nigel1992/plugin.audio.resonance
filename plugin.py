@@ -1087,11 +1087,9 @@ def stream_url(track, client):
     identity = track.get("id") or ""
     duration = int(track.get("duration_ms") or 0) / 1000
     if not re.fullmatch(r"[A-Za-z0-9]{22}", identity) or duration <= 0:
-        close_busy_dialogs()
         raise catalogue.Unavailable(_t(11522))
     reason = client.unplayable(track)
     if reason:
-        close_busy_dialogs()
         raise catalogue.Unavailable(reason)
     return f"http://127.0.0.1:52309/track/{identity}/{duration}"
 
@@ -1159,6 +1157,11 @@ def run():
     # skipped.
     migrate_legacy_addon_data()
     action = PARAMS.get("action", "home")
+    if action in ("play", "queue", "queue_playlist"):
+        # Kodi opens a busy dialog before invoking a plugin playback request.
+        # Close a previous request's dialog immediately, before metadata or
+        # stream setup can trigger another playback attempt.
+        close_busy_dialogs()
     if HANDLE >= 0 and action in (
         "web_login", "web_login_paste", "connect", "connect_settings", "connect_playback", "whats_new",
         "guided_setup",
@@ -1470,19 +1473,16 @@ def run():
             render_artist_everything(client, sections, PARAMS.get("name", ""), PARAMS["id"])
         elif action == "play":
             if not spotty_has_credentials():
-                close_busy_dialogs()
                 xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem())
                 guide_playback_pairing(PARAMS["id"])
                 return
             if not token():
-                close_busy_dialogs()
                 raise catalogue.Unavailable(_t(11450))
             track = client.metadata(client.track(PARAMS["id"]))
             from utils import get_spotify_device_name, sync_playback_to_spotify
             try:
                 if sync_playback_to_spotify() and client.play_track_on_device(
                         PARAMS["id"], get_spotify_device_name()):
-                    close_busy_dialogs()
                     # The Connect bridge opens the Kodi stream after Spotify
                     # emits its playing event. Do not start a second local
                     # Spotty decoder for the same track.
@@ -1503,10 +1503,8 @@ def run():
             item = track_item(track, stream_url(track, client))
             item.setMimeType("audio/wav")
             item.setContentLookup(False)
-            # Kodi keeps the directory busy dialog open until the resolved
-            # URL is handed back. Close it before starting the player so a
-            # failed stream cannot overlap the next playback request.
-            close_busy_dialogs()
+            # The request dialog was closed at the start of this playback
+            # action, before Kodi could overlap it with another request.
             xbmcplugin.setResolvedUrl(HANDLE, True, item)
         elif action == "queue":
             if not spotty_has_credentials():
@@ -1534,7 +1532,6 @@ def run():
                     )
                     item.setMimeType("audio/wav")
                     item.setContentLookup(False)
-                    close_busy_dialogs()
                     xbmcplugin.setResolvedUrl(HANDLE, True, item)
                     return
             except (catalogue.Unavailable, catalogue.Forbidden, ValueError) as exc:
@@ -1557,7 +1554,6 @@ def run():
             start_index = max(0, int(PARAMS.get("offset", 0)))
             page_offset = (start_index // 40) * 40
             first_index = start_index - page_offset
-            close_busy_dialogs()
             progress = xbmcgui.DialogProgress()
             progress.create("Resonance", "Loading playlist tracks...")
             prepared = []
@@ -1593,7 +1589,6 @@ def run():
                     )
                     item.setMimeType("audio/wav")
                     item.setContentLookup(False)
-                    close_busy_dialogs()
                     xbmcplugin.setResolvedUrl(HANDLE, True, item)
                     return
             except (catalogue.Unavailable, catalogue.Forbidden, ValueError) as exc:
