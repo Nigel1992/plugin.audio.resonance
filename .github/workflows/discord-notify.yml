@@ -22,7 +22,7 @@ jobs:
       DISCORD_WEBHOOK_SUPPORT: ${{ secrets.DISCORD_WEBHOOK_SUPPORT }}
       DISCORD_WEBHOOK_IDEAS: ${{ secrets.DISCORD_WEBHOOK_IDEAS }}
       DISCORD_WEBHOOK_NEWS: ${{ secrets.DISCORD_WEBHOOK_NEWS }}
-      DISCORD_TAG_IDS: '{"support":{"🐛 Bug":"1570943916323111114","❓ Vraag":"1570943916323111115","✅ Opgelost":"1570943916323111116"},"ideas":{"💡 Idee":"1570943922203529277","🛠 Gepland":"1570943922203529278","✔ Uitgevoerd":"1570943922203529279","❌ Afgewezen":"1570943922203529280"}}'
+      DISCORD_TAG_IDS: '{"support":{"🐛 Bug":"1570943916323111114","❓ Question":"1570943916323111115","✅ Resolved":"1570943916323111116"},"ideas":{"💡 Idea":"1570943922203529277","🛠 Planned":"1570943922203529278","✔ Done":"1570943922203529279","❌ Rejected":"1570943922203529280"}}'
       GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: Post event to Discord
@@ -88,8 +88,8 @@ jobs:
 
           TAG_IDS = json.loads(os.environ.get("DISCORD_TAG_IDS") or "{}")
           TAG_RULES = {
-              "support": lambda l, s: (["🐛 Bug"] if "bug" in l else ["❓ Vraag"] if "question" in l else []) + (["✅ Opgelost"] if s == "closed" else []),
-              "ideas": lambda l, s: ["💡 Idee"] + ((["❌ Afgewezen"] if any(k in x for x in l for k in ("wontfix", "invalid", "duplicate", "not planned")) else ["✔️ Uitgevoerd"]) if s == "closed" else (["🛠️ Gepland"] if any("progress" in x or "planned" in x for x in l) else [])),
+              "support": lambda l, s: (["🐛 Bug"] if "bug" in l else ["❓ Question"] if "question" in l else []) + (["✅ Resolved"] if s == "closed" else []),
+              "ideas": lambda l, s: ["💡 Idea"] + ((["❌ Rejected"] if any(k in x for x in l for k in ("wontfix", "invalid", "duplicate", "not planned")) else ["✔ Done"]) if s == "closed" else (["🛠 Planned"] if any("progress" in x or "planned" in x for x in l) else [])),
           }
 
           def field(name, value, inline=False):
