@@ -2,9 +2,9 @@ name: Validate Kodi Add-on
 
 on:
   push:
-    branches: [main, master]
+    branches: [master]
   pull_request:
-    branches: [main, master]
+    branches: [master]
   workflow_dispatch:
 
 concurrency:
