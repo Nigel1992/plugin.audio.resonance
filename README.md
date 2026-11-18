@@ -141,7 +141,7 @@ included relay from your own GitHub and Vercel accounts:
 
 1. Fork [the Resonance repository](https://github.com/Nigel1992/plugin.audio.resonance)
    to your GitHub account. Review the source in
-   [`vercel/resonance-callback`](https://github.com/Nigel1992/plugin.audio.resonance/tree/main/vercel/resonance-callback)
+   [`vercel/resonance-callback`](https://github.com/Nigel1992/plugin.audio.resonance/tree/master/vercel/resonance-callback)
    before deploying it.
 2. In Vercel, choose **Add New → Project**, import your fork, and set **Root
    Directory** to `vercel/resonance-callback`. Keep the included `api/`,
